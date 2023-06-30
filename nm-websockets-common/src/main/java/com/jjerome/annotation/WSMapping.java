@@ -19,11 +19,16 @@ public @interface WSMapping {
     )
     String value() default "/";
 
+    @AliasFor(
+            attribute = "value"
+    )
     String path() default "/";
 
     String responsePath() default "/";
 
     String[] filters() default {};
+
+    boolean disableReturnResponse() default false;
 
     WSMappingType type() default WSMappingType.METHOD;
 }

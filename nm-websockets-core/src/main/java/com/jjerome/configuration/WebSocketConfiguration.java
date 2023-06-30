@@ -1,7 +1,9 @@
 package com.jjerome.configuration;
 
 import com.jjerome.context.MappingContext;
-import com.jjerome.domain.Mapping;
+import com.jjerome.domain.ControllersStorage;
+import com.jjerome.domain.InitialClass;
+import com.jjerome.domain.MappingsStorage;
 import com.jjerome.handler.RequestHandler;
 import com.jjerome.handler.ResponseHandler;
 import com.jjerome.handler.WebSocketHandler;
@@ -11,25 +13,29 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
-import java.util.Map;
-
 @Configuration
 @EnableWebSocket
 public class WebSocketConfiguration {
 
     private MappingContext mappingContext;
 
-    private Class<?> baseClass;
+    private InitialClass initialClass;
 
-    private Map<String, Mapping> methodMappings;
+    private MappingsStorage mappingStorage;
+
+    private ControllersStorage controllersStorage;
 
 
     WebSocketConfiguration(MappingContext mappingContext,
                            BeanUtil beanUtil){
         this.mappingContext = mappingContext;
-        this.baseClass = beanUtil.findSpringBootApplicationBeanClass();
+        this.initialClass = beanUtil.findSpringBootApplicationBeanClass();
 
-        methodMappings = mappingContext.findAllMappings(baseClass);
+        controllersStorage = mappingContext.findAllControllers(initialClass.getClazz());
+        mappingStorage = mappingContext.findAllMappings(controllersStorage.getControllersList());
+
+        System.out.println(mappingStorage.getMappings());
+        System.out.println();
     }
 
 

@@ -1,77 +1,121 @@
 package com.jjerome.context;
 
 import com.jjerome.annotation.WSComponentScan;
-import com.jjerome.annotation.WSConnectMapping;
 import com.jjerome.annotation.WSController;
 import com.jjerome.annotation.WSMapping;
 import com.jjerome.anotation.EnableNMWebSockets;
+import com.jjerome.domain.Controller;
+import com.jjerome.domain.ControllersStorage;
 import com.jjerome.domain.Mapping;
+import com.jjerome.domain.MappingsStorage;
+import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
 import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
+
+import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
+import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
 
 @Component
 @RequiredArgsConstructor
 public class MappingContext {
 
+    private final ApplicationContext context;
+
     private final MethodUtil methodUtil;
 
-    public List<Class<?>> findAllControllers(Class<?> baseClass){
-        List<Class<?>> controllers = new ArrayList<>();
+    private final MergedAnnotationUtil mergedAnnotationUtil;
 
-        Reflections reflection = new Reflections(baseClass.getPackageName());
+    public ControllersStorage findAllControllers(Class<?> initialClazz) {
+        Reflections reflections = new Reflections(initialClazz.getPackageName());
 
+        if (initialClazz.isAnnotationPresent(EnableNMWebSockets.class)) {
+            EnableNMWebSockets enableAnnotation = findMergedAnnotation(initialClazz, EnableNMWebSockets.class);
 
-        controllers.addAll(reflection.getTypesAnnotatedWith(WSController.class)
-                .stream()
-                .filter(clazz -> clazz.isAnnotationPresent(WSController.class))
-                .collect(Collectors.toList()));
+            if (enableAnnotation == null) {
+                return ControllersStorage.emptyStorage();
+            }
+            WSComponentScan componentScan = findMergedAnnotation(initialClazz, WSComponentScan.class);
+            Set<Class<?>> allControllerClasses = reflections.getTypesAnnotatedWith(WSController.class);
 
-        if (baseClass.isAnnotationPresent(EnableNMWebSockets.class)){
-            EnableNMWebSockets webSockets = AnnotationUtils.getAnnotation(baseClass, EnableNMWebSockets.class);
-            WSComponentScan componentScan = AnnotationUtils.getAnnotation(baseClass, WSComponentScan.class);
+            for (String pack : componentScan.basePackages()){
+                allControllerClasses.addAll(new Reflections(pack).getTypesAnnotatedWith(WSController.class));
+            }
 
+            for (Class<?> clazz : componentScan.baseClasses()){
+                if (hasAnnotation(clazz, WSController.class)){
+                    allControllerClasses.add(clazz);
+                }
+            }
 
-            System.out.println(componentScan.basePackages().length);
+            if (enableAnnotation.enableSpringComponentScan()) {
+                ComponentScan springComponentScan = findMergedAnnotation(initialClazz, ComponentScan.class);
 
-//            if (webSockets.enableSpringComponentScan()){
-//                System.out.println(webSockets.enableSpringComponentScan());
-//            }
+                for (String pack : springComponentScan.basePackages()){
+                    allControllerClasses.addAll(new Reflections(pack).getTypesAnnotatedWith(WSController.class));
+                }
+
+                for (Class<?> clazz : springComponentScan.basePackageClasses()){
+                    if (hasAnnotation(clazz, WSController.class)){
+                        allControllerClasses.add(clazz);
+                    }
+                }
+            }
+
+            Map<Class<?>, Controller> controllers = new HashMap<>();
+
+            for (Class<?> controllerClazz : allControllerClasses){
+                Annotation[] annotations = mergedAnnotationUtil.findAllAnnotations(controllerClazz);
+                Object controllerSpringBean = context.getBean(controllerClazz);
+
+                controllers.put(controllerClazz, new Controller(annotations, controllerClazz, controllerSpringBean));
+            }
+
+            return new ControllersStorage(controllers);
         }
-        return controllers;
+        return ControllersStorage.emptyStorage();
     }
 
-    public Map<String, Mapping> findAllMappings(Class<?> baseClass){
-        Map<String, Mapping> mappings = new HashMap<>();
+    public MappingsStorage findAllMappings(List<Controller> controllers) {
+        Map<String, Mapping> methodMappings = new HashMap<>();
+        List<Mapping> connectMappings = new ArrayList<>();
+        List<Mapping> disconnectMappings = new ArrayList<>();
 
-        for (Class<?> controller : findAllControllers(baseClass)){
-            if (!controller.isAnnotationPresent(WSController.class)){
+        for (Controller controller : controllers) {
+            WSController controllerAnnotation = findMergedAnnotation(controller.getClazz(), WSController.class);
+
+            if (controllerAnnotation == null) {
                 continue;
             }
 
-            for (Method method : controller.getMethods()){
-                if (!method.isAnnotationPresent(WSConnectMapping.class)){
+            for (Method method : controller.getClazz().getDeclaredMethods()) {
+                WSMapping mappingAnnotation = findMergedAnnotation(method, WSMapping.class);
+
+                if (mappingAnnotation == null) {
                     continue;
                 }
-                WSMapping mappingAnnotation = AnnotatedElementUtils.findMergedAnnotation(method, WSMapping.class);
 
-                Mapping mapping = new Mapping(mappingAnnotation, method,
+                Mapping mapping = new Mapping(mappingAnnotation.type(), mappingAnnotation, method,
                         methodUtil.extractMethodParameters(method), methodUtil.extractMethodReturnParameter(method));
 
-                mappings.put(mapping.getMappingAnnotation().path(), mapping);
+                switch (mapping.getType()) {
+                    case METHOD -> methodMappings.put(mapping.getMappingAnnotation().path(), mapping);
+                    case CONNECT -> connectMappings.add(mapping);
+                    case DISCONNECT -> disconnectMappings.add(mapping);
+                }
             }
         }
-
-        return mappings;
+        return new MappingsStorage(methodMappings, connectMappings, disconnectMappings);
     }
 }

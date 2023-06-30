@@ -37,4 +37,9 @@ public @interface WSConnectMapping {
             annotation = WSMapping.class
     )
     String[] filters() default {};
+
+    @AliasFor(
+            annotation = WSMapping.class
+    )
+    boolean disableReturnResponse() default false;
 }

@@ -1,5 +1,7 @@
 package com.jjerome.util;
 
+import com.jjerome.annotation.WSController;
+import com.jjerome.domain.InitialClass;
 import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -8,8 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.Set;
+import java.lang.annotation.Annotation;
 
 @Component
 @RequiredArgsConstructor
@@ -31,8 +32,9 @@ public class BeanUtil {
 
     private final ApplicationContext context;
 
+    private final MergedAnnotationUtil mergedAnnotationUtil;
 
-    public Class<?> findSpringBootApplicationBeanClass(){
+    public InitialClass findSpringBootApplicationBeanClass(){
         String[] beanNames = this.context.getBeanNamesForAnnotation(SpringBootApplication.class);
 
         if (beanNames.length > 1) {
@@ -42,13 +44,19 @@ public class BeanUtil {
             return null;
         }
 
-        Reflections reflections = new Reflections(context.getBean(beanNames[0]).getClass().getPackageName());
+        Object initialClazzBean = context.getBean(beanNames[0]);
 
-        return reflections.getTypesAnnotatedWith(SpringBootApplication.class)
+        Reflections reflections = new Reflections(initialClazzBean.getClass().getPackageName());
+
+        Class<?> initialClazz = reflections.getTypesAnnotatedWith(SpringBootApplication.class)
                 .stream()
                 .filter(clazz -> clazz.isAnnotationPresent(SpringBootApplication.class))
                 .findFirst()
                 .orElse(null);
+
+        Annotation[] initialClazzAnnotations = mergedAnnotationUtil.findAllAnnotations(initialClazz);
+
+        return new InitialClass(initialClazzAnnotations, initialClazz, initialClazzBean);
     }
 }
 

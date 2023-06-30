@@ -28,4 +28,9 @@ public @interface WSDisconnectMapping {
     String path() default "/";
 
     String responsePath() default "/";
+
+    @AliasFor(
+            annotation = WSMapping.class
+    )
+    boolean disableReturnResponse() default false;
 }

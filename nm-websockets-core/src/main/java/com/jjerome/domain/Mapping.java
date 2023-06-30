@@ -1,6 +1,7 @@
 package com.jjerome.domain;
 
 import com.jjerome.annotation.WSMapping;
+import com.jjerome.enums.WSMappingType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,8 @@ import java.lang.reflect.Method;
 @NoArgsConstructor
 @Getter @Setter
 public class Mapping {
+
+    private WSMappingType type;
 
     private WSMapping mappingAnnotation;
 

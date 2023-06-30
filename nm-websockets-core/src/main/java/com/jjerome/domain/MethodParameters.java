@@ -22,4 +22,13 @@ public class MethodParameters extends Parameter {
         super(parametherClass, genericClasses);
         this.annotations = annotations;
     }
+
+    public Annotation getAnnotation(Class<? extends Annotation> annotationClazz){
+        for (Annotation annotation : annotations){
+            if (annotation.getClass() == annotationClazz){
+                return annotation;
+            }
+        }
+        return null;
+    }
 }
