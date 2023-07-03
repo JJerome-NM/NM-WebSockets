@@ -8,8 +8,8 @@ import java.lang.reflect.Method;
 
 public class ConnectMapping extends Mapping{
 
-    ConnectMapping(WSMapping mappingAnnotation, Method method,
+    ConnectMapping(WSMapping mappingAnnotation, Class<?> controllerClazz, Method method,
                    MethodParameters[] methodParams, Parameter methodReturnType){
-        super(WSMappingType.CONNECT, mappingAnnotation, method, methodParams, methodReturnType);
+        super(WSMappingType.CONNECT, mappingAnnotation, controllerClazz, method, methodParams, methodReturnType);
     }
 }

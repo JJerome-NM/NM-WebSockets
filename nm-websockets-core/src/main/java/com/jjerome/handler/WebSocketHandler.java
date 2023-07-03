@@ -1,5 +1,7 @@
 package com.jjerome.handler;
 
+import com.jjerome.domain.ControllersStorage;
+import com.jjerome.domain.MappingsStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.CloseStatus;
@@ -15,11 +17,19 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private final ResponseHandler responseHandler;
 
+    private final MappingsStorage mappingsStorage;
+
+    private final ControllersStorage controllersStorage;
+
 
     public WebSocketHandler(RequestHandler requestHandler,
-                            ResponseHandler responseHandler){
+                            ResponseHandler responseHandler,
+                            MappingsStorage mappingsStorage,
+                            ControllersStorage controllersStorage){
         this.requestHandler = requestHandler;
         this.responseHandler = responseHandler;
+        this.mappingsStorage = mappingsStorage;
+        this.controllersStorage = controllersStorage;
 
         LOGGER.info("WebSockets successfully started");
     }

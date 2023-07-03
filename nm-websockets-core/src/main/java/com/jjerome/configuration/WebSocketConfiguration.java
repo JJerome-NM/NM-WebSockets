@@ -50,9 +50,21 @@ public class WebSocketConfiguration {
     }
 
     @Bean
+    public MappingsStorage getMappingStorage(){
+        return mappingStorage;
+    }
+
+    @Bean
+    public ControllersStorage getControllersStorage(){
+        return controllersStorage;
+    }
+
+    @Bean
     public WebSocketHandler getWebSocketHandler(@Autowired RequestHandler requestHandler,
-                                                @Autowired ResponseHandler responseHandler){
-        return new WebSocketHandler(requestHandler, responseHandler);
+                                                @Autowired ResponseHandler responseHandler,
+                                                @Autowired MappingsStorage mappingsStorage,
+                                                @Autowired ControllersStorage controllersStorage){
+        return new WebSocketHandler(requestHandler, responseHandler, mappingsStorage, controllersStorage);
     }
 
     @Bean

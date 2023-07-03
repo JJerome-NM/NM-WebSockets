@@ -31,4 +31,8 @@ public class MethodParameters extends Parameter {
         }
         return null;
     }
+
+    public boolean hasAnnotation(Class<? extends Annotation> annotationClazz){
+        return getAnnotation(annotationClazz) != null;
+    }
 }

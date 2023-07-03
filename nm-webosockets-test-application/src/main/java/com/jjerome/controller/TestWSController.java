@@ -18,7 +18,7 @@ public class TestWSController {
     }
 
     @WSMapping("fffg")
-    public void test2(){
-
+    public void test2(@WSRequestBody String body){
+        System.out.println(body);
     }
 }

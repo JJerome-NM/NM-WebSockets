@@ -106,7 +106,7 @@ public class MappingContext {
                     continue;
                 }
 
-                Mapping mapping = new Mapping(mappingAnnotation.type(), mappingAnnotation, method,
+                Mapping mapping = new Mapping(mappingAnnotation.type(), mappingAnnotation, controller.getClazz(), method,
                         methodUtil.extractMethodParameters(method), methodUtil.extractMethodReturnParameter(method));
 
                 switch (mapping.getType()) {

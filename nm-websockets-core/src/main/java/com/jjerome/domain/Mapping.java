@@ -18,6 +18,8 @@ public class Mapping {
 
     private WSMapping mappingAnnotation;
 
+    private Class<?> controllerClazz;
+
     private Method method;
 
     private MethodParameters[] methodParams;

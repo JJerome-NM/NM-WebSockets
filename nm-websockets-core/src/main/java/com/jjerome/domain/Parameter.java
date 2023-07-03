@@ -17,4 +17,8 @@ public class Parameter {
         this.clazz = clazz;
         this.generics = null;
     }
+
+    public boolean hasGenerics(){
+        return generics != null;
+    }
 }
