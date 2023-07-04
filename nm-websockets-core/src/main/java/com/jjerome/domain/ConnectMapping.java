@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 public class ConnectMapping extends Mapping{
 
     ConnectMapping(WSMapping mappingAnnotation, Class<?> controllerClazz, Method method,
-                   MethodParameters[] methodParams, Parameter methodReturnType){
+                   MethodParameter[] methodParams, Parameter methodReturnType){
         super(WSMappingType.CONNECT, mappingAnnotation, controllerClazz, method, methodParams, methodReturnType);
     }
 }

@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 public class DisconnectMapping extends Mapping{
 
     DisconnectMapping(WSMapping mappingAnnotation, Class<?> controllerClazz, Method method,
-                   MethodParameters[] methodParams, Parameter methodReturnType){
+                      MethodParameter[] methodParams, Parameter methodReturnType){
         super(WSMappingType.DISCONNECT, mappingAnnotation, controllerClazz, method, methodParams, methodReturnType);
     }
 }

@@ -23,4 +23,8 @@ public class ControllersStorage {
     public List<Controller> getControllersList(){
         return new ArrayList<>(controllers.values());
     }
+
+    public Controller getController(Class<?> controllerClass){
+        return controllers.get(controllerClass);
+    }
 }

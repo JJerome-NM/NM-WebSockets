@@ -10,6 +10,8 @@ import lombok.Setter;
 @Getter @Setter
 public class Request <T> {
 
+    private String sessionId;
+
     private String path;
 
     private T body;

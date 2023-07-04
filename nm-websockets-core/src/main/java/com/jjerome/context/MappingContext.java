@@ -19,10 +19,12 @@ import org.springframework.stereotype.Component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
@@ -49,39 +51,33 @@ public class MappingContext {
             WSComponentScan componentScan = findMergedAnnotation(initialClazz, WSComponentScan.class);
             Set<Class<?>> allControllerClasses = reflections.getTypesAnnotatedWith(WSController.class);
 
-            for (String pack : componentScan.basePackages()){
-                allControllerClasses.addAll(new Reflections(pack).getTypesAnnotatedWith(WSController.class));
-            }
-
-            for (Class<?> clazz : componentScan.baseClasses()){
-                if (hasAnnotation(clazz, WSController.class)){
-                    allControllerClasses.add(clazz);
-                }
-            }
-
-            if (enableAnnotation.enableSpringComponentScan()) {
-                ComponentScan springComponentScan = findMergedAnnotation(initialClazz, ComponentScan.class);
-
-                for (String pack : springComponentScan.basePackages()){
+            BiConsumer<String[], Class<?>[]> extractClasses = (basePackages, baseClasses) -> {
+                for (String pack : basePackages){
                     allControllerClasses.addAll(new Reflections(pack).getTypesAnnotatedWith(WSController.class));
                 }
 
-                for (Class<?> clazz : springComponentScan.basePackageClasses()){
-                    if (hasAnnotation(clazz, WSController.class)){
-                        allControllerClasses.add(clazz);
-                    }
-                }
+                Arrays.stream(baseClasses)
+                        .filter(clazz -> hasAnnotation(clazz, WSController.class))
+                        .forEach(allControllerClasses::add);
+            };
+
+            extractClasses.accept(componentScan.basePackages(), componentScan.baseClasses());
+
+            if (enableAnnotation.enableSpringComponentScan()) {
+                ComponentScan springComponentScan = findMergedAnnotation(initialClazz, ComponentScan.class);
+                extractClasses.accept(springComponentScan.basePackages(), springComponentScan.basePackageClasses());
             }
 
             Map<Class<?>, Controller> controllers = new HashMap<>();
 
             for (Class<?> controllerClazz : allControllerClasses){
+                WSController controllerAnnotation = findMergedAnnotation(controllerClazz, WSController.class);
                 Annotation[] annotations = mergedAnnotationUtil.findAllAnnotations(controllerClazz);
                 Object controllerSpringBean = context.getBean(controllerClazz);
 
-                controllers.put(controllerClazz, new Controller(annotations, controllerClazz, controllerSpringBean));
+                controllers.put(controllerClazz, new Controller(annotations, controllerAnnotation,
+                        controllerClazz, controllerSpringBean));
             }
-
             return new ControllersStorage(controllers);
         }
         return ControllersStorage.emptyStorage();

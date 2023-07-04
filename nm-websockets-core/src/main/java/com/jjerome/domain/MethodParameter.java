@@ -10,22 +10,22 @@ import java.lang.annotation.Annotation;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
-public class MethodParameters extends Parameter {
+public class MethodParameter extends Parameter {
 
     private Annotation[] annotations;
 
-    public MethodParameters(Annotation[] annotations, Class<?> parametherClass){
+    public MethodParameter(Annotation[] annotations, Class<?> parametherClass){
         this(annotations, parametherClass, null);
     }
 
-    public MethodParameters(Annotation[] annotations, Class<?> parametherClass, Parameter[] genericClasses){
+    public MethodParameter(Annotation[] annotations, Class<?> parametherClass, Parameter[] genericClasses){
         super(parametherClass, genericClasses);
         this.annotations = annotations;
     }
 
     public Annotation getAnnotation(Class<? extends Annotation> annotationClazz){
         for (Annotation annotation : annotations){
-            if (annotation.getClass() == annotationClazz){
+            if (annotation.annotationType() == annotationClazz){
                 return annotation;
             }
         }

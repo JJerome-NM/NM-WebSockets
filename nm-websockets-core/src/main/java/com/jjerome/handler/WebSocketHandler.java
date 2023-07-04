@@ -2,10 +2,12 @@ package com.jjerome.handler;
 
 import com.jjerome.domain.ControllersStorage;
 import com.jjerome.domain.MappingsStorage;
+import com.jjerome.domain.PrivateGlobalData;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketMessage;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -21,22 +23,26 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private final ControllersStorage controllersStorage;
 
+    private final PrivateGlobalData privateGlobalData;
 
     public WebSocketHandler(RequestHandler requestHandler,
                             ResponseHandler responseHandler,
                             MappingsStorage mappingsStorage,
-                            ControllersStorage controllersStorage){
+                            ControllersStorage controllersStorage,
+                            PrivateGlobalData privateGlobalData){
         this.requestHandler = requestHandler;
         this.responseHandler = responseHandler;
         this.mappingsStorage = mappingsStorage;
         this.controllersStorage = controllersStorage;
+        this.privateGlobalData = privateGlobalData;
 
         LOGGER.info("WebSockets successfully started");
     }
 
+
     @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
-        System.out.println(message.getPayload());
+    protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) throws Exception {
+        requestHandler.handleMapping(session, message);
     }
 
     @Override
@@ -44,6 +50,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         System.out.println(session.getId());
 
+        privateGlobalData.getSessions().put(session.getId(), session);
     }
 
     @Override

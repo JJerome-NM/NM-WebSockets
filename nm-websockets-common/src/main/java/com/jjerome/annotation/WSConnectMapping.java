@@ -18,17 +18,6 @@ import java.lang.annotation.Target;
 public @interface WSConnectMapping {
 
     @AliasFor(
-            annotation = WSMapping.class,
-            attribute = "path"
-    )
-    String value() default "/";
-
-    @AliasFor(
-            annotation = WSMapping.class
-    )
-    String path() default "/";
-
-    @AliasFor(
             annotation = WSMapping.class
     )
     String responsePath() default "/";

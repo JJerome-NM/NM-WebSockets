@@ -18,15 +18,8 @@ import java.lang.annotation.Target;
 public @interface WSDisconnectMapping {
 
     @AliasFor(
-            attribute = "path"
-    )
-    String value() default "/";
-
-    @AliasFor(
             annotation = WSMapping.class
     )
-    String path() default "/";
-
     String responsePath() default "/";
 
     @AliasFor(

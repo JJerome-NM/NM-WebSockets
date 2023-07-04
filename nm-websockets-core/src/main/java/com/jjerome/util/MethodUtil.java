@@ -1,6 +1,6 @@
 package com.jjerome.util;
 
-import com.jjerome.domain.MethodParameters;
+import com.jjerome.domain.MethodParameter;
 import com.jjerome.domain.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -37,21 +37,21 @@ public class MethodUtil {
         return parameters;
     }
 
-    public MethodParameters[] extractMethodParameters(Method method){
+    public MethodParameter[] extractMethodParameters(Method method){
         Annotation[][] annotations = method.getParameterAnnotations();
         Type[] parametersTypes = method.getGenericParameterTypes();
         int parametersLength = parametersTypes.length;
 
-        MethodParameters[] parameters = new MethodParameters[parametersLength];
+        MethodParameter[] parameters = new MethodParameter[parametersLength];
 
         for (int i = 0; i < parametersLength; i++){
             if (parametersTypes[i] instanceof ParameterizedType pType){
                 if (pType.getRawType() instanceof Class<?> rawType){
-                    parameters[i] = new MethodParameters(annotations[i], rawType,
+                    parameters[i] = new MethodParameter(annotations[i], rawType,
                             extractGenerics(pType.getActualTypeArguments()));
                 }
             } else if (parametersTypes[i] instanceof Class<?> cType) {
-                parameters[i] = new MethodParameters(annotations[i], cType);
+                parameters[i] = new MethodParameter(annotations[i], cType);
             }
         }
         return parameters;

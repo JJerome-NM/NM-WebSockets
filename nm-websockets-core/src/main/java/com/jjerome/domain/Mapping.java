@@ -22,7 +22,7 @@ public class Mapping {
 
     private Method method;
 
-    private MethodParameters[] methodParams;
+    private MethodParameter[] methodParams;
 
     private Parameter methodReturnType;
 }
