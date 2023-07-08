@@ -15,16 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestWSController {
 
     @WSConnectMapping(responsePath = "ffg")
-    public void test(@WSRequestBody Good<Good<Good<Integer>>> good, Integer lol){
+    public void test(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
         System.out.println(good.isGood());
     }
 
     @WSMapping("/test2")
-    public void test2(@WSRequestBody OgoClazz body){
-        System.out.println(body);
+    public void test2(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
+        System.out.println(good.getBody().getBody().getBody());
     }
 
-    @WSMapping("/test3")
+    @WSMapping(path = "/test3", responsePath = "/test3/response")
     public String test3(@PathVariable Request<OgoClazz> request){
         System.out.println(request.getBody().name);
 

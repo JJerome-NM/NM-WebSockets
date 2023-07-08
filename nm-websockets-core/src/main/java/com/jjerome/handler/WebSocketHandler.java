@@ -36,7 +36,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         this.controllersStorage = controllersStorage;
         this.privateGlobalData = privateGlobalData;
 
-        LOGGER.info("WebSockets successfully started");
+        LOGGER.info("NM-WebSockets successfully started");
     }
 
 

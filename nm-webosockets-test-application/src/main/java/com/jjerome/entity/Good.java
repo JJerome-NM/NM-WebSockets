@@ -8,9 +8,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
-public class Good<T> {
+public class Good<T, R> {
 
     private boolean good;
 
     private T body;
+
+    private R r;
 }

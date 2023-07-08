@@ -5,6 +5,7 @@ import com.jjerome.domain.ControllersStorage;
 import com.jjerome.domain.Mapping;
 import com.jjerome.domain.MappingsStorage;
 import com.jjerome.domain.Request;
+import com.jjerome.domain.Response;
 import com.jjerome.domain.UndefinedBody;
 import com.jjerome.exception.MappingNotFoundException;
 import com.jjerome.mapper.RequestMapper;
@@ -13,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.concurrent.ExecutorService;
 
 @RequiredArgsConstructor
@@ -39,11 +38,16 @@ public class RequestHandler {
         }
 
         Mapping mapping = mappingsStorage.getMappings().get(request.getPath());
+        Controller controller = controllersStorage.getController(mapping.getControllerClazz());
 
-        mappingService.invokeMapping(mapping, request);
+        Object response = mappingService.invokeMapping(mapping, request);
 
+        if (mapping.getMethodReturnType() != null && !mapping.getMappingAnnotation().disableReturnResponse()){
+            String responsePath = controller.getControllerAnnotation().responsePathPrefix()
+                    + mapping.getMappingAnnotation().responsePath();
 
-        System.out.println(mapping.getType());
+            responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
+        }
     }
 
     public void handleMapping(WebSocketSession session, TextMessage message){
