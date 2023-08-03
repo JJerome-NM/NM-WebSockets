@@ -8,10 +8,8 @@ import com.jjerome.domain.OgoClazz;
 import com.jjerome.domain.Request;
 import com.jjerome.entity.Good;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/api")
-@WSController
+@WSController("/test")
 public class TestWSController {
 
     @WSConnectMapping(responsePath = "ffg")
@@ -19,12 +17,12 @@ public class TestWSController {
         System.out.println(good.isGood());
     }
 
-    @WSMapping("/test2")
+    @WSMapping("/2")
     public void test2(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
-        System.out.println(good.getBody().getBody().getBody());
+        System.out.println(good);
     }
 
-    @WSMapping(path = "/test3", responsePath = "/test3/response")
+    @WSMapping(path = "/{id}/good", responsePath = "/test3/response")
     public String test3(@PathVariable Request<OgoClazz> request){
         System.out.println(request.getBody().name);
 

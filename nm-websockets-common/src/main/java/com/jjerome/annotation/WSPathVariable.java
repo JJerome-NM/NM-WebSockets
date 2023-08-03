@@ -21,7 +21,4 @@ public @interface WSPathVariable {
 
     @AliasFor("value")
     String name() default "";
-
-
-    boolean required() default true;
 }

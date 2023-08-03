@@ -24,12 +24,4 @@ public class ResponseMapper {
         }
         return null;
     }
-
-//    public static void main(String[] args) {
-//        ResponseMapper responseMapper = new ResponseMapper();
-//
-//        String json = responseMapper.responseToJSON(new Response<>("/negr", new User("negr", 19)));
-//
-//        System.out.println(json);
-//    }
 }
