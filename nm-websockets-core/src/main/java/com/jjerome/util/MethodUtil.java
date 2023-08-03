@@ -9,6 +9,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -26,15 +27,7 @@ public class MethodUtil {
     }
 
     public Parameter[] extractGenerics(Type[] paramsTypes){
-        int paramsTypesLength = paramsTypes.length;
-
-        Parameter[] parameters = new Parameter[paramsTypesLength];
-
-        for (int i = 0; i < paramsTypesLength; i++){
-            parameters[i] = extractGeneric(paramsTypes[i]);
-        }
-
-        return parameters;
+        return Stream.of(paramsTypes).map(this::extractGeneric).toArray(Parameter[]::new);
     }
 
     public MethodParameter[] extractMethodParameters(Method method){

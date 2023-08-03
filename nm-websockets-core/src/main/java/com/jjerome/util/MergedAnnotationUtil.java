@@ -3,6 +3,7 @@ package com.jjerome.util;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
+import java.util.stream.Stream;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
@@ -10,14 +11,8 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.findMerg
 public class MergedAnnotationUtil {
 
     public Annotation[] findAllAnnotations(Class<?> element){
-        Annotation[] allElementAnnotations = element.getDeclaredAnnotations();
-        int allElementAnnotationsLength = allElementAnnotations.length;
-
-        Annotation[] allMergedAnnotations = new Annotation[allElementAnnotationsLength];
-
-        for (int i = 0; i < allElementAnnotationsLength; i++){
-            allMergedAnnotations[i] = findMergedAnnotation(element, allElementAnnotations[i].annotationType());;
-        }
-        return allMergedAnnotations;
+        return Stream.of(element.getDeclaredAnnotations())
+                .map(annotation -> findMergedAnnotation(element, annotation.annotationType()))
+                .toArray(Annotation[]::new);
     }
 }

@@ -1,12 +1,10 @@
 package com.jjerome.service;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.jjerome.annotation.WSPathVariable;
 import com.jjerome.annotation.WSRequestBody;
 import com.jjerome.domain.Controller;
 import com.jjerome.domain.ControllersStorage;
 import com.jjerome.domain.Mapping;
-import com.jjerome.domain.MethodParameter;
 import com.jjerome.domain.Request;
 import com.jjerome.domain.UndefinedBody;
 import com.jjerome.handler.ResponseHandler;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class MappingService {
 
     private final ResponseHandler responseHandler;
 
-    public Object invokeMapping(Mapping mapping, Request<UndefinedBody> request){
+    public Object invokeMapping(Mapping mapping, Request<UndefinedBody> request) {
         Method method = mapping.getMethod();
         Controller controller = controllersStorage.getController(mapping.getControllerClazz());
 
@@ -40,47 +39,39 @@ public class MappingService {
             Object[] methodParameters = collectMappingParameters(mapping, request);
 
             return method.invoke(controller.getSpringBean(), methodParameters);
-        } catch (InvocationTargetException | IllegalAccessException e){
+        } catch (InvocationTargetException | IllegalAccessException e) {
             LOGGER.error(e.getMessage());
         }
         return null;
     }
 
-    public Object[] collectMappingParameters(Mapping mapping, Request<UndefinedBody> request){
-        MethodParameter[] methodParameters = mapping.getMethodParams();
-        short methodParametersLength = (short) methodParameters.length;
-        Object[] resultParameters = new Object[methodParametersLength];
+    public Object[] collectMappingParameters(Mapping mapping, Request<UndefinedBody> request) {
+        return Stream.of(mapping.getMethodParams())
+                .map(parameter -> {
+                    if (parameter.hasAnnotation(WSRequestBody.class)) {
+                        try {
+                            return request.getBody().convertToRealBody(parameter.converToJavaType());
+                        } catch (IllegalArgumentException e) {
+                            LOGGER.warn(String.format(BAD_REQUEST_BODY, request.getSessionId(), request.getPath()));
+                            return null;
+                        }
+                    } else if (parameter.getClazz() == Request.class && parameter.hasGenerics()) {
+                        try {
+                            // There may be a problem if the generic for the body is not the first in the request
 
-        for (short i = 0; i < methodParametersLength; i++){
-            MethodParameter parameter = methodParameters[i];
+                            return new Request<>(request.getSessionId(), request.getPath(),
+                                    request.getBody().convertToRealBody(parameter.getGenerics()[0].converToJavaType()));
+                        } catch (IllegalArgumentException e) {
+                            LOGGER.warn(String.format(BAD_REQUEST_BODY, request.getSessionId(), request.getPath()));
 
-            if (parameter.hasAnnotation(WSRequestBody.class)){
-                try {
-                    resultParameters[i] = request.getBody().convertToRealBody(parameter.converToJavaType());
-                } catch (IllegalArgumentException e){
-                    resultParameters[i] = null;
-
-                    LOGGER.warn(String.format(BAD_REQUEST_BODY, request.getSessionId(), request.getPath()));
-                }
-                resultParameters[i] = request.getBody().convertToRealBody(parameter.converToJavaType());
-            } else if (parameter.getClazz() == Request.class && parameter.hasGenerics()){
-                try {
-
-                    // There may be a problem if the generic for the body is not the first in the request
-
-                    resultParameters[i] = new Request<>(request.getSessionId(), request.getPath(),
-                            request.getBody().convertToRealBody(parameter.getGenerics()[0].converToJavaType()));
-                } catch (IllegalArgumentException e){
-                    resultParameters[i] = new Request<>(request.getSessionId(), request.getPath(), null);
-
-                    LOGGER.warn(String.format(BAD_REQUEST_BODY, request.getSessionId(), request.getPath()));
-                }
-            } else if (parameter.hasAnnotation(WSPathVariable.class)) {
-                resultParameters[i] = null;
-            } else {
-                resultParameters[i] = infoService.getSomeInfo(parameter.getClazz());
-            }
-        }
-        return resultParameters;
+                            return new Request<>(request.getSessionId(), request.getPath(), null);
+                        }
+                    } else if (parameter.hasAnnotation(WSPathVariable.class)) {
+                        return null;
+                    } else {
+                        return infoService.getSomeInfo(parameter.getClazz());
+                    }
+                })
+                .toArray(Object[]::new);
     }
 }
