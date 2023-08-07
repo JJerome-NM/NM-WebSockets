@@ -34,6 +34,8 @@ public class BeanUtil {
     private final MergedAnnotationUtil mergedAnnotationUtil;
 
     public InitialClass findSpringBootApplicationBeanClass(){
+        LoggerUtil.disableReflectionsInfoLogs();
+
         String[] beanNames = this.context.getBeanNamesForAnnotation(SpringBootApplication.class);
 
         if (beanNames.length > 1) {
@@ -55,6 +57,7 @@ public class BeanUtil {
 
         Annotation[] initialClazzAnnotations = mergedAnnotationUtil.findAllAnnotations(initialClazz);
 
+        LoggerUtil.enableReflectionsLogs();
         return new InitialClass(initialClazzAnnotations, initialClazz, initialClazzBean);
     }
 }
