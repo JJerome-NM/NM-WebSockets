@@ -1,6 +1,5 @@
 package com.jjerome.util;
 
-import com.jjerome.annotation.WSController;
 import com.jjerome.domain.InitialClass;
 import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;

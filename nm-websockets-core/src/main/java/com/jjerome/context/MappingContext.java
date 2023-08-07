@@ -8,15 +8,20 @@ import com.jjerome.domain.Controller;
 import com.jjerome.domain.ControllersStorage;
 import com.jjerome.domain.Mapping;
 import com.jjerome.domain.MappingsStorage;
+import com.jjerome.util.LoggerUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
 import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.spi.LocationAwareLogger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +45,8 @@ public class MappingContext {
     private final MergedAnnotationUtil mergedAnnotationUtil;
 
     public ControllersStorage findAllControllers(Class<?> initialClazz) {
+        LoggerUtil.disableReflectionsInfoLogs();
+
         Reflections reflections = new Reflections(initialClazz.getPackageName());
 
         if (initialClazz.isAnnotationPresent(EnableNMWebSockets.class)) {
@@ -80,10 +87,13 @@ public class MappingContext {
             }
             return new ControllersStorage(controllers);
         }
+        LoggerUtil.enableReflectionsLogs();
         return ControllersStorage.emptyStorage();
     }
 
     public MappingsStorage findAllMappings(List<Controller> controllers) {
+        LoggerUtil.disableReflectionsInfoLogs();
+
         Map<String, Mapping> methodMappings = new HashMap<>();
         List<Mapping> connectMappings = new ArrayList<>();
         List<Mapping> disconnectMappings = new ArrayList<>();
@@ -112,6 +122,7 @@ public class MappingContext {
                 }
             }
         }
+        LoggerUtil.enableReflectionsLogs();
         return new MappingsStorage(methodMappings, connectMappings, disconnectMappings);
     }
 }

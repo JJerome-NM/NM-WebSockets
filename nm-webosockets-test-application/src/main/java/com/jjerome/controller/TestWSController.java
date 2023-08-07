@@ -4,7 +4,7 @@ import com.jjerome.annotation.WSConnectMapping;
 import com.jjerome.annotation.WSController;
 import com.jjerome.annotation.WSMapping;
 import com.jjerome.annotation.WSRequestBody;
-import com.jjerome.domain.OgoClazz;
+import com.jjerome.entity.OgoClazz;
 import com.jjerome.domain.Request;
 import com.jjerome.entity.Good;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -41,7 +41,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
 
     @Override
-    protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) throws Exception {
+    protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) {
         requestHandler.handleMapping(session, message);
     }
 

@@ -1,4 +1,4 @@
-package com.jjerome.domain;
+package com.jjerome.entity;
 
 public class OgoClazz {
     public int id;

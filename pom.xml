@@ -20,6 +20,7 @@
         <module>nm-websockets-core</module>
         <module>nm-websockets-common</module>
         <module>nm-webosockets-test-application</module>
+        <module>nm-websockets-filters</module>
     </modules>
 
     <properties>
