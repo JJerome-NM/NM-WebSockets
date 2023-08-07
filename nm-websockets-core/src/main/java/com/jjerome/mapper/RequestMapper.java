@@ -35,22 +35,4 @@ public class RequestMapper {
     public <T> RequestDto<T> JSONToRequestDto(String json, Class<T> bodyType){
         return (RequestDto<T>) JSONTo(json, RequestDto.class, bodyType);
     }
-
-
-//    public static void main(String[] args) throws JsonProcessingException {
-//        RequestMapper requestMapper = new RequestMapper();
-//
-//        String json = "{\n" +
-//                "    \"path\": \"test\",\n" +
-//                "    \"body\": {\n" +
-//                "        \"name\": \"JJerome\",\n" +
-//                "        \"age\": 12" +
-//                "    }\n" +
-//                "}";
-//
-//        Request<User> request = requestMapper.JSONToRequest(json, User.class);
-//
-//        System.out.println(request.getPath());
-//        System.out.println(request.getBody());
-//    }
 }

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.stream.Stream;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
@@ -37,16 +39,9 @@ public class Parameter {
         if (!hasGenerics()){
             return new JavaType[] {};
         }
-
-        short genericsLength = (short) generics.length;
-        JavaType[] genericsTypes = new JavaType[genericsLength];
-
-        for (int i = 0; i < genericsLength; i++){
-
-            genericsTypes[i] = OBJECT_MAPPER.getTypeFactory()
-                    .constructParametricType(generics[i].getClazz(), generics[i].convertGenericsToJavaType());
-        }
-
-        return genericsTypes;
+        return Stream.of(generics)
+                .map(generic -> OBJECT_MAPPER.getTypeFactory()
+                        .constructParametricType(generic.getClazz(), generic.convertGenericsToJavaType()))
+                .toArray(JavaType[]::new);
     }
 }

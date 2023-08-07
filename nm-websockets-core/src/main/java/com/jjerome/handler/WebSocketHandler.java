@@ -51,10 +51,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
         System.out.println(session.getId());
 
         privateGlobalData.getSessions().put(session.getId(), session);
+        requestHandler.handleConnectMapping();
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         System.out.println(session.getId());
+
+        requestHandler.handleDisconnectMapping();
     }
 }
