@@ -1,6 +1,7 @@
 package com.jjerome.configuration;
 
 import com.jjerome.context.MappingContext;
+import com.jjerome.domain.ApplicationFilterChain;
 import com.jjerome.domain.ControllersStorage;
 import com.jjerome.domain.InitialClass;
 import com.jjerome.domain.MappingsStorage;
@@ -14,6 +15,7 @@ import com.jjerome.service.MappingService;
 import com.jjerome.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
@@ -22,21 +24,22 @@ import java.util.concurrent.Executors;
 
 @Configuration
 @EnableWebSocket
+@ComponentScan(basePackages = {"com.jjerome"})
 public class WebSocketConfiguration {
 
     private static final int THREAD_POOL = Runtime.getRuntime().availableProcessors();
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL);
 
     private MappingContext mappingContext;
 
-    private InitialClass initialClass;
+    private final InitialClass initialClass;
 
-    private MappingsStorage mappingStorage;
+    private final MappingsStorage mappingStorage;
 
-    private ControllersStorage controllersStorage;
+    private final ControllersStorage controllersStorage;
 
-    private PrivateGlobalData privateGlobalData;
+    private final PrivateGlobalData privateGlobalData;
 
     WebSocketConfiguration(MappingContext mappingContext,
                            BeanUtil beanUtil) {
@@ -45,11 +48,17 @@ public class WebSocketConfiguration {
 
         controllersStorage = mappingContext.findAllControllers(initialClass.getClazz());
         mappingStorage = mappingContext.findAllMappings(controllersStorage.getControllersList());
+        this.privateGlobalData = new PrivateGlobalData();
 
         System.out.println(mappingStorage.getMappings());
         System.out.println();
     }
 
+
+    @Bean
+    InitialClass getInitialClass(){
+        return this.initialClass;
+    }
 
     @Bean
     public RequestHandler getRequestHandler(@Autowired MappingsStorage mappingsStorage,
@@ -86,12 +95,9 @@ public class WebSocketConfiguration {
 
     @Bean
     public WebSocketHandler getWebSocketHandler(@Autowired RequestHandler requestHandler,
-                                                @Autowired ResponseHandler responseHandler,
-                                                @Autowired MappingsStorage mappingsStorage,
-                                                @Autowired ControllersStorage controllersStorage,
-                                                @Autowired PrivateGlobalData privateGlobalData) {
-        return new WebSocketHandler(requestHandler, responseHandler, mappingsStorage,
-                controllersStorage, privateGlobalData);
+                                                @Autowired PrivateGlobalData privateGlobalData,
+                                                @Autowired(required = false) ApplicationFilterChain filterChain) {
+        return new WebSocketHandler(requestHandler, privateGlobalData, filterChain);
     }
 
     @Bean

@@ -1,15 +1,15 @@
-package com.jjerome;
+package com.jjerome_test;
 
 import com.jjerome.anotation.EnableNMWebSockets;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(
-        scanBasePackages = "com.jjerome"
+        scanBasePackages = "com.jjerome_test"
 )
 @EnableNMWebSockets(
         enableSpringComponentScan = true,
-        scanBasePackages = "com.jjerome"
+        scanBasePackages = "com.jjerome_test"
 )
 public class TestApp {
     public static void main(String[] args) {

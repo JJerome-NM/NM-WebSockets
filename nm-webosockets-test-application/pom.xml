@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>nm-webosockets-test-application</artifactId>
+    <groupId>com.jjerome_test</groupId>
 
     <properties>
         <maven.compiler.source>20</maven.compiler.source>
@@ -28,9 +29,16 @@
             <artifactId>nm-websockets-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>com.jjerome</groupId>
             <artifactId>nm-websockets-core</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jjerome</groupId>
+            <artifactId>nm-websockets-filters</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

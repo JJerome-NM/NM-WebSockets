@@ -1,4 +1,4 @@
-package com.jjerome;
+package com.jjerome_test;
 
 import lombok.Getter;
 import lombok.Setter;

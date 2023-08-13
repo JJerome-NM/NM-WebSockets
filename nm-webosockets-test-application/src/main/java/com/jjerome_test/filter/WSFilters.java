@@ -1,4 +1,4 @@
-package com.jjerome.filter;
+package com.jjerome_test.filter;
 
 import com.jjerome.annotation.WSConnectFilter;
 

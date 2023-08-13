@@ -1,5 +1,6 @@
 package com.jjerome.handler;
 
+import com.jjerome.domain.ApplicationFilterChain;
 import com.jjerome.domain.ControllersStorage;
 import com.jjerome.domain.MappingsStorage;
 import com.jjerome.domain.PrivateGlobalData;
@@ -17,24 +18,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private final RequestHandler requestHandler;
 
-    private final ResponseHandler responseHandler;
-
-    private final MappingsStorage mappingsStorage;
-
-    private final ControllersStorage controllersStorage;
-
     private final PrivateGlobalData privateGlobalData;
 
+    private final ApplicationFilterChain applicationFilterChain;
+
     public WebSocketHandler(RequestHandler requestHandler,
-                            ResponseHandler responseHandler,
-                            MappingsStorage mappingsStorage,
-                            ControllersStorage controllersStorage,
-                            PrivateGlobalData privateGlobalData){
+                            PrivateGlobalData privateGlobalData,
+                            ApplicationFilterChain applicationFilterChain) {
         this.requestHandler = requestHandler;
-        this.responseHandler = responseHandler;
-        this.mappingsStorage = mappingsStorage;
-        this.controllersStorage = controllersStorage;
         this.privateGlobalData = privateGlobalData;
+        this.applicationFilterChain = applicationFilterChain;
 
         LOGGER.info("NM-WebSockets successfully started");
     }
@@ -42,11 +35,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) {
+        ApplicationFilterChain.doFilterIfNotNull(applicationFilterChain);
         requestHandler.handleMapping(session, message);
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
+        ApplicationFilterChain.doConnectFilterIfNotNull(applicationFilterChain);
 
         System.out.println(session.getId());
 

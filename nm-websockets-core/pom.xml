@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.jjerome</groupId>
         <artifactId>NM-WebSockets</artifactId>
-        <version>${revision}</version>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>nm-websockets-core</artifactId>
@@ -33,12 +33,6 @@
         <dependency>
             <groupId>com.jjerome</groupId>
             <artifactId>nm-websockets-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jjerome</groupId>
-            <artifactId>nm-websockets-filters</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
