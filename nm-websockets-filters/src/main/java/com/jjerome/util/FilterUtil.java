@@ -1,6 +1,6 @@
 package com.jjerome.util;
 
-import com.jjerome.domain.InitialClass;
+import com.jjerome.core.InitialClass;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

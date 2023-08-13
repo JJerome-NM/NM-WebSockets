@@ -1,8 +1,8 @@
 package com.jjerome.handler;
 
 import com.jjerome.domain.PrivateGlobalData;
-import com.jjerome.domain.Response;
-import com.jjerome.mapper.ResponseMapper;
+import com.jjerome.core.Response;
+import com.jjerome.core.mapper.ResponseMapper;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

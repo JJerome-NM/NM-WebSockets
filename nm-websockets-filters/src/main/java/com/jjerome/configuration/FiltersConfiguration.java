@@ -3,8 +3,8 @@ package com.jjerome.configuration;
 
 import com.jjerome.DefaultApplicationFilterChain;
 import com.jjerome.FilterChainComparator;
-import com.jjerome.domain.ApplicationFilterChain;
-import com.jjerome.domain.InitialClass;
+import com.jjerome.filter.ApplicationFilterChain;
+import com.jjerome.core.InitialClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

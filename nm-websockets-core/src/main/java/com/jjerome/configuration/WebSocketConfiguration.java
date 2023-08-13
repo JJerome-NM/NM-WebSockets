@@ -1,16 +1,16 @@
 package com.jjerome.configuration;
 
 import com.jjerome.context.MappingContext;
-import com.jjerome.domain.ApplicationFilterChain;
+import com.jjerome.filter.ApplicationFilterChain;
 import com.jjerome.domain.ControllersStorage;
-import com.jjerome.domain.InitialClass;
+import com.jjerome.core.InitialClass;
 import com.jjerome.domain.MappingsStorage;
 import com.jjerome.domain.PrivateGlobalData;
 import com.jjerome.handler.RequestHandler;
 import com.jjerome.handler.ResponseHandler;
 import com.jjerome.handler.WebSocketHandler;
-import com.jjerome.mapper.RequestMapper;
-import com.jjerome.mapper.ResponseMapper;
+import com.jjerome.core.mapper.RequestMapper;
+import com.jjerome.core.mapper.ResponseMapper;
 import com.jjerome.service.MappingService;
 import com.jjerome.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +97,9 @@ public class WebSocketConfiguration {
     public WebSocketHandler getWebSocketHandler(@Autowired RequestHandler requestHandler,
                                                 @Autowired PrivateGlobalData privateGlobalData,
                                                 @Autowired(required = false) ApplicationFilterChain filterChain) {
-        return new WebSocketHandler(requestHandler, privateGlobalData, filterChain);
+        var filterChainWrapper = new ApplicationFilterChain.ApplicationFilterChainValidWrapper(filterChain);
+
+        return new WebSocketHandler(requestHandler, privateGlobalData, filterChainWrapper);
     }
 
     @Bean

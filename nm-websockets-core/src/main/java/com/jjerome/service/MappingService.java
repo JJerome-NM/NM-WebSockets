@@ -1,11 +1,11 @@
 package com.jjerome.service;
 
-import com.jjerome.annotation.WSPathVariable;
-import com.jjerome.annotation.WSRequestBody;
+import com.jjerome.context.anotation.WSPathVariable;
+import com.jjerome.context.anotation.WSRequestBody;
 import com.jjerome.domain.Controller;
 import com.jjerome.domain.ControllersStorage;
 import com.jjerome.domain.Mapping;
-import com.jjerome.domain.Request;
+import com.jjerome.core.Request;
 import com.jjerome.domain.UndefinedBody;
 import com.jjerome.handler.ResponseHandler;
 import lombok.RequiredArgsConstructor;

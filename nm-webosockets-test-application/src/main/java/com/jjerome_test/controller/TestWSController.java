@@ -1,11 +1,11 @@
 package com.jjerome_test.controller;
 
-import com.jjerome.annotation.WSConnectMapping;
-import com.jjerome.annotation.WSController;
-import com.jjerome.annotation.WSMapping;
-import com.jjerome.annotation.WSRequestBody;
+import com.jjerome.context.anotation.WSConnectMapping;
+import com.jjerome.context.anotation.WSController;
+import com.jjerome.context.anotation.WSMapping;
+import com.jjerome.context.anotation.WSRequestBody;
 import com.jjerome_test.entity.OgoClazz;
-import com.jjerome.domain.Request;
+import com.jjerome.core.Request;
 import com.jjerome_test.entity.Good;
 import org.springframework.web.bind.annotation.PathVariable;
 

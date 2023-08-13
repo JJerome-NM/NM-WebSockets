@@ -1,6 +1,6 @@
 package com.jjerome;
 
-import com.jjerome.domain.FilterChain;
+import com.jjerome.filter.FilterChain;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -9,9 +9,10 @@ import java.util.Comparator;
 public class FilterChainComparator<F extends FilterChain> implements Comparator<F> {
 
     /**
-     * @param filter1 the first filter to be compared.
-     * @param filter2 the second filter to be compared.
-     * @return Returns the difference between the order of the first filter and the second filter
+     * @param filter1 the first {@link FilterChain} to be compared.
+     * @param filter2 the second {@link FilterChain} to be compared.
+     * @return Returns the difference between the order of the first {@link FilterChain} and
+     * the second {@link FilterChain}
      */
     @Override
     public int compare(F filter1, F filter2) {

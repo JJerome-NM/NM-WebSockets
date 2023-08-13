@@ -1,7 +1,8 @@
 package com.jjerome;
 
-import com.jjerome.domain.ApplicationFilterChain;
-import com.jjerome.domain.FilterChain;
+import com.jjerome.filter.ApplicationFilterChain;
+import com.jjerome.filter.FilterChain;
+import com.jjerome.core.Ordered;
 import org.springframework.util.Assert;
 
 import java.util.Set;
@@ -42,6 +43,6 @@ public class DefaultApplicationFilterChain implements ApplicationFilterChain {
 
     @Override
     public int getOrder() {
-        return 0;
+        return Ordered.APPLICATION_PRECEDENCE;
     }
 }

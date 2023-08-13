@@ -1,6 +1,6 @@
 package com.jjerome_test;
 
-import com.jjerome.anotation.EnableNMWebSockets;
+import com.jjerome.context.anotation.EnableNMWebSockets;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

@@ -1,8 +1,6 @@
 package com.jjerome.handler;
 
-import com.jjerome.domain.ApplicationFilterChain;
-import com.jjerome.domain.ControllersStorage;
-import com.jjerome.domain.MappingsStorage;
+import com.jjerome.filter.ApplicationFilterChain;
 import com.jjerome.domain.PrivateGlobalData;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -35,13 +33,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) {
-        ApplicationFilterChain.doFilterIfNotNull(applicationFilterChain);
+        applicationFilterChain.doFilter();
+
         requestHandler.handleMapping(session, message);
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        ApplicationFilterChain.doConnectFilterIfNotNull(applicationFilterChain);
+        applicationFilterChain.doConnectFilter();
 
         System.out.println(session.getId());
 

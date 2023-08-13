@@ -1,9 +1,9 @@
 package com.jjerome.context;
 
-import com.jjerome.annotation.WSComponentScan;
-import com.jjerome.annotation.WSController;
-import com.jjerome.annotation.WSMapping;
-import com.jjerome.anotation.EnableNMWebSockets;
+import com.jjerome.context.anotation.WSComponentScan;
+import com.jjerome.context.anotation.WSController;
+import com.jjerome.context.anotation.WSMapping;
+import com.jjerome.context.anotation.EnableNMWebSockets;
 import com.jjerome.domain.Controller;
 import com.jjerome.domain.ControllersStorage;
 import com.jjerome.domain.Mapping;

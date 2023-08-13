@@ -1,6 +1,6 @@
 package com.jjerome.domain;
 
-import com.jjerome.annotation.WSController;
+import com.jjerome.context.anotation.WSController;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
