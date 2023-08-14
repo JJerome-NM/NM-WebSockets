@@ -11,8 +11,8 @@ import com.jjerome.handler.ResponseHandler;
 import com.jjerome.handler.WebSocketHandler;
 import com.jjerome.core.mapper.RequestMapper;
 import com.jjerome.core.mapper.ResponseMapper;
-import com.jjerome.service.MappingService;
 import com.jjerome.util.BeanUtil;
+import com.jjerome.util.MappingUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,7 +31,7 @@ public class WebSocketConfiguration {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL);
 
-    private MappingContext mappingContext;
+    private final MappingContext mappingContext;
 
     private final InitialClass initialClass;
 
@@ -62,13 +62,11 @@ public class WebSocketConfiguration {
 
     @Bean
     public RequestHandler getRequestHandler(@Autowired MappingsStorage mappingsStorage,
-                                            @Autowired ControllersStorage controllersStorage,
                                             @Autowired ResponseHandler responseHandler,
                                             @Autowired ExecutorService executorService,
                                             @Autowired RequestMapper requestMapper,
-                                            @Autowired MappingService mappingService) {
-        return new RequestHandler(mappingsStorage, controllersStorage, responseHandler,
-                executorService, requestMapper, mappingService);
+                                            @Autowired MappingUtil mappingUtil) {
+        return new RequestHandler(mappingsStorage, responseHandler, executorService, requestMapper, mappingUtil);
     }
 
     @Bean
@@ -97,9 +95,7 @@ public class WebSocketConfiguration {
     public WebSocketHandler getWebSocketHandler(@Autowired RequestHandler requestHandler,
                                                 @Autowired PrivateGlobalData privateGlobalData,
                                                 @Autowired(required = false) ApplicationFilterChain filterChain) {
-        var filterChainWrapper = new ApplicationFilterChain.ApplicationFilterChainValidWrapper(filterChain);
-
-        return new WebSocketHandler(requestHandler, privateGlobalData, filterChainWrapper);
+        return new WebSocketHandler(requestHandler, privateGlobalData, ApplicationFilterChain.wrapToValidDecorator(filterChain));
     }
 
     @Bean

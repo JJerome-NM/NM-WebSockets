@@ -1,6 +1,7 @@
 package com.jjerome.domain;
 
-import com.jjerome.context.anotation.WSController;
+import com.jjerome.context.annotation.WSController;
+import com.jjerome.core.Controller;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import java.lang.annotation.Annotation;
 
 @AllArgsConstructor
 @Getter @Setter
-public class Controller {
+public class DefaultController implements Controller {
 
     private Annotation[] annotations;
 

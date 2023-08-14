@@ -1,6 +1,7 @@
 package com.jjerome.context.anotation;
 
-import com.jjerome.enums.WSMappingType;
+import com.jjerome.context.annotation.WSMapping;
+import com.jjerome.core.enums.WSMappingType;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.Documented;

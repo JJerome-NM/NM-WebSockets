@@ -16,7 +16,7 @@ public class FilterChainComparator<F extends FilterChain> implements Comparator<
      */
     @Override
     public int compare(F filter1, F filter2) {
-        if (filter1 == filter2){
+        if (filter1.equals(filter2)){
             return 0;
         }
         int result = filter1.getOrder() - filter2.getOrder();

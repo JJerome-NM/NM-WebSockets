@@ -1,5 +1,6 @@
 package com.jjerome.domain;
 
+import com.jjerome.core.Mapping;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

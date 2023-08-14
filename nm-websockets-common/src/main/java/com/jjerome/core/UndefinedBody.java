@@ -1,4 +1,4 @@
-package com.jjerome.domain;
+package com.jjerome.core;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;

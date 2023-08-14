@@ -1,12 +1,22 @@
 package com.jjerome.filter;
 
+import com.jjerome.core.Mapping;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public interface ApplicationFilterChain extends FilterChain {
 
     void doConnectFilter();
+
+    Mapping addFilterForMapping(Mapping mapping, String... filtersNames);
+
+
+    static ApplicationFilterChain wrapToValidDecorator(ApplicationFilterChain filterChain){
+        return new ApplicationFilterChainValidDecorator(filterChain);
+    }
+
 
     /**
      * Accepts and implements the methods of the {@link ApplicationFilterChain} class and
@@ -15,18 +25,23 @@ public interface ApplicationFilterChain extends FilterChain {
      * This class is provided to avoid problems when the user does not have a filtering module enabled.
      */
     @RequiredArgsConstructor
-    class ApplicationFilterChainValidWrapper implements ApplicationFilterChain{
+    class ApplicationFilterChainValidDecorator implements ApplicationFilterChain{
 
         private final ApplicationFilterChain filterChain;
 
         @Override
         public void doConnectFilter() {
-            this.isFilterChainNonNull(() -> filterChain.doConnectFilter());
+            isFilterChainNonNull(() -> filterChain.doConnectFilter());
+        }
+
+        @Override
+        public Mapping addFilterForMapping(Mapping mapping, String... filtersNames) {
+            return isFilterChainNonNull(() -> filterChain.addFilterForMapping(mapping, filtersNames));
         }
 
         @Override
         public void doFilter() {
-            this.isFilterChainNonNull(() -> filterChain.doFilter());
+            isFilterChainNonNull(() -> filterChain.doFilter());
         }
 
         @Override
@@ -38,6 +53,15 @@ public interface ApplicationFilterChain extends FilterChain {
             if (Objects.nonNull(filterChain)){
                 runFunction.run();
             }
+        }
+
+        private <T> T isFilterChainNonNull(Supplier<T> getFunction){
+            return Objects.nonNull(filterChain) ? getFunction.get() : null;
+        }
+
+        @Override
+        public String getName() {
+            return this.getClass().getName();
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.jjerome.context.anotation;
+package com.jjerome.context.annotation;
 
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;

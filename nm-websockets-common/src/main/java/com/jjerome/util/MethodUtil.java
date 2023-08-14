@@ -15,21 +15,6 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class MethodUtil {
 
-    public Parameter extractGeneric(Type paramType){
-        if (paramType instanceof ParameterizedType pType){
-            if (pType.getRawType() instanceof Class<?> rawType){
-                return new Parameter(rawType, extractGenerics(pType.getActualTypeArguments()));
-            }
-        } else if (paramType instanceof Class<?> cType) {
-            return new Parameter(cType);
-        }
-        return null;
-    }
-
-    public Parameter[] extractGenerics(Type[] paramsTypes){
-        return Stream.of(paramsTypes).map(this::extractGeneric).toArray(Parameter[]::new);
-    }
-
     public MethodParameter[] extractMethodParameters(Method method){
         Annotation[][] annotations = method.getParameterAnnotations();
         Type[] parametersTypes = method.getGenericParameterTypes();
@@ -48,6 +33,21 @@ public class MethodUtil {
             }
         }
         return parameters;
+    }
+
+    public Parameter[] extractGenerics(Type[] paramsTypes){
+        return Stream.of(paramsTypes).map(this::extractGeneric).toArray(Parameter[]::new);
+    }
+
+    public Parameter extractGeneric(Type paramType){
+        if (paramType instanceof ParameterizedType pType){
+            if (pType.getRawType() instanceof Class<?> rawType){
+                return new Parameter(rawType, extractGenerics(pType.getActualTypeArguments()));
+            }
+        } else if (paramType instanceof Class<?> cType) {
+            return new Parameter(cType);
+        }
+        return null;
     }
 
     public Parameter extractMethodReturnParameter(Method method){

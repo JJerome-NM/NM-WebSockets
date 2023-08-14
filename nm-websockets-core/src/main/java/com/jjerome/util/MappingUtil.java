@@ -1,48 +1,33 @@
-package com.jjerome.service;
+package com.jjerome.util;
 
 import com.jjerome.context.anotation.WSPathVariable;
 import com.jjerome.context.anotation.WSRequestBody;
-import com.jjerome.domain.Controller;
-import com.jjerome.domain.ControllersStorage;
-import com.jjerome.domain.Mapping;
+import com.jjerome.core.Mapping;
 import com.jjerome.core.Request;
-import com.jjerome.domain.UndefinedBody;
-import com.jjerome.handler.ResponseHandler;
+import com.jjerome.core.UndefinedBody;
+import com.jjerome.service.GlobalInfoService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
-public class MappingService {
+public class MappingUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MappingService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MappingUtil.class);
 
     private static final String BAD_REQUEST_BODY = "%s wants to request %s but passes the wrong request body";
 
-    private final ControllersStorage controllersStorage;
 
     private final GlobalInfoService infoService;
 
-    private final ResponseHandler responseHandler;
 
-    public Object invokeMapping(Mapping mapping, Request<UndefinedBody> request) {
-        Method method = mapping.getMethod();
-        Controller controller = controllersStorage.getController(mapping.getControllerClazz());
-
-        try {
-            Object[] methodParameters = collectMappingParameters(mapping, request);
-
-            return method.invoke(controller.getSpringBean(), methodParameters);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            LOGGER.error(e.getMessage());
-        }
-        return null;
+    public Object invokeMapping(Mapping mapping, Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException{
+        return mapping.invoke(collectMappingParameters(mapping, request));
     }
 
     public Object[] collectMappingParameters(Mapping mapping, Request<UndefinedBody> request) {

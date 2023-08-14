@@ -10,9 +10,9 @@ import java.util.Map;
 @Getter
 public class ControllersStorage {
 
-    Map<Class<?>, Controller> controllers;
+    Map<Class<?>, DefaultController> controllers;
 
-    public ControllersStorage(Map<Class<?>, Controller> controllers){
+    public ControllersStorage(Map<Class<?>, DefaultController> controllers){
         this.controllers = controllers;
     }
 
@@ -20,11 +20,11 @@ public class ControllersStorage {
         return new ControllersStorage(new HashMap<>());
     }
 
-    public List<Controller> getControllersList(){
+    public List<DefaultController> getControllersList(){
         return new ArrayList<>(controllers.values());
     }
 
-    public Controller getController(Class<?> controllerClass){
+    public DefaultController getController(Class<?> controllerClass){
         return controllers.get(controllerClass);
     }
 }

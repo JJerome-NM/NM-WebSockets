@@ -33,8 +33,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) {
-        applicationFilterChain.doFilter();
-
         requestHandler.handleMapping(session, message);
     }
 

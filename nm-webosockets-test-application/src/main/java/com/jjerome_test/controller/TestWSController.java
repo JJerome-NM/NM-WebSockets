@@ -1,8 +1,8 @@
 package com.jjerome_test.controller;
 
 import com.jjerome.context.anotation.WSConnectMapping;
-import com.jjerome.context.anotation.WSController;
-import com.jjerome.context.anotation.WSMapping;
+import com.jjerome.context.annotation.WSController;
+import com.jjerome.context.annotation.WSMapping;
 import com.jjerome.context.anotation.WSRequestBody;
 import com.jjerome_test.entity.OgoClazz;
 import com.jjerome.core.Request;
@@ -12,12 +12,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 @WSController("/test")
 public class TestWSController {
 
-    @WSConnectMapping(responsePath = "ffg")
+    @WSConnectMapping(
+            responsePath = "ffg",
+            filters = {"filter1", "filter2"}
+    )
     public void test(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
         System.out.println(good.isGood());
     }
 
-    @WSMapping("/2")
+    @WSMapping(
+            path = "/2",
+            filters = {"filter1", "filter2"}
+    )
     public void test2(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
         System.out.println(good);
     }

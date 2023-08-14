@@ -1,13 +1,15 @@
 package com.jjerome.context;
 
 import com.jjerome.context.anotation.WSComponentScan;
-import com.jjerome.context.anotation.WSController;
-import com.jjerome.context.anotation.WSMapping;
+import com.jjerome.context.annotation.WSController;
+import com.jjerome.context.annotation.WSMapping;
 import com.jjerome.context.anotation.EnableNMWebSockets;
-import com.jjerome.domain.Controller;
+import com.jjerome.core.Mapping;
+import com.jjerome.domain.DefaultController;
 import com.jjerome.domain.ControllersStorage;
-import com.jjerome.domain.Mapping;
+import com.jjerome.domain.DefaultMapping;
 import com.jjerome.domain.MappingsStorage;
+import com.jjerome.filter.ApplicationFilterChain;
 import com.jjerome.util.LoggerUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
@@ -41,6 +43,8 @@ public class MappingContext {
 
     private final MergedAnnotationUtil mergedAnnotationUtil;
 
+    private final ApplicationFilterChain applicationFilterChain;
+
     public ControllersStorage findAllControllers(Class<?> initialClazz) {
         LoggerUtil.disableReflectionsInfoLogs();
 
@@ -50,7 +54,7 @@ public class MappingContext {
         Set<Class<?>> allControllerClasses;
         BiConsumer<String[], Class<?>[]> extractClasses;
         ComponentScan springComponentScan;
-        Map<Class<?>, Controller> controllers;
+        Map<Class<?>, DefaultController> controllers;
         WSController controllerAnnotation;
         Annotation[] annotations;
         Object controllerSpringBean;
@@ -88,7 +92,7 @@ public class MappingContext {
                 annotations = mergedAnnotationUtil.findAllAnnotations(controllerClazz);
                 controllerSpringBean = context.getBean(controllerClazz);
 
-                controllers.put(controllerClazz, new Controller(annotations, controllerAnnotation,
+                controllers.put(controllerClazz, new DefaultController(annotations, controllerAnnotation,
                         controllerClazz, controllerSpringBean));
             }
             LoggerUtil.enableReflectionsLogs();
@@ -98,7 +102,7 @@ public class MappingContext {
         return ControllersStorage.emptyStorage();
     }
 
-    public MappingsStorage findAllMappings(List<Controller> controllers) {
+    public MappingsStorage findAllMappings(List<DefaultController> controllers) {
         LoggerUtil.disableReflectionsInfoLogs();
 
         Map<String, Mapping> methodMappings = new HashMap<>();
@@ -110,7 +114,7 @@ public class MappingContext {
         Mapping mapping;
         String fullPath;
 
-        for (Controller controller : controllers) {
+        for (DefaultController controller : controllers) {
             controllerAnnotation = findMergedAnnotation(controller.getClazz(), WSController.class);
 
             if (controllerAnnotation == null) {
@@ -124,12 +128,22 @@ public class MappingContext {
                     continue;
                 }
 
-                mapping = new Mapping(mappingAnnotation.type(), mappingAnnotation, controller.getClazz(), method,
-                        methodUtil.extractMethodParameters(method), methodUtil.extractMethodReturnParameter(method));
+                mapping = DefaultMapping.builder()
+                        .type(mappingAnnotation.type())
+                        .mappingAnnotation(mappingAnnotation)
+                        .controller(controller)
+                        .method(method)
+                        .methodParams(methodUtil.extractMethodParameters(method))
+                        .methodReturnType(methodUtil.extractMethodReturnParameter(method))
+                        .build();
+
 
                 switch (mapping.getType()) {
                     case METHOD -> {
                         fullPath = controllerAnnotation.pathPrefix() + mapping.getMappingAnnotation().path();
+
+                        mapping = applicationFilterChain.addFilterForMapping(mapping, mapping.getMappingAnnotation().filters());
+
                         methodMappings.put(fullPath, mapping);
                     }
                     case CONNECT -> connectMappings.add(mapping);

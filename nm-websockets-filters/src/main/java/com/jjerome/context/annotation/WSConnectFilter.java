@@ -1,7 +1,7 @@
 package com.jjerome.context.annotation;
 
 import com.jjerome.core.Ordered;
-import com.jjerome.enums.WSFilterType;
+import com.jjerome.context.enums.WSFilterType;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.Documented;
