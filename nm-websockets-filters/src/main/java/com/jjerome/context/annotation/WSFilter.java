@@ -16,11 +16,11 @@ import java.lang.annotation.Target;
 public @interface WSFilter {
 
     @AliasFor(
-            attribute = "name"
+            attribute = "label"
     )
     String value() default "";
 
-    String name() default "";
+    String label() default "";
 
     int order() default Ordered.APPLICATION_PRECEDENCE;
 

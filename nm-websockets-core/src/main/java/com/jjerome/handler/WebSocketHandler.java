@@ -38,8 +38,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        applicationFilterChain.doConnectFilter();
-
         System.out.println(session.getId());
 
         privateGlobalData.getSessions().put(session.getId(), session);

@@ -34,11 +34,8 @@ public class FiltersConfiguration {
 
     @Bean
     public ApplicationFilterChain applicationFilterChain(
-            @Autowired FilterChainComparator<FilterChain> filterChainComparator,
             @Autowired FiltersStorage filtersStorage
             ) {
-        var filterChain = new DefaultApplicationFilterChain(filterChainComparator, filtersStorage);
-
-        return ApplicationFilterChain.wrapToValidDecorator(filterChain);
+        return ApplicationFilterChain.wrapToValidDecorator(new DefaultApplicationFilterChain(filtersStorage));
     }
 }

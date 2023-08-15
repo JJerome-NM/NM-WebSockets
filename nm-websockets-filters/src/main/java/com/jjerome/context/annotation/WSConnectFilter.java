@@ -20,14 +20,14 @@ public @interface WSConnectFilter {
 
     @AliasFor(
             annotation = WSFilter.class,
-            attribute = "name"
+            attribute = "label"
     )
     String value() default "";
 
     @AliasFor(
             annotation = WSFilter.class
     )
-    String name() default "";
+    String label() default "";
 
     @AliasFor(
             annotation = WSFilter.class

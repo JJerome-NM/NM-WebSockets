@@ -1,6 +1,5 @@
 package com.jjerome.context;
 
-import com.jjerome.context.annotation.WSFiltersComponent;
 import com.jjerome.filter.FilterChain;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
@@ -9,9 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -52,7 +49,7 @@ public class FiltersContext {
 
         @Override
         public void doFilter() {
-            System.out.printf("WTF");
+            System.out.println("WTF");
         }
     }
 }

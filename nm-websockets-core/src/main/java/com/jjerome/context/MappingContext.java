@@ -142,7 +142,7 @@ public class MappingContext {
                     case METHOD -> {
                         fullPath = controllerAnnotation.pathPrefix() + mapping.getMappingAnnotation().path();
 
-                        mapping = applicationFilterChain.addFilterForMapping(mapping, mapping.getMappingAnnotation().filters());
+                        mapping = applicationFilterChain.addFilterForMapping(mapping);
 
                         methodMappings.put(fullPath, mapping);
                     }

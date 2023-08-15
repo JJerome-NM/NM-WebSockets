@@ -3,14 +3,13 @@ package com.jjerome.filter;
 import com.jjerome.core.Mapping;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public interface ApplicationFilterChain extends FilterChain {
+public interface ApplicationFilterChain {
 
-    void doConnectFilter();
-
-    Mapping addFilterForMapping(Mapping mapping, String... filtersNames);
+    Mapping addFilterForMapping(Mapping mapping);
 
 
     static ApplicationFilterChain wrapToValidDecorator(ApplicationFilterChain filterChain){
@@ -29,24 +28,10 @@ public interface ApplicationFilterChain extends FilterChain {
 
         private final ApplicationFilterChain filterChain;
 
-        @Override
-        public void doConnectFilter() {
-            isFilterChainNonNull(() -> filterChain.doConnectFilter());
-        }
 
         @Override
-        public Mapping addFilterForMapping(Mapping mapping, String... filtersNames) {
-            return isFilterChainNonNull(() -> filterChain.addFilterForMapping(mapping, filtersNames));
-        }
-
-        @Override
-        public void doFilter() {
-            isFilterChainNonNull(() -> filterChain.doFilter());
-        }
-
-        @Override
-        public int getOrder() {
-            return APPLICATION_PRECEDENCE;
+        public Mapping addFilterForMapping(Mapping mapping) {
+            return isFilterChainNonNull(() -> filterChain.addFilterForMapping(mapping));
         }
 
         private void isFilterChainNonNull(Runnable runFunction){
@@ -57,11 +42,6 @@ public interface ApplicationFilterChain extends FilterChain {
 
         private <T> T isFilterChainNonNull(Supplier<T> getFunction){
             return Objects.nonNull(filterChain) ? getFunction.get() : null;
-        }
-
-        @Override
-        public String getName() {
-            return this.getClass().getName();
         }
     }
 }

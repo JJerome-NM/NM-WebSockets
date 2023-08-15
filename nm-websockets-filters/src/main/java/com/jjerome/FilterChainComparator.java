@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 
-@Component
 public class FilterChainComparator<F extends FilterChain> implements Comparator<F> {
 
     /**
@@ -21,5 +20,9 @@ public class FilterChainComparator<F extends FilterChain> implements Comparator<
         }
         int result = filter1.getOrder() - filter2.getOrder();
         return result != 0 ? result : -1;
+    }
+
+    public static FilterChainComparator<FilterChain> buildFilterChainComparator(){
+        return new FilterChainComparator<>();
     }
 }
