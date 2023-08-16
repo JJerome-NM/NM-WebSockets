@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
-public class MappingUtil {
+public class MappingUtil { // TODO: 17.08.2023 Reword throws
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MappingUtil.class);
 

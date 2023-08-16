@@ -12,7 +12,7 @@ public class MappingFilterChain implements FilterChain {
 
 
     @Override
-    public String getName() {
+    public String getLabel() {
         return this.getClass().getName();
     }
 
@@ -28,5 +28,12 @@ public class MappingFilterChain implements FilterChain {
         for (FilterChain filterChain : filters){
             filterChain.doFilter();
         }
+    }
+
+    public boolean equals(FilterChain filterChain2){
+        if (this == filterChain2){
+            return true;
+        }
+        return this.getLabel().equals(filterChain2.getLabel());
     }
 }

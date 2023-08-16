@@ -31,7 +31,6 @@ public class MappingFilterProxy implements Mapping {
         return mapping.invoke(methodParameters);
     }
 
-
     @Override
     public WSMappingType getType() {
         return mapping.getType();

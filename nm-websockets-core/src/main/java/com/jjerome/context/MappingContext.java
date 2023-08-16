@@ -4,6 +4,7 @@ import com.jjerome.context.anotation.WSComponentScan;
 import com.jjerome.context.annotation.WSController;
 import com.jjerome.context.annotation.WSMapping;
 import com.jjerome.context.anotation.EnableNMWebSockets;
+import com.jjerome.core.Controller;
 import com.jjerome.core.Mapping;
 import com.jjerome.domain.DefaultController;
 import com.jjerome.domain.ControllersStorage;
@@ -13,8 +14,8 @@ import com.jjerome.filter.ApplicationFilterChain;
 import com.jjerome.util.LoggerUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
-import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
@@ -33,8 +34,6 @@ import java.util.stream.Stream;
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
 
-@Component
-@RequiredArgsConstructor
 public class MappingContext {
 
     private final ApplicationContext context;
@@ -45,6 +44,16 @@ public class MappingContext {
 
     private final ApplicationFilterChain applicationFilterChain;
 
+    public MappingContext(ApplicationContext context,
+                          MethodUtil methodUtil,
+                          MergedAnnotationUtil mergedAnnotationUtil,
+                          @Autowired(required = false) ApplicationFilterChain applicationFilterChain) {
+        this.context = context;
+        this.methodUtil = methodUtil;
+        this.mergedAnnotationUtil = mergedAnnotationUtil;
+        this.applicationFilterChain = applicationFilterChain;
+    }
+
     public ControllersStorage findAllControllers(Class<?> initialClazz) {
         LoggerUtil.disableReflectionsInfoLogs();
 
@@ -54,7 +63,7 @@ public class MappingContext {
         Set<Class<?>> allControllerClasses;
         BiConsumer<String[], Class<?>[]> extractClasses;
         ComponentScan springComponentScan;
-        Map<Class<?>, DefaultController> controllers;
+        Map<Class<?>, Controller> controllers;
         WSController controllerAnnotation;
         Annotation[] annotations;
         Object controllerSpringBean;
@@ -102,7 +111,7 @@ public class MappingContext {
         return ControllersStorage.emptyStorage();
     }
 
-    public MappingsStorage findAllMappings(List<DefaultController> controllers) {
+    public MappingsStorage findAllMappings(List<Controller> controllers) {
         LoggerUtil.disableReflectionsInfoLogs();
 
         Map<String, Mapping> methodMappings = new HashMap<>();
@@ -114,7 +123,7 @@ public class MappingContext {
         Mapping mapping;
         String fullPath;
 
-        for (DefaultController controller : controllers) {
+        for (Controller controller : controllers) {
             controllerAnnotation = findMergedAnnotation(controller.getClazz(), WSController.class);
 
             if (controllerAnnotation == null) {

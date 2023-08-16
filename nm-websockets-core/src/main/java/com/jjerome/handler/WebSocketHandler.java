@@ -1,6 +1,5 @@
 package com.jjerome.handler;
 
-import com.jjerome.filter.ApplicationFilterChain;
 import com.jjerome.domain.PrivateGlobalData;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -18,14 +17,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private final PrivateGlobalData privateGlobalData;
 
-    private final ApplicationFilterChain applicationFilterChain;
-
     public WebSocketHandler(RequestHandler requestHandler,
-                            PrivateGlobalData privateGlobalData,
-                            ApplicationFilterChain applicationFilterChain) {
+                            PrivateGlobalData privateGlobalData) {
         this.requestHandler = requestHandler;
         this.privateGlobalData = privateGlobalData;
-        this.applicationFilterChain = applicationFilterChain;
 
         LOGGER.info("NM-WebSockets successfully started");
     }

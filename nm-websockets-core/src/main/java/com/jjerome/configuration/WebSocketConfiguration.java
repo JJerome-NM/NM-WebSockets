@@ -7,13 +7,12 @@ import com.jjerome.core.InitialClass;
 import com.jjerome.domain.MappingsStorage;
 import com.jjerome.domain.PrivateGlobalData;
 import com.jjerome.handler.RequestHandler;
-import com.jjerome.handler.ResponseHandler;
 import com.jjerome.handler.WebSocketHandler;
-import com.jjerome.core.mapper.RequestMapper;
-import com.jjerome.core.mapper.ResponseMapper;
 import com.jjerome.util.BeanUtil;
-import com.jjerome.util.MappingUtil;
+import com.jjerome.util.MergedAnnotationUtil;
+import com.jjerome.util.MethodUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -31,71 +30,56 @@ public class WebSocketConfiguration {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL);
 
-    private final MappingContext mappingContext;
-
-    private final InitialClass initialClass;
-
-    private final MappingsStorage mappingStorage;
-
-    private final ControllersStorage controllersStorage;
-
-    private final PrivateGlobalData privateGlobalData;
-
-    WebSocketConfiguration(MappingContext mappingContext,
-                           BeanUtil beanUtil) {
-        this.mappingContext = mappingContext;
-        this.initialClass = beanUtil.findSpringBootApplicationBeanClass();
-
-        controllersStorage = mappingContext.findAllControllers(initialClass.getClazz());
-        mappingStorage = mappingContext.findAllMappings(controllersStorage.getControllersList());
-        this.privateGlobalData = new PrivateGlobalData();
-
-        System.out.println(mappingStorage.getMappings());
-        System.out.println();
-    }
-
-
-    @Bean
-    InitialClass getInitialClass(){
-        return this.initialClass;
+    WebSocketConfiguration() {
+        System.out.println("-----------WebSocketConfiguration------------");
     }
 
     @Bean
-    public RequestHandler getRequestHandler(@Autowired MappingsStorage mappingsStorage,
-                                            @Autowired ResponseHandler responseHandler,
-                                            @Autowired ExecutorService executorService,
-                                            @Autowired RequestMapper requestMapper,
-                                            @Autowired MappingUtil mappingUtil) {
-        return new RequestHandler(mappingsStorage, responseHandler, executorService, requestMapper, mappingUtil);
+    public MappingContext mappingContext(
+            ApplicationContext context,
+            MethodUtil methodUtil,
+            MergedAnnotationUtil mergedAnnotationUtil,
+            @Autowired(required = false) ApplicationFilterChain applicationFilterChain
+    ){
+        applicationFilterChain = ApplicationFilterChain.wrapIfChainIsNull(applicationFilterChain);
+        return new MappingContext(context, methodUtil, mergedAnnotationUtil, applicationFilterChain);
     }
 
     @Bean
-    public PrivateGlobalData getPrivateGlobalData(){
+    public MappingsStorage mappingsStorage(
+            MappingContext mappingContext,
+            ControllersStorage controllersStorage
+    ) {
+        return mappingContext.findAllMappings(controllersStorage.getControllersList());
+    }
+
+    @Bean
+    public ControllersStorage controllersStorage(
+            MappingContext mappingContext,
+            InitialClass initialClass
+    ) {
+        return mappingContext.findAllControllers(initialClass.getClazz());
+    }
+
+    @Bean
+    public InitialClass getInitialClass(
+            BeanUtil beanUtil
+    ) {
+        return beanUtil.findSpringBootApplicationBeanClass();
+    }
+
+    @Bean
+    public PrivateGlobalData getPrivateGlobalData() {
         return new PrivateGlobalData();
     }
 
-    @Bean
-    public ResponseHandler getResponseHandler(@Autowired PrivateGlobalData privateGlobalData,
-                                              @Autowired ExecutorService executorService,
-                                              @Autowired ResponseMapper responseMapper) {
-        return new ResponseHandler(privateGlobalData, executorService, responseMapper);
-    }
 
     @Bean
-    public MappingsStorage getMappingStorage() {
-        return mappingStorage;
-    }
-
-    @Bean
-    public ControllersStorage getControllersStorage() {
-        return controllersStorage;
-    }
-
-    @Bean
-    public WebSocketHandler getWebSocketHandler(@Autowired RequestHandler requestHandler,
-                                                @Autowired PrivateGlobalData privateGlobalData,
-                                                @Autowired(required = false) ApplicationFilterChain filterChain) {
-        return new WebSocketHandler(requestHandler, privateGlobalData, ApplicationFilterChain.wrapToValidDecorator(filterChain));
+    public WebSocketHandler getWebSocketHandler(
+            RequestHandler requestHandler,
+            PrivateGlobalData privateGlobalData
+    ) {
+        return new WebSocketHandler(requestHandler, privateGlobalData);
     }
 
     @Bean

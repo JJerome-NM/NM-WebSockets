@@ -1,6 +1,7 @@
 package com.jjerome.handler;
 
 import com.jjerome.core.Mapping;
+import com.jjerome.core.RequestRepository;
 import com.jjerome.domain.MappingsStorage;
 import com.jjerome.core.Request;
 import com.jjerome.core.Response;
@@ -9,12 +10,14 @@ import com.jjerome.exception.MappingNotFoundException;
 import com.jjerome.core.mapper.RequestMapper;
 import com.jjerome.util.MappingUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
 
+@Component
 @RequiredArgsConstructor
 public class RequestHandler {
 
@@ -30,11 +33,12 @@ public class RequestHandler {
 
 
     public void handleMapping(Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException {
-        if (!mappingsStorage.getMappings().containsKey(request.getPath())){
+        if (!mappingsStorage.containsMapping(request.getPath())){
             throw new MappingNotFoundException(request.getPath() + " - mapping not found");
         }
 
-        Mapping mapping = mappingsStorage.getMappings().get(request.getPath());
+        Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
+        RequestRepository.setRequest(request);
 
         Object response = mappingUtil.invokeMapping(mapping, request);
 

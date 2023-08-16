@@ -1,5 +1,8 @@
 package com.jjerome.context;
 
+import com.jjerome.Filter;
+import com.jjerome.core.Request;
+import com.jjerome.core.UndefinedBody;
 import com.jjerome.filter.FilterChain;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
@@ -23,9 +26,9 @@ public class FiltersContext {
     public Map<String, FilterChain> findAllFilters(){
         Map<String, FilterChain> filterChains = new HashMap<>();
 
-        filterChains.put("filter1", new WTFFilter());
-        filterChains.put("filter2", new WTFFilter());
-        filterChains.put("WTFFilter3", new WTFFilter());
+        FilterChain chain = new Filter(null, null, null, null, null, null);
+        filterChains.put("filter1", chain);
+        filterChains.put("filter2", chain);
 
 //        var beans = context.getBeansWithAnnotation(WSFiltersComponent.class);
 //
@@ -33,23 +36,5 @@ public class FiltersContext {
 //        System.out.println(beans);
 
         return filterChains;
-    }
-
-    private class WTFFilter implements FilterChain{
-
-        @Override
-        public String getName() {
-            return this.getClass().getName();
-        }
-
-        @Override
-        public int getOrder() {
-            return 0;
-        }
-
-        @Override
-        public void doFilter() {
-            System.out.println("WTF");
-        }
     }
 }

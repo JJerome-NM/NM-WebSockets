@@ -16,4 +16,12 @@ public class MappingsStorage {
     private final List<Mapping> connectMappings;
 
     private final List<Mapping> disconnectMappings;
+
+    public boolean containsMapping(String path){
+        return mappings.containsKey(path);
+    }
+
+    public Mapping getMappingByPath(String path){
+        return mappings.get(path);
+    }
 }

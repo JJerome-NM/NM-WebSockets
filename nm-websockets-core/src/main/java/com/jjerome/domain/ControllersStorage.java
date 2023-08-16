@@ -1,5 +1,6 @@
 package com.jjerome.domain;
 
+import com.jjerome.core.Controller;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -10,9 +11,9 @@ import java.util.Map;
 @Getter
 public class ControllersStorage {
 
-    Map<Class<?>, DefaultController> controllers;
+    Map<Class<?>, Controller> controllers;
 
-    public ControllersStorage(Map<Class<?>, DefaultController> controllers){
+    public ControllersStorage(Map<Class<?>, Controller> controllers){
         this.controllers = controllers;
     }
 
@@ -20,11 +21,11 @@ public class ControllersStorage {
         return new ControllersStorage(new HashMap<>());
     }
 
-    public List<DefaultController> getControllersList(){
+    public List<Controller> getControllersList(){
         return new ArrayList<>(controllers.values());
     }
 
-    public DefaultController getController(Class<?> controllerClass){
+    public Controller getController(Class<?> controllerClass){
         return controllers.get(controllerClass);
     }
 }

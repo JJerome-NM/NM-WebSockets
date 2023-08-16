@@ -16,22 +16,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter @Setter
 @Builder
 public class DefaultMapping implements Mapping {
 
-    private WSMappingType type;
+    private final WSMappingType type;
 
-    private WSMapping mappingAnnotation;
+    private final WSMapping mappingAnnotation;
 
-    private Controller controller;
+    private final Controller controller;
 
-    private Method method;
+    private final Method method;
 
-    private MethodParameter[] methodParams;
+    private final MethodParameter[] methodParams;
 
-    private Parameter methodReturnType;
+    private final Parameter methodReturnType;
 
     @Override
     public Object invoke(Object[] methodParameters) throws InvocationTargetException, IllegalAccessException {
