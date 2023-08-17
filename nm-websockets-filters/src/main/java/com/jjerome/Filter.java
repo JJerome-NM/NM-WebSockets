@@ -5,7 +5,7 @@ import com.jjerome.context.Parameter;
 import com.jjerome.context.annotation.WSFilter;
 import com.jjerome.core.AnnotatedComponent;
 import com.jjerome.core.Invocable;
-import com.jjerome.util.FilterUtil;
+import com.jjerome.util.InvokeUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +42,7 @@ public class Filter implements FilterChain, Invocable, AnnotatedComponent<WSFilt
 
     @Override
     public void doFilter() {
-        FilterUtil.getInstance().invokeFilterMethod(this);
+        InvokeUtil.getINSTANCE().invoke(this);
     }
 
     public boolean equals(FilterChain filterChain2){

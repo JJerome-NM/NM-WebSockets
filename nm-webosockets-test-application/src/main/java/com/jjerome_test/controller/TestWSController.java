@@ -3,7 +3,7 @@ package com.jjerome_test.controller;
 import com.jjerome.context.anotation.WSConnectMapping;
 import com.jjerome.context.annotation.WSController;
 import com.jjerome.context.annotation.WSMapping;
-import com.jjerome.context.anotation.WSRequestBody;
+import com.jjerome.context.annotation.WSRequestBody;
 import com.jjerome_test.entity.OgoClazz;
 import com.jjerome.core.Request;
 import com.jjerome_test.entity.Good;

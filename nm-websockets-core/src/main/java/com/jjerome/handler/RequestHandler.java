@@ -8,7 +8,7 @@ import com.jjerome.core.Response;
 import com.jjerome.core.UndefinedBody;
 import com.jjerome.exception.MappingNotFoundException;
 import com.jjerome.core.mapper.RequestMapper;
-import com.jjerome.util.MappingUtil;
+import com.jjerome.util.InvokeUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -27,15 +27,12 @@ public class RequestHandler {
 
     private final RequestMapper requestMapper;
 
-    private final MappingUtil mappingUtil;
-
     public RequestHandler(MappingsStorage mappingsStorage, ResponseHandler responseHandler,
-                          ExecutorService executorService, RequestMapper requestMapper, MappingUtil mappingUtil) {
+                          ExecutorService executorService, RequestMapper requestMapper) {
         this.mappingsStorage = mappingsStorage;
         this.responseHandler = responseHandler;
         this.executorService = executorService;
         this.requestMapper = requestMapper;
-        this.mappingUtil = mappingUtil;
     }
 
 
@@ -48,7 +45,7 @@ public class RequestHandler {
 
         Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
 
-        Object response = mappingUtil.invokeMapping(mapping, request);
+        Object response = InvokeUtil.getINSTANCE().invoke(mapping);
 
         if (mapping.getMethodReturnType() != null && !mapping.getComponentAnnotation().disableReturnResponse()){
             String responsePath = mapping.getController().buildFullPath(mapping);

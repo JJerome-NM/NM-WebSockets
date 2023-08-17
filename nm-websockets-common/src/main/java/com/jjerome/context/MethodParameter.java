@@ -7,9 +7,12 @@ public class MethodParameter extends Parameter {
 
     private Annotation[] annotations;
 
+    private byte annotationsLength;
+
     public MethodParameter(Annotation[] annotations, Class<?> clazz, Parameter[] generics) {
         super(clazz, generics);
         this.annotations = annotations;
+        this.annotationsLength = (byte) annotations.length;
     }
 
     public MethodParameter(Annotation[] annotations, Class<?> clazz) {
@@ -18,9 +21,9 @@ public class MethodParameter extends Parameter {
     }
 
     public Annotation getAnnotation(Class<? extends Annotation> annotationClazz){
-        for (Annotation annotation : annotations){
-            if (annotation.annotationType() == annotationClazz){
-                return annotation;
+        for(byte i = 0; i < annotationsLength; ++i){
+            if (annotations[i].annotationType() == annotationClazz){
+                return annotations[i];
             }
         }
         return null;

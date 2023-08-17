@@ -5,10 +5,14 @@ import java.util.Set;
 
 public class MappingFilterChain implements FilterChain {
 
-    private final Set<FilterChain> filters;
+    private final FilterChain[] filters;
+
+    private final short filtersCount;
+
 
     public MappingFilterChain(Set<FilterChain> filters) {
-        this.filters = filters;
+        this.filters = filters.toArray(FilterChain[]::new);
+        this.filtersCount = (short) this.filters.length;
     }
 
     @Override
@@ -23,8 +27,8 @@ public class MappingFilterChain implements FilterChain {
 
     @Override
     public void doFilter() {
-        for (FilterChain filterChain : filters){
-            filterChain.doFilter();
+        for (short i = 0; i < filtersCount; i++){
+            filters[i].doFilter();
         }
     }
 

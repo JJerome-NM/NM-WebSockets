@@ -32,12 +32,6 @@
 
         <dependency>
             <groupId>com.jjerome</groupId>
-            <artifactId>nm-websockets-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jjerome</groupId>
             <artifactId>nm-websockets-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
