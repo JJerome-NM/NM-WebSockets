@@ -32,7 +32,6 @@ public class WebSocketConfiguration {
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL);
 
     WebSocketConfiguration() {
-        System.out.println("-----------WebSocketConfiguration------------");
     }
 
     @Bean

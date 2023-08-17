@@ -21,4 +21,16 @@ public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
     Parameter getMethodReturnType();
 
     String buildFullPath();
+
+    interface MappingBuilder<T extends Mapping> extends AnnotatedComponentBuilder<WSMapping, T>, Builder<T>{
+        MappingBuilder<T> type(WSMappingType type);
+
+        MappingBuilder<T> controller(Controller controller);
+
+        MappingBuilder<T> method(Method method);
+
+        MappingBuilder<T> methodParams(MethodParameter[] parameters);
+
+        MappingBuilder<T> methodReturnType(Parameter returnType);
+    }
 }

@@ -9,4 +9,12 @@ public interface AnnotatedComponent<A> {
     A getComponentAnnotation();
 
     Object getSpringBean();
+
+    interface AnnotatedComponentBuilder<A, T> extends Builder<T>{
+        AnnotatedComponentBuilder<A, T> annotations(Annotation[] annotations);
+
+        AnnotatedComponentBuilder<A, T> componentAnnotation(A componentAnnotation);
+
+        AnnotatedComponentBuilder<A, T> springBean(Object springBean);
+    }
 }

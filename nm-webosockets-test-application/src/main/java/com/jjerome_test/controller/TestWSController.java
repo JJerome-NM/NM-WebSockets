@@ -24,8 +24,9 @@ public class TestWSController {
             path = "/2",
             filters = {"GoodFilter", "GoodFilter2"}
     )
-    public void test2(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
+    public Integer test2(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
         System.out.println(good);
+        return good.getR();
     }
 
     @WSMapping(path = "/{id}/good", responsePath = "/test3/response")

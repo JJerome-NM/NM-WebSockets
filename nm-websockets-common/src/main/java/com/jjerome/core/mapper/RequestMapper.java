@@ -5,13 +5,11 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jjerome.core.Request;
 import com.jjerome.core.dto.RequestDto;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class RequestMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestMapper.class);

@@ -2,21 +2,16 @@ package com.jjerome.context;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.stream.Stream;
 
-@Getter @Setter
 public class Parameter {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private Class<?> clazz;
+    private final Class<?> clazz;
 
-    private Parameter[] generics;
+    private final Parameter[] generics;
 
     private final JavaType type;
 
@@ -28,11 +23,7 @@ public class Parameter {
     }
 
     public Parameter(Class<?> clazz){
-        this(clazz, null);
-    }
-
-    public Parameter(){
-        this(null, null);
+        this(clazz, new Parameter[]{});
     }
 
     public boolean hasGenerics(){
@@ -58,5 +49,13 @@ public class Parameter {
 
     public JavaType getType(){
         return this.type;
+    }
+
+    public Class<?> getClazz() {
+        return clazz;
+    }
+
+    public Parameter[] getGenerics() {
+        return generics;
     }
 }

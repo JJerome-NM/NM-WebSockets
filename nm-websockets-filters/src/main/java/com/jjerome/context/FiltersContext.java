@@ -7,7 +7,6 @@ import com.jjerome.context.annotation.WSFiltersComponent;
 import com.jjerome.core.InitialClass;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
-import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,6 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.findMerg
 import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
 
 @Component
-@RequiredArgsConstructor
 public class FiltersContext {
 
     private final ApplicationContext context;
@@ -34,6 +32,14 @@ public class FiltersContext {
     private final MergedAnnotationUtil mergedAnnotationUtil;
 
     private final InitialClass initialClass;
+
+    public FiltersContext(ApplicationContext context, MethodUtil methodUtil,
+                          MergedAnnotationUtil mergedAnnotationUtil, InitialClass initialClass) {
+        this.context = context;
+        this.methodUtil = methodUtil;
+        this.mergedAnnotationUtil = mergedAnnotationUtil;
+        this.initialClass = initialClass;
+    }
 
     public List<FilterComponent> findAllFilterComponents(){
         List<FilterComponent> filterComponents = new ArrayList<>();
@@ -82,7 +88,7 @@ public class FiltersContext {
                 filter = Filter.builder()
                         .annotations(mergedAnnotationUtil.findAllAnnotations(method))
                         .filterComponent(filterComponent)
-                        .filterAnnotation(filterAnnotation)
+                        .componentAnnotation(filterAnnotation)
                         .method(method)
                         .methodParams(methodUtil.extractMethodParameters(method))
                         .methodReturnType(methodUtil.extractMethodReturnParameter(method))

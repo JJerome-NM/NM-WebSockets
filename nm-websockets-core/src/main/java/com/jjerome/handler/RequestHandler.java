@@ -9,7 +9,6 @@ import com.jjerome.core.UndefinedBody;
 import com.jjerome.exception.MappingNotFoundException;
 import com.jjerome.core.mapper.RequestMapper;
 import com.jjerome.util.MappingUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -18,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
 
 @Component
-@RequiredArgsConstructor
 public class RequestHandler {
 
     private final MappingsStorage mappingsStorage;
@@ -30,6 +28,15 @@ public class RequestHandler {
     private final RequestMapper requestMapper;
 
     private final MappingUtil mappingUtil;
+
+    public RequestHandler(MappingsStorage mappingsStorage, ResponseHandler responseHandler,
+                          ExecutorService executorService, RequestMapper requestMapper, MappingUtil mappingUtil) {
+        this.mappingsStorage = mappingsStorage;
+        this.responseHandler = responseHandler;
+        this.executorService = executorService;
+        this.requestMapper = requestMapper;
+        this.mappingUtil = mappingUtil;
+    }
 
 
     public void handleMapping(Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException {

@@ -106,7 +106,7 @@ public class MappingContext {
                 mapping = DefaultMapping.builder()
                         .annotations(mergedAnnotationUtil.findAllAnnotations(method))
                         .type(mappingAnnotation.type())
-                        .mappingAnnotation(mappingAnnotation)
+                        .componentAnnotation(mappingAnnotation)
                         .controller(controller)
                         .method(method)
                         .methodParams(methodUtil.extractMethodParameters(method))

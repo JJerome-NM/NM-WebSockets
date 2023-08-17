@@ -25,6 +25,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>com.jjerome</groupId>
             <artifactId>nm-websockets-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>

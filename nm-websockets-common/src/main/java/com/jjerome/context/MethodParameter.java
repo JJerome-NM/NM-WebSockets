@@ -1,25 +1,19 @@
 package com.jjerome.context;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.lang.annotation.Annotation;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter @Setter
 public class MethodParameter extends Parameter {
 
     private Annotation[] annotations;
 
-    public MethodParameter(Annotation[] annotations, Class<?> parametherClass){
-        this(annotations, parametherClass, null);
+    public MethodParameter(Annotation[] annotations, Class<?> clazz, Parameter[] generics) {
+        super(clazz, generics);
+        this.annotations = annotations;
     }
 
-    public MethodParameter(Annotation[] annotations, Class<?> parametherClass, Parameter[] genericClasses){
-        super(parametherClass, genericClasses);
+    public MethodParameter(Annotation[] annotations, Class<?> clazz) {
+        super(clazz);
         this.annotations = annotations;
     }
 

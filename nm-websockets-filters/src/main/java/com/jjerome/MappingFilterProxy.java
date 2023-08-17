@@ -30,6 +30,11 @@ public class MappingFilterProxy implements Mapping {
     }
 
     @Override
+    public String buildFullPath() {
+        return mapping.buildFullPath();
+    }
+
+    @Override
     public WSMappingType getType() {
         return mapping.getType();
     }
@@ -52,11 +57,6 @@ public class MappingFilterProxy implements Mapping {
     @Override
     public Parameter getMethodReturnType() {
         return mapping.getMethodReturnType();
-    }
-
-    @Override
-    public String buildFullPath() {
-        return mapping.buildFullPath();
     }
 
     @Override

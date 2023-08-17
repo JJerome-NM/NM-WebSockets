@@ -1,14 +1,15 @@
 package com.jjerome;
 
-import lombok.RequiredArgsConstructor;
 
 import java.util.Set;
 
-@RequiredArgsConstructor
 public class MappingFilterChain implements FilterChain {
 
     private final Set<FilterChain> filters;
 
+    public MappingFilterChain(Set<FilterChain> filters) {
+        this.filters = filters;
+    }
 
     @Override
     public String getLabel() {

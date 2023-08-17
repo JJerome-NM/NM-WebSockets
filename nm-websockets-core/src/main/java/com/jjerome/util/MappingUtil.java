@@ -7,7 +7,6 @@ import com.jjerome.core.Mapping;
 import com.jjerome.core.Request;
 import com.jjerome.core.UndefinedBody;
 import com.jjerome.service.GlobalInfoService;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -15,15 +14,17 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationTargetException;
 
 @Component
-@RequiredArgsConstructor
 public class MappingUtil { // TODO: 17.08.2023 Reword throws
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MappingUtil.class);
 
     private static final String BAD_REQUEST_BODY = "%s wants to request %s but passes the wrong request body";
 
-
     private final GlobalInfoService infoService;
+
+    public MappingUtil(GlobalInfoService infoService) {
+        this.infoService = infoService;
+    }
 
 
     public Object invokeMapping(Mapping mapping, Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException {

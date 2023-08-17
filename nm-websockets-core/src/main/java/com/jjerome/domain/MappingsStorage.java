@@ -1,14 +1,10 @@
 package com.jjerome.domain;
 
 import com.jjerome.core.Mapping;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
-@Getter
 public class MappingsStorage {
 
     private final Map<String, Mapping> mappings;
@@ -16,6 +12,12 @@ public class MappingsStorage {
     private final List<Mapping> connectMappings;
 
     private final List<Mapping> disconnectMappings;
+
+    public MappingsStorage(Map<String, Mapping> mappings, List<Mapping> connectMappings, List<Mapping> disconnectMappings) {
+        this.mappings = mappings;
+        this.connectMappings = connectMappings;
+        this.disconnectMappings = disconnectMappings;
+    }
 
     public boolean containsMapping(String path){
         return mappings.containsKey(path);

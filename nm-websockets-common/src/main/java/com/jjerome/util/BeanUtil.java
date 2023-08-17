@@ -1,7 +1,6 @@
 package com.jjerome.util;
 
 import com.jjerome.core.InitialClass;
-import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 import java.lang.annotation.Annotation;
 
 @Component
-@RequiredArgsConstructor
 public class BeanUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BeanUtil.class);
@@ -32,6 +30,11 @@ public class BeanUtil {
     private final ApplicationContext context;
 
     private final MergedAnnotationUtil mergedAnnotationUtil;
+
+    public BeanUtil(ApplicationContext context, MergedAnnotationUtil mergedAnnotationUtil) {
+        this.context = context;
+        this.mergedAnnotationUtil = mergedAnnotationUtil;
+    }
 
     public InitialClass findSpringBootApplicationBeanClass(){
         LoggerUtil.disableReflectionsInfoLogs();

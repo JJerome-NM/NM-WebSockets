@@ -3,13 +3,12 @@ package com.jjerome.core.mapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jjerome.core.Response;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.TextMessage;
 
 @Component
-@RequiredArgsConstructor
 public class ResponseMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResponseMapper.class);
@@ -23,5 +22,9 @@ public class ResponseMapper {
             LOGGER.error(exception.getMessage());
         }
         return null;
+    }
+
+    public TextMessage buildTextMessage(Response<?> response){
+        return new TextMessage(responseToJSON(response));
     }
 }

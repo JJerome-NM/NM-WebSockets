@@ -2,7 +2,6 @@ package com.jjerome.util;
 
 import com.jjerome.context.MethodParameter;
 import com.jjerome.context.Parameter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -12,7 +11,6 @@ import java.lang.reflect.Type;
 import java.util.stream.Stream;
 
 @Component
-@RequiredArgsConstructor
 public class MethodUtil {
 
     public MethodParameter[] extractMethodParameters(Method method){
