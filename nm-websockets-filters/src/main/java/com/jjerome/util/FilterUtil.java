@@ -16,16 +16,14 @@ public class FilterUtil implements InitializingBean {
 
 
     public void invokeFilterMethod(Filter filterChain) { // TODO: 17.08.2023 All throws rework for ExeprionInterceptor 
-        Request<UndefinedBody> request = RequestRepository.getRequest();
-
         try {
-            filterChain.invoke(collectFilterParamethers(filterChain, request));
+            filterChain.invoke(collectFilterParameters(filterChain, RequestRepository.getRequest()));
         } catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Object[] collectFilterParamethers(Filter filterChain, Request<UndefinedBody> request){
+    private Object[] collectFilterParameters(Filter filterChain, Request<UndefinedBody> request){
         return new Object[]{};
     }
 

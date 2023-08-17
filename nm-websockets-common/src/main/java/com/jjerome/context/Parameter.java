@@ -9,8 +9,6 @@ import lombok.Setter;
 
 import java.util.stream.Stream;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter @Setter
 public class Parameter {
 
@@ -19,9 +17,22 @@ public class Parameter {
     private Class<?> clazz;
 
     private Parameter[] generics;
-    public Parameter(Class<?> clazz){
+
+    private final JavaType type;
+
+    public Parameter(Class<?> clazz, Parameter[] generics){
         this.clazz = clazz;
-        this.generics = null;
+        this.generics = generics;
+
+        this.type = this.converToJavaType();
+    }
+
+    public Parameter(Class<?> clazz){
+        this(clazz, null);
+    }
+
+    public Parameter(){
+        this(null, null);
     }
 
     public boolean hasGenerics(){
@@ -43,5 +54,9 @@ public class Parameter {
                 .map(generic -> OBJECT_MAPPER.getTypeFactory()
                         .constructParametricType(generic.getClazz(), generic.convertGenericsToJavaType()))
                 .toArray(JavaType[]::new);
+    }
+
+    public JavaType getType(){
+        return this.type;
     }
 }

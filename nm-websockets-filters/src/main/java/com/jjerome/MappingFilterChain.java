@@ -1,6 +1,5 @@
 package com.jjerome;
 
-import com.jjerome.filter.FilterChain;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Set;
@@ -23,8 +22,6 @@ public class MappingFilterChain implements FilterChain {
 
     @Override
     public void doFilter() {
-        System.out.println(this.getClass().getName());
-
         for (FilterChain filterChain : filters){
             filterChain.doFilter();
         }

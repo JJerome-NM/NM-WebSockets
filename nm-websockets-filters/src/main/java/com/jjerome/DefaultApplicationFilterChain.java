@@ -15,7 +15,7 @@ public class DefaultApplicationFilterChain implements ApplicationFilterChain {
 
     @Override
     public Mapping addFilterForMapping(Mapping mapping) {
-        String[] filtersLabel = mapping.getMappingAnnotation().filters();
+        String[] filtersLabel = mapping.getComponentAnnotation().filters();
 
         if (filtersLabel.length != 0){
              return new MappingFilterProxy(filtersStorage.buildMappingFilterChain(mapping), mapping);

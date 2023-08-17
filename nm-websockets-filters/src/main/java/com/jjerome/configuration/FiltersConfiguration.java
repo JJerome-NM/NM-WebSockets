@@ -2,25 +2,28 @@ package com.jjerome.configuration;
 
 
 import com.jjerome.DefaultApplicationFilterChain;
+import com.jjerome.FilterComponent;
 import com.jjerome.FiltersStorage;
 import com.jjerome.context.FiltersContext;
 import com.jjerome.filter.ApplicationFilterChain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 
 @Configuration
 public class FiltersConfiguration {
 
     FiltersConfiguration() {
-        System.out.println("------------FiltersConfiguration2-------------");
     }
 
     @Bean
     public FiltersStorage filtersStorage(
             FiltersContext filtersContext
     ) {
-        return new FiltersStorage(filtersContext.findAllFilters());
+        List<FilterComponent> filterComponents = filtersContext.findAllFilterComponents();
+        return new FiltersStorage(filtersContext.findAllFilters(filterComponents), filterComponents);
     }
 
     @Bean

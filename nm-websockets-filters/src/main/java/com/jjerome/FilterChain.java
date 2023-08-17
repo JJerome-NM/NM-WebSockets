@@ -1,4 +1,4 @@
-package com.jjerome.filter;
+package com.jjerome;
 
 import com.jjerome.core.Ordered;
 

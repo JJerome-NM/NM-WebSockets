@@ -1,8 +1,5 @@
 package com.jjerome;
 
-import com.jjerome.filter.FilterChain;
-import org.springframework.stereotype.Component;
-
 import java.util.Comparator;
 
 public class FilterChainComparator<F extends FilterChain> implements Comparator<F> {
@@ -22,7 +19,7 @@ public class FilterChainComparator<F extends FilterChain> implements Comparator<
         return result != 0 ? result : -1;
     }
 
-    public static FilterChainComparator<FilterChain> buildFilterChainComparator(){
+    public static FilterChainComparator<FilterChain> buildComparator(){
         return new FilterChainComparator<>();
     }
 }

@@ -4,13 +4,9 @@ import com.jjerome.context.annotation.WSController;
 
 import java.lang.annotation.Annotation;
 
-public interface Controller {
-
-    Annotation[] getAnnotations();
-
-    WSController getControllerAnnotation();
+public interface Controller extends AnnotatedComponent<WSController> {
 
     Class<?> getClazz();
 
-    Object getSpringBean();
+    String buildFullPath(Mapping mapping);
 }

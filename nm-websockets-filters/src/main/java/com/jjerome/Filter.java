@@ -3,25 +3,28 @@ package com.jjerome;
 import com.jjerome.context.MethodParameter;
 import com.jjerome.context.Parameter;
 import com.jjerome.context.annotation.WSFilter;
+import com.jjerome.core.AnnotatedComponent;
 import com.jjerome.core.Invocable;
-import com.jjerome.filter.FilterChain;
 import com.jjerome.util.FilterUtil;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 @RequiredArgsConstructor
+@Builder
 @Getter @Setter
-public class Filter implements FilterChain, Invocable {
+public class Filter implements FilterChain, Invocable, AnnotatedComponent<WSFilter> {
+
+    private final Annotation[] annotations;
 
     private final FilterComponent filterComponent;
 
     private final WSFilter filterAnnotation;
-
-    private final Object springBean;
 
     private final Method method;
 
@@ -40,6 +43,13 @@ public class Filter implements FilterChain, Invocable {
         FilterUtil.getInstance().invokeFilterMethod(this);
     }
 
+    public boolean equals(FilterChain filterChain2){
+        if (this == filterChain2){
+            return true;
+        }
+        return this.getLabel().equals(filterChain2.getLabel());
+    }
+
     @Override
     public int getOrder() {
         return filterAnnotation.order();
@@ -50,10 +60,18 @@ public class Filter implements FilterChain, Invocable {
         return filterAnnotation.label();
     }
 
-    public boolean equals(FilterChain filterChain2){
-        if (this == filterChain2){
-            return true;
-        }
-        return this.getLabel().equals(filterChain2.getLabel());
+    @Override
+    public Annotation[] getAnnotations() {
+        return annotations;
+    }
+
+    @Override
+    public WSFilter getComponentAnnotation() {
+        return filterAnnotation;
+    }
+
+    @Override
+    public Object getSpringBean() {
+        return filterComponent.getSpringBean();
     }
 }

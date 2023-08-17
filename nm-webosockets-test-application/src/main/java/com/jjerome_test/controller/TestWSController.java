@@ -14,7 +14,7 @@ public class TestWSController {
 
     @WSConnectMapping(
             responsePath = "ffg",
-            filters = {"filter1", "filter2"}
+            filters = {"GoodFilter", "GoodFilter2"}
     )
     public void test(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
         System.out.println(good.isGood());
@@ -22,7 +22,7 @@ public class TestWSController {
 
     @WSMapping(
             path = "/2",
-            filters = {"filter1", "filter2"}
+            filters = {"GoodFilter", "GoodFilter2"}
     )
     public void test2(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
         System.out.println(good);

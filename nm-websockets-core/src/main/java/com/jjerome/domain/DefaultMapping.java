@@ -9,9 +9,9 @@ import com.jjerome.core.enums.WSMappingType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 @Getter @Setter
 @Builder
 public class DefaultMapping implements Mapping {
+
+    private final Annotation[] annotations;
 
     private final WSMappingType type;
 
@@ -35,5 +37,25 @@ public class DefaultMapping implements Mapping {
     @Override
     public Object invoke(Object[] methodParameters) throws InvocationTargetException, IllegalAccessException {
         return method.invoke(controller.getSpringBean(), methodParameters);
+    }
+
+    @Override
+    public Annotation[] getAnnotations() {
+        return annotations;
+    }
+
+    @Override
+    public WSMapping getComponentAnnotation() {
+        return mappingAnnotation;
+    }
+
+    @Override
+    public Object getSpringBean() {
+        return controller.getSpringBean();
+    }
+
+    @Override
+    public String buildFullPath() {
+        return controller.buildFullPath(this);
     }
 }

@@ -9,6 +9,7 @@ import com.jjerome.domain.PrivateGlobalData;
 import com.jjerome.handler.RequestHandler;
 import com.jjerome.handler.WebSocketHandler;
 import com.jjerome.util.BeanUtil;
+import com.jjerome.util.InitUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +40,11 @@ public class WebSocketConfiguration {
             ApplicationContext context,
             MethodUtil methodUtil,
             MergedAnnotationUtil mergedAnnotationUtil,
+            InitialClass initialClass,
             @Autowired(required = false) ApplicationFilterChain applicationFilterChain
     ){
         applicationFilterChain = ApplicationFilterChain.wrapIfChainIsNull(applicationFilterChain);
-        return new MappingContext(context, methodUtil, mergedAnnotationUtil, applicationFilterChain);
+        return new MappingContext(context, methodUtil, mergedAnnotationUtil, initialClass, applicationFilterChain);
     }
 
     @Bean
@@ -55,17 +57,19 @@ public class WebSocketConfiguration {
 
     @Bean
     public ControllersStorage controllersStorage(
-            MappingContext mappingContext,
-            InitialClass initialClass
+            MappingContext mappingContext
     ) {
-        return mappingContext.findAllControllers(initialClass.getClazz());
+        return mappingContext.getAllControllers();
     }
 
     @Bean
     public InitialClass getInitialClass(
-            BeanUtil beanUtil
+            BeanUtil beanUtil,
+            InitUtil initUtil
     ) {
-        return beanUtil.findSpringBootApplicationBeanClass();
+        InitialClass initialClass = beanUtil.findSpringBootApplicationBeanClass();
+        initUtil.initWSComponentScanFields(initialClass);
+        return initialClass;
     }
 
     @Bean

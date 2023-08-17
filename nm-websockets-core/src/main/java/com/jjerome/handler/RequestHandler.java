@@ -37,14 +37,14 @@ public class RequestHandler {
             throw new MappingNotFoundException(request.getPath() + " - mapping not found");
         }
 
-        Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
         RequestRepository.setRequest(request);
+
+        Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
 
         Object response = mappingUtil.invokeMapping(mapping, request);
 
-        if (mapping.getMethodReturnType() != null && !mapping.getMappingAnnotation().disableReturnResponse()){
-            String responsePath = mapping.getController().getControllerAnnotation().responsePathPrefix()
-                    + mapping.getMappingAnnotation().responsePath();
+        if (mapping.getMethodReturnType() != null && !mapping.getComponentAnnotation().disableReturnResponse()){
+            String responsePath = mapping.getController().buildFullPath(mapping);
 
             responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
         }

@@ -6,8 +6,8 @@ import com.jjerome.context.annotation.WSMapping;
 import com.jjerome.core.Controller;
 import com.jjerome.core.Mapping;
 import com.jjerome.core.enums.WSMappingType;
-import com.jjerome.filter.FilterChain;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -24,8 +24,6 @@ public class MappingFilterProxy implements Mapping {
 
     @Override
     public Object invoke(Object[] methodParameters) throws InvocationTargetException, IllegalAccessException {
-        System.out.println("MappingFilterProxy.invoke()");
-
         filterChain.doFilter();
 
         return mapping.invoke(methodParameters);
@@ -34,11 +32,6 @@ public class MappingFilterProxy implements Mapping {
     @Override
     public WSMappingType getType() {
         return mapping.getType();
-    }
-
-    @Override
-    public WSMapping getMappingAnnotation() {
-        return mapping.getMappingAnnotation();
     }
 
     @Override
@@ -59,5 +52,25 @@ public class MappingFilterProxy implements Mapping {
     @Override
     public Parameter getMethodReturnType() {
         return mapping.getMethodReturnType();
+    }
+
+    @Override
+    public String buildFullPath() {
+        return mapping.buildFullPath();
+    }
+
+    @Override
+    public Annotation[] getAnnotations() {
+        return mapping.getAnnotations();
+    }
+
+    @Override
+    public WSMapping getComponentAnnotation() {
+        return mapping.getComponentAnnotation();
+    }
+
+    @Override
+    public Object getSpringBean() {
+        return mapping.getSpringBean();
     }
 }

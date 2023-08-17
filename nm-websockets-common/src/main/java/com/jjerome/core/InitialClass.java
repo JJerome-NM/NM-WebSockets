@@ -1,20 +1,61 @@
 package com.jjerome.core;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.lang.annotation.Annotation;
+import java.util.Set;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter @Setter
-public class InitialClass {
+public class InitialClass implements AnnotatedComponent<Annotation> {
 
-    Annotation[] annotations;
+    private final Annotation[] annotations;
 
-    Class<?> clazz;
+    private final Class<?> clazz;
 
-    Object springBean;
+    private final Object springBean;
+
+    private Set<String> basePackages;
+
+    private Set<Class<?>> baseClasses;
+
+    private boolean enableSpringComponentScan;
+
+    public InitialClass(Annotation[] annotations, Class<?> clazz, Object springBean) {
+        this.annotations = annotations;
+        this.clazz = clazz;
+        this.springBean = springBean;
+    }
+
+    public void initWSComponentScanFields(Set<String> basePackages, Set<Class<?>> baseClasses, boolean enableSpringComponentScan){
+        this.basePackages = basePackages;
+        this.baseClasses = baseClasses;
+        this.enableSpringComponentScan = enableSpringComponentScan;
+    }
+
+    public Annotation[] getAnnotations() {
+        return annotations;
+    }
+
+    @Override
+    public Annotation getComponentAnnotation() {
+        return null;
+    }
+
+    public Class<?> getClazz() {
+        return clazz;
+    }
+
+    public Object getSpringBean() {
+        return springBean;
+    }
+
+    public Set<String> getBasePackages() {
+        return basePackages;
+    }
+
+    public Set<Class<?>> getBaseClasses() {
+        return baseClasses;
+    }
+
+    public boolean isEnableSpringComponentScan() {
+        return enableSpringComponentScan;
+    }
 }

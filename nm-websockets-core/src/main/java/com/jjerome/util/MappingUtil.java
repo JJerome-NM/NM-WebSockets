@@ -1,5 +1,6 @@
 package com.jjerome.util;
 
+import com.jjerome.context.MethodParameter;
 import com.jjerome.context.anotation.WSPathVariable;
 import com.jjerome.context.anotation.WSRequestBody;
 import com.jjerome.core.Mapping;
@@ -12,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -26,37 +26,40 @@ public class MappingUtil { // TODO: 17.08.2023 Reword throws
     private final GlobalInfoService infoService;
 
 
-    public Object invokeMapping(Mapping mapping, Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException{
+    public Object invokeMapping(Mapping mapping, Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException {
         return mapping.invoke(collectMappingParameters(mapping, request));
     }
 
     public Object[] collectMappingParameters(Mapping mapping, Request<UndefinedBody> request) {
-        return Stream.of(mapping.getMethodParams())
-                .map(parameter -> {
-                    if (parameter.hasAnnotation(WSRequestBody.class)) {
-                        try {
-                            return request.getBody().convertToRealBody(parameter.converToJavaType());
-                        } catch (IllegalArgumentException e) {
-                            LOGGER.warn(String.format(BAD_REQUEST_BODY, request.getSessionId(), request.getPath()));
-                            return null;
-                        }
-                    } else if (parameter.getClazz() == Request.class && parameter.hasGenerics()) {
-                        try {
-                            // There may be a problem if the generic for the body is not the first in the request
+        int paramsLength = mapping.getMethodParams().length;
+        Object[] resultParams = new Object[paramsLength];
+        MethodParameter[] parameters = mapping.getMethodParams();
 
-                            return new Request<>(request.getSessionId(), request.getPath(),
-                                    request.getBody().convertToRealBody(parameter.getGenerics()[0].converToJavaType()));
-                        } catch (IllegalArgumentException e) {
-                            LOGGER.warn(String.format(BAD_REQUEST_BODY, request.getSessionId(), request.getPath()));
+        for (short i = 0; i < paramsLength; i++) {
+            if (parameters[i].hasAnnotation(WSRequestBody.class)) {
+                try {
+                    resultParams[i] = request.getBody().convertToRealBody(parameters[i].getType()); // TODO: 17.08.2023  maybe can try to optimize the "convertToRealBody"
+                } catch (IllegalArgumentException e) {
+                    LOGGER.warn(String.format(BAD_REQUEST_BODY, request.getSessionId(), request.getPath()));
+                    resultParams[i] = null;
+                }
+            } else if (parameters[i].getClazz() == Request.class && parameters[i].hasGenerics()) {
+                try {
+                    // There may be a problem if the generic for the body is not the first in the request
 
-                            return new Request<>(request.getSessionId(), request.getPath(), null);
-                        }
-                    } else if (parameter.hasAnnotation(WSPathVariable.class)) {
-                        return null;
-                    } else {
-                        return infoService.getSomeInfo(parameter.getClazz());
-                    }
-                })
-                .toArray(Object[]::new);
+                    resultParams[i] = new Request<>(request.getSessionId(), request.getPath(),
+                            request.getBody().convertToRealBody(parameters[i].getGenerics()[0].getType()));
+                } catch (IllegalArgumentException e) {
+                    LOGGER.warn(String.format(BAD_REQUEST_BODY, request.getSessionId(), request.getPath()));
+
+                    resultParams[i] = new Request<>(request.getSessionId(), request.getPath(), null);
+                }
+            } else if (parameters[i].hasAnnotation(WSPathVariable.class)) {
+                resultParams[i] = null;
+            } else {
+                resultParams[i] = infoService.getSomeInfo(parameters[i].getClazz());
+            }
+        }
+        return resultParams;
     }
 }
