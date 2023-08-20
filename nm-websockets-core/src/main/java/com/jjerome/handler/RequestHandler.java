@@ -41,15 +41,11 @@ public class RequestHandler {
 
     public void handleMapping(Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException {
         executorService.submit(() -> {
-            double start = System.nanoTime();
-
             if (!mappingsStorage.containsMapping(request.getPath())){
                 throw new MappingNotFoundException(request.getPath() + " - mapping not found");
             }
 
             RequestRepository.setRequest(request);
-
-            System.out.println(request.getPath());
 
             Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
 
@@ -60,8 +56,6 @@ public class RequestHandler {
 
                 responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
             }
-
-            System.out.println("Request runtime = " + (System.nanoTime() - start));
         });
     }
 
