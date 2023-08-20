@@ -9,8 +9,8 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>nm-webosockets-test-application</artifactId>
-    <groupId>com.jjerome_test</groupId>
+    <artifactId>nm-websockets-test-application</artifactId>
+    <groupId>com.jjerometest</groupId>
 
     <properties>
         <maven.compiler.source>20</maven.compiler.source>
@@ -21,7 +21,8 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>3.1.2</version>
         </dependency>
 
         <dependency>

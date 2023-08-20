@@ -23,14 +23,15 @@ public class WebSocketHandler extends TextWebSocketHandler {
         this.privateGlobalData = privateGlobalData;
 
         LOGGER.info("NM-WebSockets successfully started");
+        LOGGER.error("Happy hacking😘");
     }
 
 
     @Override
     protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) {
-        double start = System.nanoTime();
+//        double start = System.nanoTime();
         requestHandler.handleMapping(session, message);
-        System.out.println("Request runtime = " + (System.nanoTime() - start));
+//        System.out.println("Request runtime = " + (System.nanoTime() - start));
 
     }
 

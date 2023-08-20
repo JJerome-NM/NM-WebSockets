@@ -1,4 +1,4 @@
-package com.jjerome_test.entity;
+package com.jjerometest.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

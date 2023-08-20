@@ -11,11 +11,14 @@ public class WebSocketHandlerConfiguration implements WebSocketConfigurer {
     @Autowired
     private WebSocketHandler webSocketHandler;
 
-    @Value("${nmwebsocket.path:/socket}")
+    @Value("${nm-websocket.path:/socket}")
     private String path;
+
+    @Value("${nm-websocket.allowed-origins:*}")
+    private String[] allowedOrigins;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, path);
+        registry.addHandler(webSocketHandler, path).setAllowedOrigins(allowedOrigins);
     }
 }

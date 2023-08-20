@@ -1,6 +1,6 @@
 package com.jjerome.core;
 
-public interface Builder<O> {
+public interface Builder<T> {
 
-    O build();
+    T build();
 }

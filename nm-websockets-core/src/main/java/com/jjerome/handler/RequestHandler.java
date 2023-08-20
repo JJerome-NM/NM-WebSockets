@@ -27,31 +27,42 @@ public class RequestHandler {
 
     private final RequestMapper requestMapper;
 
+    private final InvokeUtil invokeUtil;
+
     public RequestHandler(MappingsStorage mappingsStorage, ResponseHandler responseHandler,
-                          ExecutorService executorService, RequestMapper requestMapper) {
+                          ExecutorService executorService, RequestMapper requestMapper, InvokeUtil invokeUtil) {
         this.mappingsStorage = mappingsStorage;
         this.responseHandler = responseHandler;
         this.executorService = executorService;
         this.requestMapper = requestMapper;
+        this.invokeUtil = invokeUtil;
     }
 
 
     public void handleMapping(Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException {
-        if (!mappingsStorage.containsMapping(request.getPath())){
-            throw new MappingNotFoundException(request.getPath() + " - mapping not found");
-        }
+        executorService.submit(() -> {
+            double start = System.nanoTime();
 
-        RequestRepository.setRequest(request);
+            if (!mappingsStorage.containsMapping(request.getPath())){
+                throw new MappingNotFoundException(request.getPath() + " - mapping not found");
+            }
 
-        Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
+            RequestRepository.setRequest(request);
 
-        Object response = InvokeUtil.getINSTANCE().invoke(mapping);
+            System.out.println(request.getPath());
 
-        if (mapping.getMethodReturnType() != null && !mapping.getComponentAnnotation().disableReturnResponse()){
-            String responsePath = mapping.getController().buildFullPath(mapping);
+            Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
 
-            responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
-        }
+            Object response = invokeUtil.invoke(mapping);
+
+            if (mapping.getMethodReturnType() != null && !mapping.getComponentAnnotation().disableReturnResponse()){
+                String responsePath = mapping.getController().buildFullPath(mapping);
+
+                responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
+            }
+
+            System.out.println("Request runtime = " + (System.nanoTime() - start));
+        });
     }
 
     public void handleMapping(WebSocketSession session, TextMessage message){

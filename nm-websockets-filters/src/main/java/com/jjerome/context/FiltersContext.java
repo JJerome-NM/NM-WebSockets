@@ -5,6 +5,7 @@ import com.jjerome.FilterComponent;
 import com.jjerome.context.annotation.WSFilter;
 import com.jjerome.context.annotation.WSFiltersComponent;
 import com.jjerome.core.InitialClass;
+import com.jjerome.util.LoggerUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
 import org.reflections.Reflections;
@@ -42,10 +43,10 @@ public class FiltersContext {
     }
 
     public List<FilterComponent> findAllFilterComponents(){
+        LoggerUtil.disableReflectionsInfoLogs();
+
         List<FilterComponent> filterComponents = new ArrayList<>();
-
         Reflections initPackage = new Reflections(initialClass.getClazz().getPackageName());
-
         Set<Class<?>> allFilterComponents = initPackage.getTypesAnnotatedWith(WSFiltersComponent.class);
 
         for (String pack : initialClass.getBasePackages()){
@@ -67,7 +68,7 @@ public class FiltersContext {
 
             filterComponents.add(new FilterComponent(annotations, controllerAnnotation, filterClazz, controllerBean));
         }
-
+        LoggerUtil.enableReflectionsLogs();
         return filterComponents;
     }
 

@@ -21,7 +21,7 @@ public class InvokeUtil implements InitializingBean {
 
     private static final String BAD_REQUEST_BODY = "%s wants to request %s but passes the wrong request body";
     
-    private static InvokeUtil INSTANCE;
+    private static InvokeUtil instance;
 
     public Object invoke(Invocable invocable){
         try {
@@ -67,10 +67,10 @@ public class InvokeUtil implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        INSTANCE = this;
+        instance = this;
     }
 
     public static InvokeUtil getINSTANCE(){
-        return INSTANCE;
+        return instance;
     }
 }

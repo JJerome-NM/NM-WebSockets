@@ -1,24 +1,25 @@
-package com.jjerome_test.filter;
+package com.jjerometest.filter;
 
 
 import com.jjerome.context.annotation.WSConnectFilter;
 import com.jjerome.context.annotation.WSFilter;
 import com.jjerome.context.annotation.WSFiltersComponent;
-import com.jjerome.context.annotation.WSRequestBody;
 import com.jjerome.core.Ordered;
-import com.jjerome_test.entity.Good;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WSFiltersComponent
 public class WSFilters {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(WSFilters.class);
+
     @WSConnectFilter(value = "GoodFilter", order = Ordered.APPLICATION_PRECEDENCE + 1)
-    public void goodFirstFilter(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
-        System.out.println("WSFilters.goodFirstFilter");
-        System.out.println(good.isGood());
+    public void goodFirstFilter(){
+        LOGGER.info("WSFilters.goodFirstFilter");
     }
 
     @WSFilter(value = "GoodFilter2", order = Ordered.APPLICATION_PRECEDENCE - 1)
     public void goodSecondFilter(){
-        System.out.println("WSFilters.goodSecondFilter");
+        LOGGER.info("WSFilters.goodFirstFilter");
     }
 }
