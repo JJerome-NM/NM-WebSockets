@@ -1,7 +1,5 @@
 package com.jjerome.handler;
 
-import com.jjerome.domain.ControllersStorage;
-import com.jjerome.domain.MappingsStorage;
 import com.jjerome.domain.PrivateGlobalData;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -17,37 +15,28 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private final RequestHandler requestHandler;
 
-    private final ResponseHandler responseHandler;
-
-    private final MappingsStorage mappingsStorage;
-
-    private final ControllersStorage controllersStorage;
-
     private final PrivateGlobalData privateGlobalData;
 
     public WebSocketHandler(RequestHandler requestHandler,
-                            ResponseHandler responseHandler,
-                            MappingsStorage mappingsStorage,
-                            ControllersStorage controllersStorage,
-                            PrivateGlobalData privateGlobalData){
+                            PrivateGlobalData privateGlobalData) {
         this.requestHandler = requestHandler;
-        this.responseHandler = responseHandler;
-        this.mappingsStorage = mappingsStorage;
-        this.controllersStorage = controllersStorage;
         this.privateGlobalData = privateGlobalData;
 
         LOGGER.info("NM-WebSockets successfully started");
+        LOGGER.error("Happy hacking😘");
     }
 
 
     @Override
     protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) {
+//        double start = System.nanoTime();
         requestHandler.handleMapping(session, message);
+//        System.out.println("Request runtime = " + (System.nanoTime() - start));
+
     }
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-
         System.out.println(session.getId());
 
         privateGlobalData.getSessions().put(session.getId(), session);

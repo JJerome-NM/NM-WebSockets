@@ -1,36 +1,34 @@
 package com.jjerome.context;
 
-import com.jjerome.annotation.WSComponentScan;
-import com.jjerome.annotation.WSController;
-import com.jjerome.annotation.WSMapping;
-import com.jjerome.anotation.EnableNMWebSockets;
-import com.jjerome.domain.Controller;
+import com.jjerome.context.annotation.WSController;
+import com.jjerome.context.annotation.WSMapping;
+import com.jjerome.core.Controller;
+import com.jjerome.core.InitialClass;
+import com.jjerome.core.Mapping;
+import com.jjerome.domain.DefaultController;
 import com.jjerome.domain.ControllersStorage;
-import com.jjerome.domain.Mapping;
+import com.jjerome.domain.DefaultMapping;
 import com.jjerome.domain.MappingsStorage;
+import com.jjerome.filter.ApplicationFilterChain;
+import com.jjerome.util.LoggerUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
-import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.stream.Stream;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
 
-@Component
-@RequiredArgsConstructor
 public class MappingContext {
 
     private final ApplicationContext context;
@@ -39,57 +37,54 @@ public class MappingContext {
 
     private final MergedAnnotationUtil mergedAnnotationUtil;
 
-    public ControllersStorage findAllControllers(Class<?> initialClazz) {
-        Reflections reflections = new Reflections(initialClazz.getPackageName());
-        EnableNMWebSockets enableAnnotation;
-        WSComponentScan componentScan;
+    private final ApplicationFilterChain applicationFilterChain;
+
+    private final InitialClass initialClass;
+
+    public MappingContext(ApplicationContext context,
+                          MethodUtil methodUtil,
+                          MergedAnnotationUtil mergedAnnotationUtil,
+                          InitialClass initialClass,
+                          @Autowired(required = false) ApplicationFilterChain applicationFilterChain) {
+        this.context = context;
+        this.methodUtil = methodUtil;
+        this.mergedAnnotationUtil = mergedAnnotationUtil;
+        this.initialClass = initialClass;
+        this.applicationFilterChain = applicationFilterChain;
+    }
+
+    public ControllersStorage getAllControllers() {
+        LoggerUtil.disableReflectionsInfoLogs();
+
+        Reflections reflections = new Reflections(initialClass.getClazz().getPackageName());
         Set<Class<?>> allControllerClasses;
-        BiConsumer<String[], Class<?>[]> extractClasses;
-        ComponentScan springComponentScan;
-        Map<Class<?>, Controller> controllers;
+
+        allControllerClasses = reflections.getTypesAnnotatedWith(WSController.class);
+
+        for (String pack : initialClass.getBasePackages()){
+            allControllerClasses.addAll(new Reflections(pack).getTypesAnnotatedWith(WSController.class));
+        }
+
+        initialClass.getBaseClasses().stream()
+                .filter(clazz -> hasAnnotation(clazz, WSController.class))
+                .forEach(allControllerClasses::add);
+
+
+        Map<Class<?>, Controller> controllers = new HashMap<>();
         WSController controllerAnnotation;
         Annotation[] annotations;
         Object controllerSpringBean;
 
-        if (initialClazz.isAnnotationPresent(EnableNMWebSockets.class)) {
-            enableAnnotation = findMergedAnnotation(initialClazz, EnableNMWebSockets.class);
+        for (Class<?> controllerClazz : allControllerClasses){
+            controllerAnnotation = findMergedAnnotation(controllerClazz, WSController.class);
+            annotations = mergedAnnotationUtil.findAllAnnotations(controllerClazz);
+            controllerSpringBean = context.getBean(controllerClazz);
 
-            if (enableAnnotation == null) {
-                return ControllersStorage.emptyStorage();
-            }
-
-            componentScan = findMergedAnnotation(initialClazz, WSComponentScan.class);
-            allControllerClasses = reflections.getTypesAnnotatedWith(WSController.class);
-
-            extractClasses = (basePackages, baseClasses) -> {
-                for (String pack : basePackages){
-                    allControllerClasses.addAll(new Reflections(pack).getTypesAnnotatedWith(WSController.class));
-                }
-                Stream.of(baseClasses)
-                        .filter(clazz -> hasAnnotation(clazz, WSController.class))
-                        .forEach(allControllerClasses::add);
-            };
-
-            extractClasses.accept(componentScan.basePackages(), componentScan.baseClasses());
-
-            if (enableAnnotation.enableSpringComponentScan()) {
-                springComponentScan = findMergedAnnotation(initialClazz, ComponentScan.class);
-                extractClasses.accept(springComponentScan.basePackages(), springComponentScan.basePackageClasses());
-            }
-
-            controllers = new HashMap<>();
-
-            for (Class<?> controllerClazz : allControllerClasses){
-                controllerAnnotation = findMergedAnnotation(controllerClazz, WSController.class);
-                annotations = mergedAnnotationUtil.findAllAnnotations(controllerClazz);
-                controllerSpringBean = context.getBean(controllerClazz);
-
-                controllers.put(controllerClazz, new Controller(annotations, controllerAnnotation,
-                        controllerClazz, controllerSpringBean));
-            }
-            return new ControllersStorage(controllers);
+            controllers.put(controllerClazz, new DefaultController(annotations, controllerAnnotation,
+                    controllerClazz, controllerSpringBean));
         }
-        return ControllersStorage.emptyStorage();
+        LoggerUtil.enableReflectionsLogs();
+        return new ControllersStorage(controllers);
     }
 
     public MappingsStorage findAllMappings(List<Controller> controllers) {
@@ -97,18 +92,10 @@ public class MappingContext {
         List<Mapping> connectMappings = new ArrayList<>();
         List<Mapping> disconnectMappings = new ArrayList<>();
 
-        WSController controllerAnnotation;
         WSMapping mappingAnnotation;
         Mapping mapping;
-        String fullPath;
 
         for (Controller controller : controllers) {
-            controllerAnnotation = findMergedAnnotation(controller.getClazz(), WSController.class);
-
-            if (controllerAnnotation == null) {
-                continue;
-            }
-
             for (Method method : controller.getClazz().getDeclaredMethods()) {
                 mappingAnnotation = findMergedAnnotation(method, WSMapping.class);
 
@@ -116,13 +103,20 @@ public class MappingContext {
                     continue;
                 }
 
-                mapping = new Mapping(mappingAnnotation.type(), mappingAnnotation, controller.getClazz(), method,
-                        methodUtil.extractMethodParameters(method), methodUtil.extractMethodReturnParameter(method));
+                mapping = DefaultMapping.builder()
+                        .annotations(mergedAnnotationUtil.findAllAnnotations(method))
+                        .type(mappingAnnotation.type())
+                        .componentAnnotation(mappingAnnotation)
+                        .controller(controller)
+                        .method(method)
+                        .methodParams(methodUtil.extractMethodParameters(method))
+                        .methodReturnType(methodUtil.extractMethodReturnParameter(method))
+                        .build();
 
                 switch (mapping.getType()) {
                     case METHOD -> {
-                        fullPath = controllerAnnotation.pathPrefix() + mapping.getMappingAnnotation().path();
-                        methodMappings.put(fullPath, mapping);
+                        mapping = applicationFilterChain.addFilterForMapping(mapping);
+                        methodMappings.put(mapping.buildFullPath(), mapping);
                     }
                     case CONNECT -> connectMappings.add(mapping);
                     case DISCONNECT -> disconnectMappings.add(mapping);

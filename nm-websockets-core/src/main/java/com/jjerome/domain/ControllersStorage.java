@@ -1,13 +1,12 @@
 package com.jjerome.domain;
 
-import lombok.Getter;
+import com.jjerome.core.Controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Getter
 public class ControllersStorage {
 
     Map<Class<?>, Controller> controllers;
@@ -26,5 +25,9 @@ public class ControllersStorage {
 
     public Controller getController(Class<?> controllerClass){
         return controllers.get(controllerClass);
+    }
+
+    public Map<Class<?>, Controller> getControllers() {
+        return controllers;
     }
 }
