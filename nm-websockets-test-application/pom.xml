@@ -42,6 +42,11 @@
             <artifactId>nm-websockets-filters</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-    </dependencies>
 
+        <dependency>
+            <groupId>com.jjerome</groupId>
+            <artifactId>nm-websockets-security</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>

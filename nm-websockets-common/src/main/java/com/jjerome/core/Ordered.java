@@ -8,6 +8,8 @@ public interface Ordered {
 
     int APPLICATION_PRECEDENCE = 1000;
 
+    int APPLICATION_SECURITY_PRECEDENCE = -1000;
+
 
     int getOrder();
 }

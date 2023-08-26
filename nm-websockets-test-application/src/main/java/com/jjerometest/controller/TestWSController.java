@@ -1,5 +1,7 @@
 package com.jjerometest.controller;
 
+import com.jjerome.context.annotation.HasRole;
+import com.jjerome.context.annotation.UseFilters;
 import com.jjerome.context.anotation.WSConnectMapping;
 import com.jjerome.context.annotation.WSController;
 import com.jjerome.context.annotation.WSMapping;
@@ -22,6 +24,7 @@ public class TestWSController {
             path = "/second",
             filters = {"GoodFilter", "GoodFilter2"}
     )
+    @HasRole("ROLE")
     public Integer test2(){
         System.out.println("test2");
         return 2;

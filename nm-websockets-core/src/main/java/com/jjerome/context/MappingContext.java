@@ -1,5 +1,6 @@
 package com.jjerome.context;
 
+import com.jjerome.context.annotation.UseFilters;
 import com.jjerome.context.annotation.WSController;
 import com.jjerome.context.annotation.WSMapping;
 import com.jjerome.core.Controller;
@@ -8,19 +9,19 @@ import com.jjerome.core.Mapping;
 import com.jjerome.domain.DefaultController;
 import com.jjerome.domain.ControllersStorage;
 import com.jjerome.domain.DefaultMapping;
+import com.jjerome.domain.MappingFactory;
 import com.jjerome.domain.MappingsStorage;
-import com.jjerome.filter.ApplicationFilterChain;
 import com.jjerome.util.LoggerUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
 import org.reflections.Reflections;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.annotation.Annotation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class MappingContext {
 
     private final MergedAnnotationUtil mergedAnnotationUtil;
 
-    private final ApplicationFilterChain applicationFilterChain;
+    private final MappingFactory mappingFactory;
 
     private final InitialClass initialClass;
 
@@ -45,12 +46,12 @@ public class MappingContext {
                           MethodUtil methodUtil,
                           MergedAnnotationUtil mergedAnnotationUtil,
                           InitialClass initialClass,
-                          @Autowired(required = false) ApplicationFilterChain applicationFilterChain) {
+                          MappingFactory mappingFactory) {
         this.context = context;
         this.methodUtil = methodUtil;
         this.mergedAnnotationUtil = mergedAnnotationUtil;
         this.initialClass = initialClass;
-        this.applicationFilterChain = applicationFilterChain;
+        this.mappingFactory = mappingFactory;
     }
 
     public ControllersStorage getAllControllers() {
@@ -97,7 +98,7 @@ public class MappingContext {
 
         for (Controller controller : controllers) {
             for (Method method : controller.getClazz().getDeclaredMethods()) {
-                mappingAnnotation = findMergedAnnotation(method, WSMapping.class);
+                mappingAnnotation = mergedAnnotationUtil.findAllMergedAnnotationsAndCompareArrays(method, WSMapping.class);
 
                 if (mappingAnnotation == null) {
                     continue;
@@ -115,7 +116,7 @@ public class MappingContext {
 
                 switch (mapping.getType()) {
                     case METHOD -> {
-                        mapping = applicationFilterChain.addFilterForMapping(mapping);
+                        mapping = mappingFactory.buildMapping(mapping);
                         methodMappings.put(mapping.buildFullPath(), mapping);
                     }
                     case CONNECT -> connectMappings.add(mapping);

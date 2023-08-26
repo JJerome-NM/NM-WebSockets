@@ -4,14 +4,14 @@ import com.jjerome.context.MethodParameter;
 import com.jjerome.context.Parameter;
 import com.jjerome.context.annotation.WSFilter;
 import com.jjerome.core.AnnotatedComponent;
-import com.jjerome.core.Invocable;
+import com.jjerome.core.filters.Filter;
 import com.jjerome.util.InvokeUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class Filter implements FilterChain, Invocable, AnnotatedComponent<WSFilter> {
+public class MappingFilter implements Filter, AnnotatedComponent<WSFilter> {
 
     private final Annotation[] annotations;
 
@@ -25,8 +25,8 @@ public class Filter implements FilterChain, Invocable, AnnotatedComponent<WSFilt
 
     private final Parameter methodReturnType;
 
-    public Filter(Annotation[] annotations, FilterComponent filterComponent, WSFilter filterAnnotation,
-                  Method method, MethodParameter[] methodParams, Parameter methodReturnType) {
+    public MappingFilter(Annotation[] annotations, FilterComponent filterComponent, WSFilter filterAnnotation,
+                         Method method, MethodParameter[] methodParams, Parameter methodReturnType) {
         this.annotations = annotations;
         this.filterComponent = filterComponent;
         this.filterAnnotation = filterAnnotation;
@@ -45,7 +45,7 @@ public class Filter implements FilterChain, Invocable, AnnotatedComponent<WSFilt
         InvokeUtil.getINSTANCE().invoke(this);
     }
 
-    public boolean equals(FilterChain filterChain2){
+    public boolean equals(Filter filterChain2){
         if (this == filterChain2){
             return true;
         }
@@ -101,7 +101,7 @@ public class Filter implements FilterChain, Invocable, AnnotatedComponent<WSFilt
         return new FilterBuilder();
     }
 
-    public static class FilterBuilder implements AnnotatedComponentBuilder<WSFilter, Filter>{
+    public static class FilterBuilder implements AnnotatedComponentBuilder<WSFilter, MappingFilter>{
 
         private Annotation[] annotations;
 
@@ -116,8 +116,8 @@ public class Filter implements FilterChain, Invocable, AnnotatedComponent<WSFilt
         private Parameter methodReturnType;
 
         @Override
-        public Filter build() {
-            return new Filter(annotations, filterComponent, componentAnnotation, method, methodParams, methodReturnType);
+        public MappingFilter build() {
+            return new MappingFilter(annotations, filterComponent, componentAnnotation, method, methodParams, methodReturnType);
         }
 
         @Override

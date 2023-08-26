@@ -20,6 +20,6 @@ public class WSFilters {
 
     @WSFilter(value = "GoodFilter2", order = Ordered.APPLICATION_PRECEDENCE - 1)
     public void goodSecondFilter(){
-        LOGGER.info("WSFilters.goodFirstFilter");
+        LOGGER.info("WSFilters.goodSecondFilter");
     }
 }

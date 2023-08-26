@@ -1,9 +1,10 @@
 package com.jjerome.configuration;
 
 import com.jjerome.context.MappingContext;
-import com.jjerome.filter.ApplicationFilterChain;
+import com.jjerome.core.filters.ApplicationFilterChain;
 import com.jjerome.domain.ControllersStorage;
 import com.jjerome.core.InitialClass;
+import com.jjerome.domain.MappingFactory;
 import com.jjerome.domain.MappingsStorage;
 import com.jjerome.domain.PrivateGlobalData;
 import com.jjerome.handler.RequestHandler;
@@ -17,6 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 import java.util.concurrent.ExecutorService;
@@ -32,18 +34,20 @@ public class WebSocketConfiguration {
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL);
 
     WebSocketConfiguration() {
+        Modules.CORE.enable();
+        System.out.println("WebSocketConfiguration");
     }
 
     @Bean
+    @DependsOn("securityContext")
     public MappingContext mappingContext(
             ApplicationContext context,
             MethodUtil methodUtil,
             MergedAnnotationUtil mergedAnnotationUtil,
             InitialClass initialClass,
-            @Autowired(required = false) ApplicationFilterChain applicationFilterChain
+            MappingFactory mappingFactory
     ){
-        applicationFilterChain = ApplicationFilterChain.wrapIfChainIsNull(applicationFilterChain);
-        return new MappingContext(context, methodUtil, mergedAnnotationUtil, initialClass, applicationFilterChain);
+        return new MappingContext(context, methodUtil, mergedAnnotationUtil, initialClass, mappingFactory);
     }
 
     @Bean

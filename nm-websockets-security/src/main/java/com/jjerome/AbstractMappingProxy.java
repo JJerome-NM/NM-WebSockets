@@ -1,10 +1,10 @@
 package com.jjerome;
 
+
 import com.jjerome.context.MethodParameter;
 import com.jjerome.context.Parameter;
 import com.jjerome.context.annotation.WSMapping;
 import com.jjerome.core.Controller;
-import com.jjerome.core.filters.FilterChain;
 import com.jjerome.core.Mapping;
 import com.jjerome.core.enums.WSMappingType;
 
@@ -12,20 +12,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class MappingFilterProxy implements Mapping {
-
-    private final FilterChain filterChain;
+public abstract class AbstractMappingProxy implements Mapping {
 
     private final Mapping mapping;
 
-    MappingFilterProxy(FilterChain filterChain, Mapping realMapping){
-        this.filterChain = filterChain;
-        this.mapping = realMapping;
+
+    protected AbstractMappingProxy(Mapping mapping) {
+        this.mapping = mapping;
     }
 
     @Override
     public Object invoke(Object[] methodParameters) throws InvocationTargetException, IllegalAccessException {
-        filterChain.doFilters();
         return mapping.invoke(methodParameters);
     }
 

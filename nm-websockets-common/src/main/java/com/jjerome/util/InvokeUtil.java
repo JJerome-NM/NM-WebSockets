@@ -27,6 +27,7 @@ public class InvokeUtil implements InitializingBean {
         try {
             return invocable.invoke(collectInvocableParameters(invocable, RequestRepository.getRequest()));
         } catch (InvocationTargetException | IllegalAccessException e) {
+            System.out.println(e);
             throw new RuntimeException(e);
         }
     }

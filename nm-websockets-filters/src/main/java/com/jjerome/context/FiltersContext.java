@@ -1,10 +1,11 @@
 package com.jjerome.context;
 
-import com.jjerome.Filter;
+import com.jjerome.MappingFilter;
 import com.jjerome.FilterComponent;
 import com.jjerome.context.annotation.WSFilter;
 import com.jjerome.context.annotation.WSFiltersComponent;
 import com.jjerome.core.InitialClass;
+import com.jjerome.core.filters.Filter;
 import com.jjerome.util.LoggerUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
@@ -76,7 +77,7 @@ public class FiltersContext {
         Map<String, Filter> filterChains = new HashMap<>();
 
         WSFilter filterAnnotation;
-        Filter filter;
+        Filter mappingFilter;
 
         for (FilterComponent filterComponent : filterComponents){
             for(Method method : filterComponent.getClazz().getDeclaredMethods()){
@@ -86,7 +87,7 @@ public class FiltersContext {
                     continue;
                 }
 
-                filter = Filter.builder()
+                mappingFilter = MappingFilter.builder()
                         .annotations(mergedAnnotationUtil.findAllAnnotations(method))
                         .filterComponent(filterComponent)
                         .componentAnnotation(filterAnnotation)
@@ -95,7 +96,7 @@ public class FiltersContext {
                         .methodReturnType(methodUtil.extractMethodReturnParameter(method))
                         .build();
 
-                filterChains.put(filter.getLabel(), filter);
+                filterChains.put(mappingFilter.getLabel(), mappingFilter);
             }
         }
         return filterChains;

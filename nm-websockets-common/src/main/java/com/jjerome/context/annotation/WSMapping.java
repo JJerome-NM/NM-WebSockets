@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@UseFilters
 public @interface WSMapping {
 
     @AliasFor(
@@ -26,6 +27,10 @@ public @interface WSMapping {
 
     String responsePath() default "/";
 
+    @AliasFor(
+            annotation = UseFilters.class,
+            attribute = "filters"
+    )
     String[] filters() default {};
 
     boolean disableReturnResponse() default false;

@@ -1,4 +1,4 @@
-package com.jjerome.filter;
+package com.jjerome.core.filters;
 
 import com.jjerome.core.Mapping;
 
@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 public interface ApplicationFilterChain {
 
-    Mapping addFilterForMapping(Mapping mapping);
+    Mapping wrapMappingWithFilter(Mapping mapping);
 
     static ApplicationFilterChain wrapToValidDecorator(ApplicationFilterChain filterChain){
         return new ApplicationFilterChainValidDecorator(filterChain);
@@ -33,8 +33,8 @@ public interface ApplicationFilterChain {
         }
 
         @Override
-        public Mapping addFilterForMapping(Mapping mapping) {
-            return isFilterChainNonNullOrElse(() -> filterChain.addFilterForMapping(mapping), mapping);
+        public Mapping wrapMappingWithFilter(Mapping mapping) {
+            return isFilterChainNonNullOrElse(() -> filterChain.wrapMappingWithFilter(mapping), mapping);
         }
 
         private void isFilterChainNonNull(Runnable runFunction){
