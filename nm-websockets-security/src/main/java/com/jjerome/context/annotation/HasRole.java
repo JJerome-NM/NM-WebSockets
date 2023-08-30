@@ -18,7 +18,7 @@ import static java.lang.annotation.ElementType.TYPE;
 public @interface HasRole {
 
     @AliasFor(
-            attribute = "role",
+            attribute = "roles",
             annotation = HasAnyRole.class
     )
     String value() default "ROLE_USER";

@@ -1,7 +1,6 @@
 package com.jjerome.util;
 
 import org.apache.commons.lang3.AnnotationUtils;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -18,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import static org.springframework.core.annotation.AnnotatedElementUtils.findAllMergedAnnotations;
 
 @Component
 public class MergedAnnotationUtil {
@@ -43,7 +44,7 @@ public class MergedAnnotationUtil {
 
     public <T extends Annotation> T findAllMergedAnnotationsAndCompareArrays(AnnotatedElement element,
                                                                              Class<T> annotationType) {
-        Set<T> allAnnotations = AnnotatedElementUtils.findAllMergedAnnotations(element, annotationType);
+        Set<T> allAnnotations = findAllMergedAnnotations(element, annotationType);
         if (allAnnotations.size() == 1){
             return allAnnotations.stream().findFirst().orElseThrow();
         }

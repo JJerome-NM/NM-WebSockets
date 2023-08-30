@@ -17,6 +17,10 @@ public class HasAnyRoleFilter extends AbstractSecurityFilter {
         this.annotations = annotations;
     }
 
+    public HasAnyRoleFilter(Annotation baseAnnotation, Annotation[] annotations) {
+        this((HasRole) baseAnnotation, annotations);
+    }
+
     @Override
     public void doFilter() {
         System.out.println(getLabel());

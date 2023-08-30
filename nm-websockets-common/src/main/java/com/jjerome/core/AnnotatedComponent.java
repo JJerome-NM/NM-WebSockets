@@ -10,7 +10,20 @@ public interface AnnotatedComponent<A> {
 
     Object getSpringBean();
 
-    interface AnnotatedComponentBuilder<A, T> extends Builder<T>{
+    default <T extends Annotation> T getAnnotation(Class<T> type) {
+        for (Annotation ann : getAnnotations()) {
+            if (ann.annotationType() == type) {
+                return (T) ann;
+            }
+        }
+        return null;
+    }
+
+    default <T extends Annotation> boolean containsAnnotation(Class<T> type) {
+        return getAnnotation(type) != null;
+    }
+
+    interface AnnotatedComponentBuilder<A, T> extends Builder<T> {
         AnnotatedComponentBuilder<A, T> annotations(Annotation[] annotations);
 
         AnnotatedComponentBuilder<A, T> componentAnnotation(A componentAnnotation);

@@ -65,6 +65,16 @@ public class MappingFilterProxy implements Mapping {
     }
 
     @Override
+    public <T extends Annotation> T getAnnotation(Class<T> type) {
+        return mapping.getAnnotation(type);
+    }
+
+    @Override
+    public <T extends Annotation> boolean containsAnnotation(Class<T> type) {
+        return mapping.containsAnnotation(type);
+    }
+
+    @Override
     public WSMapping getComponentAnnotation() {
         return mapping.getComponentAnnotation();
     }

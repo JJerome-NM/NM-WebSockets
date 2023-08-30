@@ -8,17 +8,13 @@ import com.jjerome.core.enums.WSMappingType;
 
 import java.lang.reflect.Method;
 
-public interface  Mapping extends Invocable, AnnotatedComponent<WSMapping> {
+public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
 
     WSMappingType getType();
 
     Controller getController();
 
     Method getMethod();
-
-    MethodParameter[] getMethodParams();
-
-    Parameter getMethodReturnType();
 
     String buildFullPath();
 

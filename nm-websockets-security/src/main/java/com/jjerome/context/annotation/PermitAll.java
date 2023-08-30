@@ -12,5 +12,5 @@ import static java.lang.annotation.ElementType.TYPE;
 @Target({METHOD, TYPE})
 @Retention(RUNTIME)
 @Documented
-public @interface PermitAll {
+public @interface PermitAll{
 }

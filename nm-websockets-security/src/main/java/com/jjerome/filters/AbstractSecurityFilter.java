@@ -8,7 +8,6 @@ import com.jjerome.core.filters.Filter;
 
 public abstract class AbstractSecurityFilter implements Filter {
 
-
     @Override
     public MethodParameter[] getMethodParams() {
         return new MethodParameter[0];
