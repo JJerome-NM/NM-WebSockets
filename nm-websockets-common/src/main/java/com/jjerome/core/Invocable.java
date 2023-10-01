@@ -12,4 +12,8 @@ public interface Invocable {
     Parameter getMethodReturnType();
 
     Object invoke(Object[] methodParameters) throws InvocationTargetException, IllegalAccessException;
+
+    default boolean returnsResponse(){
+        return getMethodReturnType().getClazz() != void.class;
+    }
 }

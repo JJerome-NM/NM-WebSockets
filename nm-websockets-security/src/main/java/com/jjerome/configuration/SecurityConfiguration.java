@@ -1,7 +1,7 @@
 package com.jjerome.configuration;
 
 import com.jjerome.SecurityStorage;
-import com.jjerome.context.SecurityContext;
+import com.jjerome.reflection.context.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

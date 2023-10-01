@@ -1,6 +1,5 @@
-package com.jjerome;
+package com.jjerome.core;
 
-import com.jjerome.core.Mapping;
 import com.jjerome.core.filters.Filter;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +12,7 @@ public class SecurityMappingProxy extends AbstractMappingProxy {
 
     private short filtersLength;
 
-    protected SecurityMappingProxy(Mapping mapping) {
+    public SecurityMappingProxy(Mapping mapping) {
         super(mapping);
     }
 

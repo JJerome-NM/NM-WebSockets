@@ -1,4 +1,4 @@
-package com.jjerome.context.annotation;
+package com.jjerome.reflection.context.annotation;
 
 import org.springframework.core.annotation.AliasFor;
 

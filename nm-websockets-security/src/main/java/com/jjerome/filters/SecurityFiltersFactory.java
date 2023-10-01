@@ -1,6 +1,6 @@
 package com.jjerome.filters;
 
-import com.jjerome.context.annotation.HasRole;
+import com.jjerome.reflection.context.annotation.HasRole;
 import com.jjerome.core.filters.Filter;
 import org.springframework.stereotype.Component;
 

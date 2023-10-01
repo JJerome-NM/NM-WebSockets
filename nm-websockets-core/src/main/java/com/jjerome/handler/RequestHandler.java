@@ -8,7 +8,9 @@ import com.jjerome.core.Response;
 import com.jjerome.core.UndefinedBody;
 import com.jjerome.exception.MappingNotFoundException;
 import com.jjerome.core.mapper.RequestMapper;
+import com.jjerome.local.data.SessionLocal;
 import com.jjerome.util.InvokeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -29,13 +31,17 @@ public class RequestHandler {
 
     private final InvokeUtil invokeUtil;
 
+    private final SessionLocal sessionLocal;
+
     public RequestHandler(MappingsStorage mappingsStorage, ResponseHandler responseHandler,
-                          ExecutorService executorService, RequestMapper requestMapper, InvokeUtil invokeUtil) {
+                          ExecutorService executorService, RequestMapper requestMapper, InvokeUtil invokeUtil,
+                          SessionLocal sessionLocal) {
         this.mappingsStorage = mappingsStorage;
         this.responseHandler = responseHandler;
         this.executorService = executorService;
         this.requestMapper = requestMapper;
         this.invokeUtil = invokeUtil;
+        this.sessionLocal = sessionLocal;
     }
 
 
@@ -47,14 +53,21 @@ public class RequestHandler {
 
             RequestRepository.setRequest(request);
 
+//            sessionLocal.setArgument("security.key", "SECURITY_KEY");
+//            var securityKey = sessionLocal.getArgument("security.key");
+
             Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
 
-            Object response = invokeUtil.invoke(mapping);
+            if (mapping.returnsResponse()){
+                Object response = invokeUtil.invoke(mapping);
 
-            if (mapping.getMethodReturnType() != null && !mapping.getComponentAnnotation().disableReturnResponse()){
-                String responsePath = mapping.getController().buildFullPath(mapping);
+                if (mapping.getMethodReturnType() != null && !mapping.getComponentAnnotation().disableReturnResponse()){
+                    String responsePath = mapping.getController().buildFullPath(mapping);
 
-                responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
+                    responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
+                }
+            } else {
+                invokeUtil.invoke(mapping);
             }
         });
     }

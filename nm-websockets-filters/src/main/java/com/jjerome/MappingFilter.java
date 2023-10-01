@@ -25,6 +25,8 @@ public class MappingFilter implements Filter, AnnotatedComponent<WSFilter> {
 
     private final Parameter methodReturnType;
 
+    private int order;
+
     public MappingFilter(Annotation[] annotations, FilterComponent filterComponent, WSFilter filterAnnotation,
                          Method method, MethodParameter[] methodParams, Parameter methodReturnType) {
         this.annotations = annotations;
@@ -33,6 +35,7 @@ public class MappingFilter implements Filter, AnnotatedComponent<WSFilter> {
         this.method = method;
         this.methodParams = methodParams;
         this.methodReturnType = methodReturnType;
+        this.order = filterAnnotation.order();
     }
 
     @Override
@@ -54,7 +57,12 @@ public class MappingFilter implements Filter, AnnotatedComponent<WSFilter> {
 
     @Override
     public int getOrder() {
-        return filterAnnotation.order();
+        return this.order;
+    }
+
+    @Override
+    public void setOrder(int order) {
+        this.order = order;
     }
 
     @Override

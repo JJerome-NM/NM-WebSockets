@@ -9,6 +9,7 @@ import com.jjerome.domain.MappingsStorage;
 import com.jjerome.domain.PrivateGlobalData;
 import com.jjerome.handler.RequestHandler;
 import com.jjerome.handler.WebSocketHandler;
+import com.jjerome.local.data.SessionLocal;
 import com.jjerome.util.BeanUtil;
 import com.jjerome.util.InitUtil;
 import com.jjerome.util.MergedAnnotationUtil;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 import java.util.concurrent.ExecutorService;
@@ -97,5 +99,10 @@ public class WebSocketConfiguration {
     @Bean
     public ExecutorService getExecutorService() {
         return this.executorService;
+    }
+
+    @Bean
+    public SessionLocal sessionLocal(){
+        return new SessionLocal();
     }
 }

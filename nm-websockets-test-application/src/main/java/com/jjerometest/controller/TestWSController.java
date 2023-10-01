@@ -1,15 +1,8 @@
 package com.jjerometest.controller;
 
-import com.jjerome.context.annotation.DenyAll;
-import com.jjerome.context.annotation.HasRole;
-import com.jjerome.context.annotation.PermitAll;
-import com.jjerome.context.annotation.UseFilters;
-import com.jjerome.context.anotation.WSConnectMapping;
+import com.jjerome.reflection.context.annotation.HasRole;
 import com.jjerome.context.annotation.WSController;
 import com.jjerome.context.annotation.WSMapping;
-import com.jjerome.context.annotation.WSRequestBody;
-import com.jjerometest.entity.Good;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @WSController("/test")
 public class TestWSController {

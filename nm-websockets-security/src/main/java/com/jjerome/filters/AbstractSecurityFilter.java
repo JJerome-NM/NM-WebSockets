@@ -22,9 +22,4 @@ public abstract class AbstractSecurityFilter implements Filter {
     public Object invoke(Object[] methodParameters) {
         return null;
     }
-
-    @Override
-    public int getOrder() {
-        return Ordered.APPLICATION_SECURITY_PRECEDENCE;
-    }
 }

@@ -1,8 +1,8 @@
-package com.jjerome;
+package com.jjerome.core;
 
-public interface BasicAuthUser {
+public interface BasicUserDetails {
 
-    String getPassword();
+    String getPassword() throws NoSuchMethodException;
 
     String getUsername();
 

@@ -1,10 +1,10 @@
-package com.jjerome;
+package com.jjerome.context;
 
 import org.springframework.util.Assert;
 
 import java.util.function.Supplier;
 
-public class ThreadLocalWSSecurityContextHolderStrategy implements WSSecurityContextHolderStrategy{
+public class SessionLocalWSSecurityContextHolderStrategy implements WSSecurityContextHolderStrategy{
 
     private final ThreadLocal<Supplier<SecurityContext>> contextHolder = new ThreadLocal<>();
 

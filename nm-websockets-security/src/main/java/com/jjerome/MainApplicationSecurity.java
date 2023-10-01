@@ -1,7 +1,9 @@
 package com.jjerome;
 
-import com.jjerome.context.annotation.DenyAll;
-import com.jjerome.context.annotation.PermitAll;
+import com.jjerome.core.SecurityMappingProxy;
+import com.jjerome.core.WSSecurityFilterChain;
+import com.jjerome.reflection.context.annotation.DenyAll;
+import com.jjerome.reflection.context.annotation.PermitAll;
 import com.jjerome.core.Mapping;
 import com.jjerome.filters.DenyAllFilter;
 import com.jjerome.filters.PermitAllFilter;
@@ -12,13 +14,17 @@ public class MainApplicationSecurity implements ApplicationSecurity {
 
     private final SecurityStorage securityStorage;
 
+    private final WSSecurityFilterChain securityFilterChain;
 
-    MainApplicationSecurity(SecurityStorage securityStorage){
+    MainApplicationSecurity(SecurityStorage securityStorage, WSSecurityFilterChain securityFilterChain){
         this.securityStorage = securityStorage;
+        this.securityFilterChain = securityFilterChain;
     }
 
     @Override
     public Mapping wrapMappingSecurity(Mapping mapping) {
+        var list = securityFilterChain.getFilters();
+
         SecurityMappingProxy proxy = new SecurityMappingProxy(mapping);
 
         if (mapping.containsAnnotation(DenyAll.class)){

@@ -1,4 +1,6 @@
-package com.jjerome;
+package com.jjerome.context;
+
+import com.jjerome.core.Authentication;
 
 public class SecurityContextImpl implements SecurityContext{
 

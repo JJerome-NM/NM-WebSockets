@@ -1,7 +1,6 @@
 package com.jjerome.filters;
 
-import com.jjerome.context.annotation.DenyAll;
-import com.jjerome.context.annotation.HasRole;
+import com.jjerome.reflection.context.annotation.DenyAll;
 import com.jjerome.exeption.AccessToMappingIsDenyException;
 
 import java.lang.annotation.Annotation;
@@ -12,10 +11,13 @@ public class DenyAllFilter extends AbstractSecurityFilter{
 
     private final DenyAll baseAnnotation;
 
+    private int order;
+
 
     public DenyAllFilter(DenyAll baseAnnotation, Annotation[] annotations) {
         this.baseAnnotation = baseAnnotation;
         this.annotations = annotations;
+        this.order = APPLICATION_SECURITY_PRECEDENCE;
     }
 
     public DenyAllFilter(Annotation baseAnnotation, Annotation[] annotations) {
@@ -30,5 +32,15 @@ public class DenyAllFilter extends AbstractSecurityFilter{
     @Override
     public String getLabel() {
         return this.getClass().getSimpleName();
+    }
+
+    @Override
+    public int getOrder() {
+        return this.order;
+    }
+
+    @Override
+    public void setOrder(int order) {
+        this.order = order;
     }
 }

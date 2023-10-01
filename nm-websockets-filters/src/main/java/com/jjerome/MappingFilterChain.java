@@ -12,10 +12,12 @@ public class MappingFilterChain implements FilterChain {
 
     private final short filtersCount;
 
+    private int order;
 
     public MappingFilterChain(Set<Filter> filters) {
         this.filters = filters.toArray(Filter[]::new);
         this.filtersCount = (short) this.filters.length;
+        this.order = APPLICATION_PRECEDENCE;
     }
 
     @Override
@@ -27,6 +29,13 @@ public class MappingFilterChain implements FilterChain {
 
     @Override
     public int getOrder() {
-        return APPLICATION_PRECEDENCE;
+        return this.order;
     }
+
+    @Override
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
+
 }
