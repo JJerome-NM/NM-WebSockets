@@ -2,6 +2,7 @@ package com.jjerome.configuration;
 
 import com.jjerome.core.DefaulWSSecurityFilterChain;
 import com.jjerome.core.WSSecurityFilterChain;
+import com.jjerome.core.enums.WSMappingType;
 import com.jjerome.core.filters.Filter;
 
 import java.util.ArrayList;
@@ -20,20 +21,8 @@ public class WebSocketSecurity extends WSSecurityConfigurationBuilder {
     }
 
     @Override
-    public WebSocketSecurity addFilter(Filter filter) {
+    public WebSocketSecurity addFilter(Filter filter, WSMappingType type) {
         filters.add(filter);
-        return this;
-    }
-
-    @Override
-    public WebSocketSecurity addConnectionFilter(Filter filter) {
-        connectFilters.add(filter);
-        return this;
-    }
-
-    @Override
-    public WebSocketSecurity addDisconnectionFilter(Filter filter) {
-        disconnectFilters.add(filter);
         return this;
     }
 

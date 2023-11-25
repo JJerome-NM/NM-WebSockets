@@ -3,17 +3,10 @@ package com.jjerometest.controller;
 import com.jjerome.reflection.context.annotation.HasRole;
 import com.jjerome.context.annotation.WSController;
 import com.jjerome.context.annotation.WSMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @WSController("/test")
 public class TestWSController {
-
-//    @WSConnectMapping(
-//            responsePath = "/connected",
-//            filters = {"GoodFilter", "GoodFilter2"}
-//    )
-//    public void test(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
-//        System.out.println(good.isGood());
-//    }
 
     @WSMapping(
             path = "/second",
@@ -25,10 +18,11 @@ public class TestWSController {
         return 2;
     }
 
-//    @WSMapping(path = "/{id}/good", responsePath = "/test3/response")
-//    public String test3(@PathVariable Integer request){
-//        System.out.println(request);
-//
-//        return request.toString();
-//    }
+    @WSMapping(path = "/{id}/good", responsePath = "/test3/response")
+    public String test3(@PathVariable Integer request){
+
+        System.out.println(request);
+
+        return request.toString();
+    }
 }
