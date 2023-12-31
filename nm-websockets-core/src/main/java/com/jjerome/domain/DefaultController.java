@@ -1,6 +1,6 @@
 package com.jjerome.domain;
 
-import com.jjerome.context.annotation.WSController;
+import com.jjerome.reflection.context.annotation.WSController;
 import com.jjerome.core.Controller;
 import com.jjerome.core.Mapping;
 
@@ -27,6 +27,11 @@ public class DefaultController implements Controller {
     @Override
     public String buildFullPath(Mapping mapping) {
         return controllerAnnotation.pathPrefix() + mapping.getComponentAnnotation().path();
+    }
+
+    @Override
+    public String buildFullResponsePath(Mapping mapping) {
+        return controllerAnnotation.responsePathPrefix() + mapping.getComponentAnnotation().responsePath();
     }
 
     @Override

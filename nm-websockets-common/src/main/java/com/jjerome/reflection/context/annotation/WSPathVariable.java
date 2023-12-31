@@ -1,4 +1,4 @@
-package com.jjerome.context.annotation;
+package com.jjerome.reflection.context.annotation;
 
 import org.springframework.core.annotation.AliasFor;
 
@@ -8,18 +8,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.TYPE_USE, ElementType.METHOD})
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface UseFilters {
+public @interface WSPathVariable {
 
-    @AliasFor(
-            attribute = "filters"
-    )
-    String[] value() default {};
+    /**
+     * Alias for {@link #name}.
+     */
+    @AliasFor("name")
+    String value() default "";
 
-    @AliasFor(
-            attribute = "value"
-    )
-    String[] filters() default {};
+    @AliasFor("value")
+    String name() default "";
 }

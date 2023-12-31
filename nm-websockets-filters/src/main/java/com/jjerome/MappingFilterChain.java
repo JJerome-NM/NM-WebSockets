@@ -36,6 +36,4 @@ public class MappingFilterChain implements FilterChain {
     public void setOrder(int order) {
         this.order = order;
     }
-
-
 }

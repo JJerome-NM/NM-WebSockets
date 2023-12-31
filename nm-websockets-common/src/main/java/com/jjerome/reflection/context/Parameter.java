@@ -1,4 +1,4 @@
-package com.jjerome.context;
+package com.jjerome.reflection.context;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;

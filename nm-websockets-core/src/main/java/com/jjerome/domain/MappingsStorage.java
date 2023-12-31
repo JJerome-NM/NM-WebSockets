@@ -26,4 +26,12 @@ public class MappingsStorage {
     public Mapping getMappingByPath(String path){
         return mappings.get(path);
     }
+
+    public List<Mapping> getConnectMappings() {
+        return connectMappings;
+    }
+
+    public List<Mapping> getDisconnectMappings() {
+        return disconnectMappings;
+    }
 }

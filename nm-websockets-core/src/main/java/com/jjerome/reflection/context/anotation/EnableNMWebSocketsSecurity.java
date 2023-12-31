@@ -1,4 +1,4 @@
-package com.jjerome.context.anotation;
+package com.jjerome.reflection.context.anotation;
 
 public @interface EnableNMWebSocketsSecurity {
 }

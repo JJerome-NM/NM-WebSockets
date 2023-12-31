@@ -1,6 +1,5 @@
-package com.jjerome.context.anotation;
+package com.jjerome.reflection.context.annotation;
 
-import com.jjerome.context.annotation.WSMapping;
 import com.jjerome.core.enums.WSMappingType;
 import org.springframework.core.annotation.AliasFor;
 
@@ -10,21 +9,31 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@WSMapping(
-        type = WSMappingType.DISCONNECT
-)
-public @interface WSDisconnectMapping {
+@UseFilters
+public @interface WSMapping {
 
     @AliasFor(
-            annotation = WSMapping.class
+            attribute = "path"
     )
+    String value() default "/";
+
+    @AliasFor(
+            attribute = "value"
+    )
+    String path() default "/";
+
     String responsePath() default "/";
 
     @AliasFor(
-            annotation = WSMapping.class
+            annotation = UseFilters.class,
+            attribute = "filters"
     )
+    String[] filters() default {};
+
     boolean disableReturnResponse() default false;
+
+    WSMappingType type() default WSMappingType.METHOD;
 }

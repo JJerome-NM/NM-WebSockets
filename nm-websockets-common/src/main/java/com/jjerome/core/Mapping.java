@@ -1,9 +1,9 @@
 package com.jjerome.core;
 
 
-import com.jjerome.context.MethodParameter;
-import com.jjerome.context.Parameter;
-import com.jjerome.context.annotation.WSMapping;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.Parameter;
+import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.core.enums.WSMappingType;
 
 import java.lang.reflect.Method;

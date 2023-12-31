@@ -16,6 +16,7 @@ public class WSFilters {
     @WSConnectFilter(value = "GoodFilter", order = Ordered.APPLICATION_PRECEDENCE + 1)
     public void goodFirstFilter(){
         LOGGER.info("WSFilters.goodFirstFilter");
+//        throw new RuntimeException("fdgfgfg");
     }
 
     @WSFilter(value = "GoodFilter2", order = Ordered.APPLICATION_PRECEDENCE - 1)

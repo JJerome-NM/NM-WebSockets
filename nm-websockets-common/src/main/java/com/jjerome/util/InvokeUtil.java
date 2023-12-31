@@ -1,8 +1,8 @@
 package com.jjerome.util;
 
-import com.jjerome.context.MethodParameter;
-import com.jjerome.context.annotation.WSPathVariable;
-import com.jjerome.context.annotation.WSRequestBody;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.annotation.WSPathVariable;
+import com.jjerome.reflection.context.annotation.WSRequestBody;
 import com.jjerome.core.Invocable;
 import com.jjerome.core.Request;
 import com.jjerome.core.RequestRepository;

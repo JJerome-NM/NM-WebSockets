@@ -1,7 +1,6 @@
 package com.jjerome.configuration;
 
-import com.jjerome.context.MappingContext;
-import com.jjerome.core.filters.ApplicationFilterChain;
+import com.jjerome.reflection.context.MappingContext;
 import com.jjerome.domain.ControllersStorage;
 import com.jjerome.core.InitialClass;
 import com.jjerome.domain.MappingFactory;
@@ -14,13 +13,11 @@ import com.jjerome.util.BeanUtil;
 import com.jjerome.util.InitUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 import java.util.concurrent.ExecutorService;

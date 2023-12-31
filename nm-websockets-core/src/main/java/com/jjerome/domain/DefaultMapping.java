@@ -1,8 +1,8 @@
 package com.jjerome.domain;
 
-import com.jjerome.context.MethodParameter;
-import com.jjerome.context.Parameter;
-import com.jjerome.context.annotation.WSMapping;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.Parameter;
+import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.core.Controller;
 import com.jjerome.core.Mapping;
 import com.jjerome.core.enums.WSMappingType;

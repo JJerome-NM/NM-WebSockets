@@ -19,6 +19,10 @@ public class Request <T> {
         this(sessionId, path, null);
     }
 
+    public Request(String sessionId) {
+        this(sessionId, null, null);
+    }
+
     public Request() {
     }
 

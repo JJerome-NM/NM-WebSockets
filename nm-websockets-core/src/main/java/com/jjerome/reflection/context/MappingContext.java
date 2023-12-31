@@ -1,8 +1,7 @@
-package com.jjerome.context;
+package com.jjerome.reflection.context;
 
-import com.jjerome.context.annotation.UseFilters;
-import com.jjerome.context.annotation.WSController;
-import com.jjerome.context.annotation.WSMapping;
+import com.jjerome.reflection.context.annotation.WSController;
+import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.core.Controller;
 import com.jjerome.core.InitialClass;
 import com.jjerome.core.Mapping;
@@ -21,7 +20,6 @@ import java.lang.annotation.Annotation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -57,18 +57,9 @@ public class RequestHandler {
 //            var securityKey = sessionLocal.getArgument("security.key");
 
             Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
+            // Todo Enum for mapping types mb tray use factory or something else
 
-            if (mapping.returnsResponse()){
-                Object response = invokeUtil.invoke(mapping);
-
-                if (mapping.getMethodReturnType() != null && !mapping.getComponentAnnotation().disableReturnResponse()){
-                    String responsePath = mapping.getController().buildFullPath(mapping);
-
-                    responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
-                }
-            } else {
-                invokeUtil.invoke(mapping);
-            }
+            invokeMapping(mapping, request);
         });
     }
 
@@ -82,11 +73,36 @@ public class RequestHandler {
         }
     }
 
-    public void handleConnectMapping(){
+    public void handleConnectMapping(WebSocketSession session){
+        mappingsStorage.getConnectMappings().forEach((mapping -> {
+            Request<UndefinedBody> request = new Request<>(session.getId());
 
+            RequestRepository.setRequest(request);
+
+            invokeMapping(mapping, request);
+        }));
     }
 
     public void handleDisconnectMapping(){
 
+    }
+
+    private void invokeMapping(Mapping mapping, Request<UndefinedBody> request) {
+        if (mapping.returnsResponse()){
+            try {
+                Object response = invokeUtil.invoke(mapping);
+
+                if (!mapping.getComponentAnnotation().disableReturnResponse()){
+                    String responsePath = mapping.getController().buildFullResponsePath(mapping);
+
+                    responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
+                }
+            } catch (RuntimeException e){
+
+                System.out.println(e);
+            }
+        } else {
+            invokeUtil.invoke(mapping);
+        }
     }
 }

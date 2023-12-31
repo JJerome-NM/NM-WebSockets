@@ -1,7 +1,7 @@
 package com.jjerome.util;
 
-import com.jjerome.context.MethodParameter;
-import com.jjerome.context.Parameter;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.Parameter;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;

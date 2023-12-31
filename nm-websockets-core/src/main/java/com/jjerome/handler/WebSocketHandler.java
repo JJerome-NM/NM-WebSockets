@@ -40,7 +40,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         System.out.println(session.getId());
 
         privateGlobalData.getSessions().put(session.getId(), session);
-        requestHandler.handleConnectMapping();
+        requestHandler.handleConnectMapping(session);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.jjerome.util;
 
-import com.jjerome.context.anotation.EnableNMWebSockets;
+import com.jjerome.reflection.context.anotation.EnableNMWebSockets;
 import com.jjerome.core.InitialClass;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;

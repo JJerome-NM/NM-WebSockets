@@ -1,8 +1,7 @@
 package com.jjerome.filters;
 
-import com.jjerome.context.MethodParameter;
-import com.jjerome.context.Parameter;
-import com.jjerome.core.Ordered;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.Parameter;
 import com.jjerome.core.filters.Filter;
 
 

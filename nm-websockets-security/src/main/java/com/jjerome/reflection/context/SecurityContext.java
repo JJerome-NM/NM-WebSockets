@@ -1,7 +1,7 @@
 package com.jjerome.reflection.context;
 
-import com.jjerome.context.annotation.WSController;
-import com.jjerome.context.annotation.WSMapping;
+import com.jjerome.reflection.context.annotation.WSController;
+import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.core.InitialClass;
 import com.jjerome.core.filters.Filter;
 import com.jjerome.filters.SecurityFiltersFactory;
