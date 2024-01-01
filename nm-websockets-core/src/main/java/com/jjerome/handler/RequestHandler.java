@@ -1,24 +1,21 @@
 package com.jjerome.handler;
 
 import com.jjerome.core.Mapping;
-import com.jjerome.core.RequestRepository;
-import com.jjerome.domain.MappingsStorage;
 import com.jjerome.core.Request;
+import com.jjerome.core.RequestRepository;
 import com.jjerome.core.Response;
 import com.jjerome.core.UndefinedBody;
-import com.jjerome.exception.MappingNotFoundException;
 import com.jjerome.core.mapper.RequestMapper;
+import com.jjerome.domain.MappingsStorage;
+import com.jjerome.exception.MappingNotFoundException;
 import com.jjerome.local.data.SessionLocal;
 import com.jjerome.util.InvokeUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
 
-@Component
 public class RequestHandler {
 
     private final MappingsStorage mappingsStorage;
@@ -42,12 +39,15 @@ public class RequestHandler {
         this.requestMapper = requestMapper;
         this.invokeUtil = invokeUtil;
         this.sessionLocal = sessionLocal;
+
+//        AntPathMatcher
     }
 
 
     public void handleMapping(Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException {
         executorService.submit(() -> {
-            if (!mappingsStorage.containsMapping(request.getPath())){
+            String path = mappingsStorage.containsMapping(request.getPath());
+            if (path == null) {
                 throw new MappingNotFoundException(request.getPath() + " - mapping not found");
             }
 
@@ -56,7 +56,7 @@ public class RequestHandler {
 //            sessionLocal.setArgument("security.key", "SECURITY_KEY");
 //            var securityKey = sessionLocal.getArgument("security.key");
 
-            Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
+            Mapping mapping = mappingsStorage.getMappingByPath(path);
             // Todo Enum for mapping types mb tray use factory or something else
 
             invokeMapping(mapping, request);
@@ -66,6 +66,7 @@ public class RequestHandler {
     public void handleMapping(WebSocketSession session, TextMessage message){
         Request<UndefinedBody> request = requestMapper.JSONToRequest(message.getPayload(), UndefinedBody.class);
         request.setSessionId(session.getId());
+        request.setHttpHeaders(session.getHandshakeHeaders());
         try {
             handleMapping(request);
         } catch (InvocationTargetException | IllegalAccessException e) {

@@ -1,17 +1,17 @@
 package com.jjerome.domain;
 
-import com.jjerome.reflection.context.MethodParameter;
-import com.jjerome.reflection.context.Parameter;
-import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.core.Controller;
 import com.jjerome.core.Mapping;
 import com.jjerome.core.enums.WSMappingType;
+import com.jjerome.reflection.context.AnnotatedParameter;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.annotation.WSMapping;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class DefaultMapping implements Mapping {
+public class ReadOnlyMapping implements Mapping {
 
     private final Annotation[] annotations;
 
@@ -23,13 +23,15 @@ public class DefaultMapping implements Mapping {
 
     private final Method method;
 
-    private final MethodParameter[] methodParams;
+    private final AnnotatedParameter[] methodParams;
 
-    private final Parameter methodReturnType;
+    private final MethodParameter methodReturnType;
 
-    public DefaultMapping(Annotation[] annotations, WSMappingType type, WSMapping mappingAnnotation,
-                          Controller controller, Method method, MethodParameter[] methodParams,
-                          Parameter methodReturnType) {
+    private final String[] pathVariablesNames;
+
+    public ReadOnlyMapping(Annotation[] annotations, WSMappingType type, WSMapping mappingAnnotation,
+                           Controller controller, Method method, AnnotatedParameter[] methodParams,
+                           MethodParameter methodReturnType, String[] pathVariablesNames) {
         this.annotations = annotations;
         this.type = type;
         this.mappingAnnotation = mappingAnnotation;
@@ -37,6 +39,7 @@ public class DefaultMapping implements Mapping {
         this.method = method;
         this.methodParams = methodParams;
         this.methodReturnType = methodReturnType;
+        this.pathVariablesNames = pathVariablesNames;
     }
 
     @Override
@@ -65,6 +68,11 @@ public class DefaultMapping implements Mapping {
     }
 
     @Override
+    public String[] getPathVariablesNames() {
+        return pathVariablesNames;
+    }
+
+    @Override
     public WSMappingType getType() {
         return type;
     }
@@ -84,12 +92,12 @@ public class DefaultMapping implements Mapping {
     }
 
     @Override
-    public MethodParameter[] getMethodParams() {
+    public AnnotatedParameter[] getMethodParams() {
         return methodParams;
     }
 
     @Override
-    public Parameter getMethodReturnType() {
+    public MethodParameter getMethodReturnType() {
         return methodReturnType;
     }
 
@@ -97,7 +105,7 @@ public class DefaultMapping implements Mapping {
         return new DefaultMappingBuilder();
     }
 
-    public static class DefaultMappingBuilder implements MappingBuilder<DefaultMapping>{
+    public static class DefaultMappingBuilder implements MappingBuilder<ReadOnlyMapping> {
 
         private Annotation[] annotations;
 
@@ -109,13 +117,16 @@ public class DefaultMapping implements Mapping {
 
         private Method method;
 
-        private MethodParameter[] methodParams;
+        private AnnotatedParameter[] methodParams;
 
-        private Parameter methodReturnType;
+        private MethodParameter methodReturnType;
+
+        private String[] pathVariablesNames;
 
         @Override
-        public DefaultMapping build() {
-            return new DefaultMapping(annotations, type, componentAnnotation, controller, method, methodParams, methodReturnType);
+        public ReadOnlyMapping build() {
+            return new ReadOnlyMapping(annotations, type, componentAnnotation, controller, method, methodParams,
+                    methodReturnType, pathVariablesNames);
         }
 
         @Override
@@ -154,14 +165,20 @@ public class DefaultMapping implements Mapping {
         }
 
         @Override
-        public DefaultMappingBuilder methodParams(MethodParameter[] parameters) {
+        public DefaultMappingBuilder methodParams(AnnotatedParameter[] parameters) {
             this.methodParams = parameters;
             return this;
         }
 
         @Override
-        public DefaultMappingBuilder methodReturnType(Parameter returnType) {
+        public DefaultMappingBuilder methodReturnType(MethodParameter returnType) {
             this.methodReturnType = returnType;
+            return this;
+        }
+
+        @Override
+        public MappingBuilder<ReadOnlyMapping> getPathVariablesNames(String[] pathVariablesNames) {
+            this.pathVariablesNames = pathVariablesNames;
             return this;
         }
     }

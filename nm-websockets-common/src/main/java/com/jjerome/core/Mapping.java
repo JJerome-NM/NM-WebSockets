@@ -1,10 +1,10 @@
 package com.jjerome.core;
 
 
-import com.jjerome.reflection.context.MethodParameter;
-import com.jjerome.reflection.context.Parameter;
-import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.core.enums.WSMappingType;
+import com.jjerome.reflection.context.AnnotatedParameter;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.annotation.WSMapping;
 
 import java.lang.reflect.Method;
 
@@ -18,6 +18,8 @@ public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
 
     String buildFullPath();
 
+    String[] getPathVariablesNames();
+
     interface MappingBuilder<T extends Mapping> extends AnnotatedComponentBuilder<WSMapping, T>, Builder<T>{
         MappingBuilder<T> type(WSMappingType type);
 
@@ -25,8 +27,10 @@ public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
 
         MappingBuilder<T> method(Method method);
 
-        MappingBuilder<T> methodParams(MethodParameter[] parameters);
+        MappingBuilder<T> methodParams(AnnotatedParameter[] parameters);
 
-        MappingBuilder<T> methodReturnType(Parameter returnType);
+        MappingBuilder<T> methodReturnType(MethodParameter returnType);
+
+        MappingBuilder<T> getPathVariablesNames(String[] pathVariablesNames);
     }
 }

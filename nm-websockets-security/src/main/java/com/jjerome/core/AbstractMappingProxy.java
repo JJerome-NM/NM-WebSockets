@@ -1,10 +1,10 @@
 package com.jjerome.core;
 
 
-import com.jjerome.reflection.context.MethodParameter;
-import com.jjerome.reflection.context.Parameter;
-import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.core.enums.WSMappingType;
+import com.jjerome.reflection.context.AnnotatedParameter;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.annotation.WSMapping;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +30,11 @@ public abstract class AbstractMappingProxy implements Mapping {
     }
 
     @Override
+    public String[] getPathVariablesNames() {
+        return mapping.getPathVariablesNames();
+    }
+
+    @Override
     public WSMappingType getType() {
         return mapping.getType();
     }
@@ -45,12 +50,12 @@ public abstract class AbstractMappingProxy implements Mapping {
     }
 
     @Override
-    public MethodParameter[] getMethodParams() {
+    public AnnotatedParameter[] getMethodParams() {
         return mapping.getMethodParams();
     }
 
     @Override
-    public Parameter getMethodReturnType() {
+    public MethodParameter getMethodReturnType() {
         return mapping.getMethodReturnType();
     }
 

@@ -1,35 +1,68 @@
 package com.jjerome.reflection.context;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.lang.annotation.Annotation;
+import java.util.stream.Stream;
 
-public class MethodParameter extends Parameter {
+public class MethodParameter {
 
-    private Annotation[] annotations;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private byte annotationsLength;
+    private final Class<?> clazz;
 
-    public MethodParameter(Annotation[] annotations, Class<?> clazz, Parameter[] generics) {
-        super(clazz, generics);
-        this.annotations = annotations;
-        this.annotationsLength = (byte) annotations.length;
+    private final MethodParameter[] generics;
+
+    private final JavaType type;
+
+    private final String name;
+
+    public MethodParameter(String name, Class<?> clazz, MethodParameter[] generics) {
+        this.name = name;
+        this.clazz = clazz;
+        this.generics = generics;
+
+        this.type = this.converToJavaType();
     }
 
-    public MethodParameter(Annotation[] annotations, Class<?> clazz) {
-        super(clazz);
-        this.annotations = annotations;
+    public MethodParameter(String name, Class<?> clazz) {
+        this(name, clazz, new MethodParameter[]{});
     }
 
-    public Annotation getAnnotation(Class<? extends Annotation> annotationClazz){
-        for(byte i = 0; i < annotationsLength; ++i){
-            if (annotations[i].annotationType() == annotationClazz){
-                return annotations[i];
-            }
+    public boolean hasGenerics() {
+        return generics != null;
+    }
+
+    public JavaType converToJavaType() {
+        if (!hasGenerics()) {
+            return OBJECT_MAPPER.getTypeFactory().constructType(clazz);
         }
-        return null;
+        return OBJECT_MAPPER.getTypeFactory().constructParametricType(clazz, convertGenericsToJavaType());
     }
 
-    public boolean hasAnnotation(Class<? extends Annotation> annotationClazz){
-        return getAnnotation(annotationClazz) != null;
+    public JavaType[] convertGenericsToJavaType() {
+        if (!hasGenerics()) {
+            return new JavaType[]{};
+        }
+        return Stream.of(generics)
+                .map(generic -> OBJECT_MAPPER.getTypeFactory()
+                        .constructParametricType(generic.getClazz(), generic.convertGenericsToJavaType()))
+                .toArray(JavaType[]::new);
+    }
+
+    public JavaType getType() {
+        return this.type;
+    }
+
+    public Class<?> getClazz() {
+        return clazz;
+    }
+
+    public MethodParameter[] getGenerics() {
+        return generics;
+    }
+
+    public String getName() {
+        return name;
     }
 }

@@ -2,8 +2,11 @@ package com.jjerome.domain;
 
 import com.jjerome.core.Mapping;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MappingsStorage {
 

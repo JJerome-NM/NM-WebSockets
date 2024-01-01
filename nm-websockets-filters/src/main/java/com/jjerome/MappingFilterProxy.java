@@ -1,12 +1,12 @@
 package com.jjerome;
 
-import com.jjerome.reflection.context.MethodParameter;
-import com.jjerome.reflection.context.Parameter;
-import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.core.Controller;
-import com.jjerome.core.filters.FilterChain;
 import com.jjerome.core.Mapping;
 import com.jjerome.core.enums.WSMappingType;
+import com.jjerome.core.filters.FilterChain;
+import com.jjerome.reflection.context.AnnotatedParameter;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.annotation.WSMapping;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -35,6 +35,11 @@ public class MappingFilterProxy implements Mapping {
     }
 
     @Override
+    public String[] getPathVariablesNames() {
+        return mapping.getPathVariablesNames();
+    }
+
+    @Override
     public WSMappingType getType() {
         return mapping.getType();
     }
@@ -50,12 +55,12 @@ public class MappingFilterProxy implements Mapping {
     }
 
     @Override
-    public MethodParameter[] getMethodParams() {
+    public AnnotatedParameter[] getMethodParams() {
         return mapping.getMethodParams();
     }
 
     @Override
-    public Parameter getMethodReturnType() {
+    public MethodParameter getMethodReturnType() {
         return mapping.getMethodReturnType();
     }
 

@@ -9,17 +9,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 
 @RequiredArgsConstructor
-@WSController(value = "/test", handlerPath = "/socket")
-public class TestWSController {
+@WSController(value = "/room", handlerPath = "/room")
+public class TestWSController23 {
 
     private final ApplicationContext context;
 
 
-    @WSConnectMapping(responsePath = "/connect/test")
-    public Integer connect(){
-
+    @WSConnectMapping(responsePath = "/connect/success")
+    public Integer connect() {
         context.getDisplayName();
-
         return 23232;
     }
 
@@ -28,7 +26,7 @@ public class TestWSController {
             filters = {"GoodFilter", "GoodFilter2"}
     )
     @HasRole("ADMIN")
-    public Integer test2(){
+    public Integer test2() {
         System.out.println("test2");
         return 2;
     }
@@ -40,11 +38,7 @@ public class TestWSController {
 
     @WSMapping(path = "/{id}/dooo", responsePath = "/test3/response")
     public String test4(@WSPathVariable String id) {
-        return id;
-    }
 
-    @WSMapping(path = "/ffff/{id}/dooo", responsePath = "/test3/response")
-    public String test5(@WSPathVariable String id) {
-        return id;
+        return id.toString();
     }
 }

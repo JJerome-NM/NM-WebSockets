@@ -1,15 +1,22 @@
 package com.jjerome.reflection.context;
 
-import com.jjerome.reflection.context.annotation.WSController;
-import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.core.Controller;
 import com.jjerome.core.InitialClass;
 import com.jjerome.core.Mapping;
+import com.jjerome.core.mapper.RequestMapper;
 import com.jjerome.domain.DefaultController;
-import com.jjerome.domain.ControllersStorage;
-import com.jjerome.domain.DefaultMapping;
+import com.jjerome.domain.DomainStorage;
 import com.jjerome.domain.MappingFactory;
 import com.jjerome.domain.MappingsStorage;
+import com.jjerome.domain.PrivateGlobalData;
+import com.jjerome.domain.ReadOnlyMapping;
+import com.jjerome.handler.RequestHandler;
+import com.jjerome.handler.ResponseHandler;
+import com.jjerome.handler.WebSocketHandler;
+import com.jjerome.local.data.SessionLocal;
+import com.jjerome.reflection.context.annotation.WSController;
+import com.jjerome.reflection.context.annotation.WSMapping;
+import com.jjerome.util.InvokeUtil;
 import com.jjerome.util.LoggerUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
@@ -17,13 +24,13 @@ import org.reflections.Reflections;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.annotation.Annotation;
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
@@ -31,28 +38,55 @@ import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnot
 public class MappingContext {
 
     private final ApplicationContext context;
-
     private final MethodUtil methodUtil;
-
     private final MergedAnnotationUtil mergedAnnotationUtil;
-
     private final MappingFactory mappingFactory;
-
     private final InitialClass initialClass;
+    private final DomainStorage domainStorage;
 
     public MappingContext(ApplicationContext context,
                           MethodUtil methodUtil,
                           MergedAnnotationUtil mergedAnnotationUtil,
                           InitialClass initialClass,
-                          MappingFactory mappingFactory) {
+                          MappingFactory mappingFactory,
+                          DomainStorage domainStorage) {
         this.context = context;
         this.methodUtil = methodUtil;
         this.mergedAnnotationUtil = mergedAnnotationUtil;
         this.initialClass = initialClass;
         this.mappingFactory = mappingFactory;
+        this.domainStorage = domainStorage;
     }
 
-    public ControllersStorage getAllControllers() {
+    public void collectWebSocketHandlers(ResponseHandler responseHandler,
+                                         ExecutorService executorService,
+                                         RequestMapper requestMapper,
+                                         InvokeUtil invokeUtil,
+                                         SessionLocal sessionLocal,
+                                         PrivateGlobalData privateGlobalData) {
+        LoggerUtil.disableReflectionsInfoLogs();
+        Map<String, WebSocketHandler> handlers = domainStorage.getHandlers();
+        List<Controller> controllers = getAllControllers();
+        Map<String, List<Controller>> handlersControllers = new HashMap<>();
+
+        for (Controller controller : controllers) {
+            String handlerPath = controller.getComponentAnnotation().handlerPath();
+            if (!handlersControllers.containsKey(handlerPath)) {
+                handlersControllers.put(handlerPath, new ArrayList<>());
+            }
+            handlersControllers.get(handlerPath).add(controller);
+        }
+
+        for (String handlerPath : handlersControllers.keySet()) {
+            MappingsStorage mappingsStorage = findAllMappings(handlersControllers.get(handlerPath));
+            RequestHandler requestHandler = new RequestHandler(mappingsStorage, responseHandler, executorService,
+                    requestMapper, invokeUtil, sessionLocal);
+            handlers.put(handlerPath, new WebSocketHandler(requestHandler, privateGlobalData));
+        }
+        LoggerUtil.enableReflectionsLogs();
+    }
+
+    public List<Controller> getAllControllers() {
         LoggerUtil.disableReflectionsInfoLogs();
 
         Reflections reflections = new Reflections(initialClass.getClazz().getPackageName());
@@ -69,7 +103,7 @@ public class MappingContext {
                 .forEach(allControllerClasses::add);
 
 
-        Map<Class<?>, Controller> controllers = new HashMap<>();
+        List<Controller> controllers = new ArrayList<>();
         WSController controllerAnnotation;
         Annotation[] annotations;
         Object controllerSpringBean;
@@ -79,11 +113,10 @@ public class MappingContext {
             annotations = mergedAnnotationUtil.findAllAnnotations(controllerClazz);
             controllerSpringBean = context.getBean(controllerClazz);
 
-            controllers.put(controllerClazz, new DefaultController(annotations, controllerAnnotation,
-                    controllerClazz, controllerSpringBean));
+            controllers.add(new DefaultController(annotations, controllerAnnotation, controllerClazz, controllerSpringBean));
         }
         LoggerUtil.enableReflectionsLogs();
-        return new ControllersStorage(controllers);
+        return controllers;
     }
 
     public MappingsStorage findAllMappings(List<Controller> controllers) {
@@ -102,7 +135,7 @@ public class MappingContext {
                     continue;
                 }
 
-                mapping = DefaultMapping.builder()
+                mapping = ReadOnlyMapping.builder()
                         .annotations(mergedAnnotationUtil.findAllAnnotations(method))
                         .type(mappingAnnotation.type())
                         .componentAnnotation(mappingAnnotation)

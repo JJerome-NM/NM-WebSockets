@@ -1,10 +1,10 @@
 package com.jjerome;
 
-import com.jjerome.reflection.context.MethodParameter;
-import com.jjerome.reflection.context.Parameter;
 import com.jjerome.context.annotation.WSFilter;
 import com.jjerome.core.AnnotatedComponent;
 import com.jjerome.core.filters.Filter;
+import com.jjerome.reflection.context.AnnotatedParameter;
+import com.jjerome.reflection.context.MethodParameter;
 import com.jjerome.util.InvokeUtil;
 
 import java.lang.annotation.Annotation;
@@ -21,14 +21,14 @@ public class MappingFilter implements Filter, AnnotatedComponent<WSFilter> {
 
     private final Method method;
 
-    private final MethodParameter[] methodParams;
+    private final AnnotatedParameter[] methodParams;
 
-    private final Parameter methodReturnType;
+    private final MethodParameter methodReturnType;
 
     private int order;
 
     public MappingFilter(Annotation[] annotations, FilterComponent filterComponent, WSFilter filterAnnotation,
-                         Method method, MethodParameter[] methodParams, Parameter methodReturnType) {
+                         Method method, AnnotatedParameter[] methodParams, MethodParameter methodReturnType) {
         this.annotations = annotations;
         this.filterComponent = filterComponent;
         this.filterAnnotation = filterAnnotation;
@@ -97,11 +97,11 @@ public class MappingFilter implements Filter, AnnotatedComponent<WSFilter> {
         return method;
     }
 
-    public MethodParameter[] getMethodParams() {
+    public AnnotatedParameter[] getMethodParams() {
         return methodParams;
     }
 
-    public Parameter getMethodReturnType() {
+    public MethodParameter getMethodReturnType() {
         return methodReturnType;
     }
 
@@ -119,9 +119,9 @@ public class MappingFilter implements Filter, AnnotatedComponent<WSFilter> {
 
         private Method method;
 
-        private MethodParameter[] methodParams;
+        private AnnotatedParameter[] methodParams;
 
-        private Parameter methodReturnType;
+        private MethodParameter methodReturnType;
 
         @Override
         public MappingFilter build() {
@@ -155,12 +155,12 @@ public class MappingFilter implements Filter, AnnotatedComponent<WSFilter> {
             return this;
         }
 
-        public FilterBuilder methodParams(MethodParameter[] methodParams) {
+        public FilterBuilder methodParams(AnnotatedParameter[] methodParams) {
             this.methodParams = methodParams;
             return this;
         }
 
-        public FilterBuilder methodReturnType(Parameter methodReturnType) {
+        public FilterBuilder methodReturnType(MethodParameter methodReturnType) {
             this.methodReturnType = methodReturnType;
             return this;
         }

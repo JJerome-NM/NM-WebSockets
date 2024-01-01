@@ -1,16 +1,16 @@
 package com.jjerome.configuration;
 
-import com.jjerome.reflection.context.MappingContext;
-import com.jjerome.domain.ControllersStorage;
 import com.jjerome.core.InitialClass;
+import com.jjerome.core.mapper.RequestMapper;
+import com.jjerome.domain.DomainStorage;
 import com.jjerome.domain.MappingFactory;
-import com.jjerome.domain.MappingsStorage;
 import com.jjerome.domain.PrivateGlobalData;
-import com.jjerome.handler.RequestHandler;
-import com.jjerome.handler.WebSocketHandler;
+import com.jjerome.handler.ResponseHandler;
 import com.jjerome.local.data.SessionLocal;
+import com.jjerome.reflection.context.MappingContext;
 import com.jjerome.util.BeanUtil;
 import com.jjerome.util.InitUtil;
+import com.jjerome.util.InvokeUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
 import org.springframework.context.ApplicationContext;
@@ -44,24 +44,15 @@ public class WebSocketConfiguration {
             MethodUtil methodUtil,
             MergedAnnotationUtil mergedAnnotationUtil,
             InitialClass initialClass,
-            MappingFactory mappingFactory
+            MappingFactory mappingFactory,
+            DomainStorage domainStorage
     ){
-        return new MappingContext(context, methodUtil, mergedAnnotationUtil, initialClass, mappingFactory);
+        return new MappingContext(context, methodUtil, mergedAnnotationUtil, initialClass, mappingFactory, domainStorage);
     }
 
     @Bean
-    public MappingsStorage mappingsStorage(
-            MappingContext mappingContext,
-            ControllersStorage controllersStorage
-    ) {
-        return mappingContext.findAllMappings(controllersStorage.getControllersList());
-    }
-
-    @Bean
-    public ControllersStorage controllersStorage(
-            MappingContext mappingContext
-    ) {
-        return mappingContext.getAllControllers();
+    public DomainStorage domainStorage() {          ////
+        return new DomainStorage();
     }
 
     @Bean
@@ -79,17 +70,17 @@ public class WebSocketConfiguration {
         return new PrivateGlobalData();
     }
 
-
     @Bean
-    public WebSocketHandler getWebSocketHandler(
-            RequestHandler requestHandler,
-            PrivateGlobalData privateGlobalData
-    ) {
-        return new WebSocketHandler(requestHandler, privateGlobalData);
-    }
-
-    @Bean
-    public WebSocketHandlerConfiguration getWebSocketHandlerConfiguration() {
+    public WebSocketHandlerConfiguration getWebSocketHandlerConfiguration(
+            ResponseHandler responseHandler,
+            ExecutorService executorService,
+            RequestMapper requestMapper,
+            InvokeUtil invokeUtil,
+            SessionLocal sessionLocal,
+            PrivateGlobalData privateGlobalData,
+            MappingContext mappingContext) {
+        mappingContext.collectWebSocketHandlers(responseHandler, executorService, requestMapper, invokeUtil,
+                sessionLocal, privateGlobalData);
         return new WebSocketHandlerConfiguration();
     }
 

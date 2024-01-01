@@ -1,20 +1,20 @@
 package com.jjerome.core;
 
+import com.jjerome.reflection.context.AnnotatedParameter;
 import com.jjerome.reflection.context.MethodParameter;
-import com.jjerome.reflection.context.Parameter;
 
 import java.lang.reflect.InvocationTargetException;
 
 public interface Invocable {
 
-    MethodParameter[] getMethodParams();
+    AnnotatedParameter[] getMethodParams();
 
-    Parameter getMethodReturnType();
+    MethodParameter getMethodReturnType();
 
     Object invoke(Object[] methodParameters) throws InvocationTargetException, IllegalAccessException;
 
     default boolean returnsResponse(){
-        Parameter parameter = getMethodReturnType();
+        MethodParameter parameter = getMethodReturnType();
         return parameter != null && parameter.getClazz() != void.class;
     }
 }
