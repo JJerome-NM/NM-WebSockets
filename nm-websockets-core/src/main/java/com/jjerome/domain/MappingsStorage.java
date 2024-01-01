@@ -22,8 +22,45 @@ public class MappingsStorage {
         this.disconnectMappings = disconnectMappings;
     }
 
-    public boolean containsMapping(String path){
-        return mappings.containsKey(path);
+    public String containsMapping(String path) {
+        if (mappings.containsKey(path)) {
+            return path;
+        }
+
+        String[] pathArgs = path.split("\\/");
+        /* 'test', '1111', 'good' */
+        Set<String> allPaths = new HashSet<>(mappings.keySet());
+        Set<String> allPathsCopy = new HashSet<>(mappings.keySet());
+        Iterator<String> pathsIterator = allPaths.iterator();
+        while (pathsIterator.hasNext()) {
+            String value = pathsIterator.next();
+            String[] valueArgs = value.split("\\/");
+            if (valueArgs.length != pathArgs.length) {
+                allPathsCopy.remove(value);
+                continue;
+            }
+
+            boolean ok = true;
+            for (int i = 0; i < valueArgs.length; ++i) {
+                String val1 = pathArgs[i];
+                String val2 = valueArgs[i];
+                if (val2.contains("{") && val2.contains("}")) {
+                    continue;
+                }
+                if (!val1.contains(val2)) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (!ok) {
+                allPathsCopy.remove(value);
+            }
+        }
+        if (allPathsCopy.size() > 1) {
+            throw new RuntimeException("NO");
+        }
+
+        return !allPathsCopy.isEmpty() ? allPathsCopy.iterator().next() : null;
     }
 
     public Mapping getMappingByPath(String path){
