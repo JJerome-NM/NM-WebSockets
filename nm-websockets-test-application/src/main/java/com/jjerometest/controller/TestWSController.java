@@ -33,14 +33,14 @@ public class TestWSController {
         return 2;
     }
 
-    @WSMapping(path = "/{id}/good", responsePath = "/test3/response")
-    public String test3(@WSPathVariable Integer id) {
+    @WSMapping(path = "/{id}/good/{id2}/{id3}", responsePath = "/test3/response")
+    public String test3(@WSPathVariable Integer id, @WSPathVariable Integer id2, @WSPathVariable Integer id3) {
         return id.toString();
     }
 
-    @WSMapping(path = "/{id}/dooo", responsePath = "/test3/response")
-    public String test4(@WSPathVariable String id) {
-        return id;
+    @WSMapping(path = "/{id}/dooo/{name}", responsePath = "/test3/response")
+    public String test4(@WSPathVariable String id, @WSPathVariable String name) {
+        return name + "|" + id;
     }
 
     @WSMapping(path = "/ffff/{id}/dooo", responsePath = "/test3/response")

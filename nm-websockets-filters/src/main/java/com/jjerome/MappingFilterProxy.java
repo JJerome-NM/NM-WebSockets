@@ -11,6 +11,7 @@ import com.jjerome.reflection.context.annotation.WSMapping;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.regex.Pattern;
 
 public class MappingFilterProxy implements Mapping {
 
@@ -37,6 +38,11 @@ public class MappingFilterProxy implements Mapping {
     @Override
     public String[] getPathVariablesNames() {
         return mapping.getPathVariablesNames();
+    }
+
+    @Override
+    public Pattern getRegexPathPattern() {
+        return mapping.getRegexPathPattern();
     }
 
     @Override

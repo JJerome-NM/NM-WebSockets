@@ -10,6 +10,7 @@ import com.jjerome.reflection.context.annotation.WSMapping;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.regex.Pattern;
 
 public class ReadOnlyMapping implements Mapping {
 
@@ -29,9 +30,11 @@ public class ReadOnlyMapping implements Mapping {
 
     private final String[] pathVariablesNames;
 
+    private final Pattern pathPattern;
+
     public ReadOnlyMapping(Annotation[] annotations, WSMappingType type, WSMapping mappingAnnotation,
                            Controller controller, Method method, AnnotatedParameter[] methodParams,
-                           MethodParameter methodReturnType, String[] pathVariablesNames) {
+                           MethodParameter methodReturnType, String[] pathVariablesNames, Pattern pathPattern) {
         this.annotations = annotations;
         this.type = type;
         this.mappingAnnotation = mappingAnnotation;
@@ -40,6 +43,7 @@ public class ReadOnlyMapping implements Mapping {
         this.methodParams = methodParams;
         this.methodReturnType = methodReturnType;
         this.pathVariablesNames = pathVariablesNames;
+        this.pathPattern = pathPattern;
     }
 
     @Override
@@ -70,6 +74,11 @@ public class ReadOnlyMapping implements Mapping {
     @Override
     public String[] getPathVariablesNames() {
         return pathVariablesNames;
+    }
+
+    @Override
+    public Pattern getRegexPathPattern() {
+        return pathPattern;
     }
 
     @Override
@@ -123,10 +132,12 @@ public class ReadOnlyMapping implements Mapping {
 
         private String[] pathVariablesNames;
 
+        private Pattern regexPathPattern;
+
         @Override
         public ReadOnlyMapping build() {
             return new ReadOnlyMapping(annotations, type, componentAnnotation, controller, method, methodParams,
-                    methodReturnType, pathVariablesNames);
+                    methodReturnType, pathVariablesNames, regexPathPattern);
         }
 
         @Override
@@ -176,9 +187,14 @@ public class ReadOnlyMapping implements Mapping {
             return this;
         }
 
-        @Override
-        public MappingBuilder<ReadOnlyMapping> getPathVariablesNames(String[] pathVariablesNames) {
+        public MappingBuilder<ReadOnlyMapping> pathVariablesNames(String[] pathVariablesNames) {
             this.pathVariablesNames = pathVariablesNames;
+            return this;
+        }
+
+        @Override
+        public MappingBuilder<ReadOnlyMapping> regexPathPattern(String regexPath) {
+            this.regexPathPattern = Pattern.compile(regexPath);
             return this;
         }
     }

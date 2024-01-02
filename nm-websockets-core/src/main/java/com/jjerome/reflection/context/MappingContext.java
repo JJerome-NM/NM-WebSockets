@@ -20,6 +20,7 @@ import com.jjerome.util.InvokeUtil;
 import com.jjerome.util.LoggerUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
+import com.jjerome.util.PathUtil;
 import org.reflections.Reflections;
 import org.springframework.context.ApplicationContext;
 
@@ -43,19 +44,22 @@ public class MappingContext {
     private final MappingFactory mappingFactory;
     private final InitialClass initialClass;
     private final DomainStorage domainStorage;
+    private final PathUtil pathUtil;
 
     public MappingContext(ApplicationContext context,
                           MethodUtil methodUtil,
                           MergedAnnotationUtil mergedAnnotationUtil,
                           InitialClass initialClass,
                           MappingFactory mappingFactory,
-                          DomainStorage domainStorage) {
+                          DomainStorage domainStorage,
+                          PathUtil pathUtil) {
         this.context = context;
         this.methodUtil = methodUtil;
         this.mergedAnnotationUtil = mergedAnnotationUtil;
         this.initialClass = initialClass;
         this.mappingFactory = mappingFactory;
         this.domainStorage = domainStorage;
+        this.pathUtil = pathUtil;
     }
 
     public void collectWebSocketHandlers(ResponseHandler responseHandler,
@@ -124,18 +128,18 @@ public class MappingContext {
         List<Mapping> connectMappings = new ArrayList<>();
         List<Mapping> disconnectMappings = new ArrayList<>();
 
-        WSMapping mappingAnnotation;
-        Mapping mapping;
-
         for (Controller controller : controllers) {
+            WSController controllerAnnotation = controller.getComponentAnnotation();
+
             for (Method method : controller.getClazz().getDeclaredMethods()) {
-                mappingAnnotation = mergedAnnotationUtil.findAllMergedAnnotationsAndCompareArrays(method, WSMapping.class);
+                WSMapping mappingAnnotation = mergedAnnotationUtil.findAllMergedAnnotationsAndCompareArrays(method, WSMapping.class);
 
                 if (mappingAnnotation == null) {
                     continue;
                 }
 
-                mapping = ReadOnlyMapping.builder()
+                String fullPath = String.join("", controllerAnnotation.pathPrefix(), mappingAnnotation.path());
+                Mapping mapping = ReadOnlyMapping.builder()
                         .annotations(mergedAnnotationUtil.findAllAnnotations(method))
                         .type(mappingAnnotation.type())
                         .componentAnnotation(mappingAnnotation)
@@ -143,6 +147,8 @@ public class MappingContext {
                         .method(method)
                         .methodParams(methodUtil.extractMethodParameters(method))
                         .methodReturnType(methodUtil.extractMethodReturnParameter(method))
+                        .pathVariablesNames(pathUtil.extractPathVariables(fullPath))
+                        .regexPathPattern(pathUtil.buildRegex(fullPath))
                         .build();
 
                 switch (mapping.getType()) {

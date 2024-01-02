@@ -13,6 +13,7 @@ import com.jjerome.util.InitUtil;
 import com.jjerome.util.InvokeUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
+import com.jjerome.util.PathUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -45,9 +46,10 @@ public class WebSocketConfiguration {
             MergedAnnotationUtil mergedAnnotationUtil,
             InitialClass initialClass,
             MappingFactory mappingFactory,
-            DomainStorage domainStorage
+            DomainStorage domainStorage,
+            PathUtil pathUtil
     ){
-        return new MappingContext(context, methodUtil, mergedAnnotationUtil, initialClass, mappingFactory, domainStorage);
+        return new MappingContext(context, methodUtil, mergedAnnotationUtil, initialClass, mappingFactory, domainStorage, pathUtil);
     }
 
     @Bean

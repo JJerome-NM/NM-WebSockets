@@ -41,8 +41,8 @@ public class InvokeUtil implements InitializingBean {
         Object[] resultParams = new Object[paramsLength];
         AnnotatedParameter[] parameters = invocable.getMethodParams();
 
-        fillPathVariables(((Mapping) invocable).buildFullPath(), request);
-        fillRequestParams(request);
+//        fillPathVariables(((Mapping) invocable).buildFullPath(), request);
+//        fillRequestParams(request);
 
         for (short i = 0; i < paramsLength; i++) {
             if (parameters[i].hasAnnotation(WSRequestBody.class)) {

@@ -7,19 +7,37 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 public class MappingsStorage {
 
     private final Map<String, Mapping> mappings;
-
     private final List<Mapping> connectMappings;
-
     private final List<Mapping> disconnectMappings;
 
     public MappingsStorage(Map<String, Mapping> mappings, List<Mapping> connectMappings, List<Mapping> disconnectMappings) {
         this.mappings = mappings;
         this.connectMappings = connectMappings;
         this.disconnectMappings = disconnectMappings;
+    }
+
+    public String containsMapping(String requestPath, boolean shit) {
+        if (mappings.containsKey(requestPath)) {
+            return requestPath;
+        }
+
+        // /test/foo/{id}/smth
+        // /test/foo/(.+)/smth
+        // /test/foo/1/smth
+        // 1, 434
+        for (Map.Entry<String, Mapping> entry : mappings.entrySet()) {
+            String fullPath = entry.getKey();
+            Matcher matcher = entry.getValue().getRegexPathPattern().matcher(requestPath);
+            if (matcher.matches()) {
+                return fullPath;
+            }
+        }
+        throw new RuntimeException("Not found the suitable pattern!");
     }
 
     public String containsMapping(String path) {

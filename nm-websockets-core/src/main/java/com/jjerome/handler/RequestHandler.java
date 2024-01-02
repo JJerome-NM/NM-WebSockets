@@ -15,6 +15,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
+import java.util.regex.Matcher;
 
 public class RequestHandler {
 
@@ -46,7 +47,7 @@ public class RequestHandler {
 
     public void handleMapping(Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException {
         executorService.submit(() -> {
-            String path = mappingsStorage.containsMapping(request.getPath());
+            String path = mappingsStorage.containsMapping(request.getPath(), true);
             if (path == null) {
                 throw new MappingNotFoundException(request.getPath() + " - mapping not found");
             }
@@ -57,6 +58,16 @@ public class RequestHandler {
 //            var securityKey = sessionLocal.getArgument("security.key");
 
             Mapping mapping = mappingsStorage.getMappingByPath(path);
+            String[] allPathVariableNames = mapping.getPathVariablesNames();
+            Matcher matcher = mapping.getRegexPathPattern().matcher(request.getPath());
+
+            if (matcher.find()) {
+                for (int i = 1; i <= matcher.groupCount(); ++i) {
+                    String value = matcher.group(i);
+                    request.getPathVariables().put(allPathVariableNames[i - 1], value);
+                }
+            }
+
             // Todo Enum for mapping types mb tray use factory or something else
 
             invokeMapping(mapping, request);
