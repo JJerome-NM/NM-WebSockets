@@ -2,6 +2,7 @@ package com.jjerome.util;
 
 import com.jjerome.reflection.context.AnnotatedParameter;
 import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.MethodParameterFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -33,6 +34,12 @@ public class MethodUtil {
         return parameters;
     }*/
 
+    private final MethodParameterFactory parameterFactory;
+
+    MethodUtil(MethodParameterFactory parameterFactory) {
+        this.parameterFactory = parameterFactory;
+    }
+
     public AnnotatedParameter[] extractMethodParameters(Method method) {
         Annotation[][] annotations = method.getParameterAnnotations();
         java.lang.reflect.Parameter[] methodParameters = method.getParameters();
@@ -44,11 +51,11 @@ public class MethodUtil {
         for (int i = 0; i < parametersLength; i++) {
             if (parametersTypes[i] instanceof ParameterizedType pType) {
                 if (pType.getRawType() instanceof Class<?> rawType) {
-                    parameters[i] = new AnnotatedParameter(methodParameters[i].getName(), annotations[i], rawType,
-                            extractGenerics(pType.getActualTypeArguments()));
+                    parameters[i] = parameterFactory.buildAnnotatedParameter(methodParameters[i].getName(),
+                            annotations[i], rawType, extractGenerics(pType.getActualTypeArguments()));
                 }
             } else if (parametersTypes[i] instanceof Class<?> cType) {
-                parameters[i] = new AnnotatedParameter(methodParameters[i].getName(), annotations[i], cType);
+                parameters[i] = parameterFactory.buildAnnotatedParameter(methodParameters[i].getName(), annotations[i], cType);
             }
         }
         return parameters;

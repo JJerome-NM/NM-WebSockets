@@ -59,12 +59,15 @@ public class RequestHandler {
 
             Mapping mapping = mappingsStorage.getMappingByPath(path);
             String[] allPathVariableNames = mapping.getPathVariablesNames();
-            Matcher matcher = mapping.getRegexPathPattern().matcher(request.getPath());
 
-            if (matcher.find()) {
-                for (int i = 1; i <= matcher.groupCount(); ++i) {
-                    String value = matcher.group(i);
-                    request.getPathVariables().put(allPathVariableNames[i - 1], value);
+            if (allPathVariableNames.length > 0) {
+                Matcher matcher = mapping.getRegexPathPattern().matcher(request.getPath());
+
+                if (matcher.find()) {
+                    for (int i = 1; i <= matcher.groupCount(); ++i) {
+                        String value = matcher.group(i);
+                        request.getPathVariables().put(allPathVariableNames[i - 1], value);
+                    }
                 }
             }
 

@@ -1,10 +1,13 @@
 package com.jjerometest.controller;
 
+import com.jjerome.core.Request;
 import com.jjerome.reflection.context.annotation.HasRole;
 import com.jjerome.reflection.context.annotation.WSController;
 import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.reflection.context.annotation.WSPathVariable;
+import com.jjerome.reflection.context.annotation.WSRequestBody;
 import com.jjerome.reflection.context.anotation.WSConnectMapping;
+import com.jjerometest.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 
@@ -44,7 +47,7 @@ public class TestWSController {
     }
 
     @WSMapping(path = "/ffff/{id}/dooo", responsePath = "/test3/response")
-    public String test5(@WSPathVariable String id) {
+    public String test5(@WSPathVariable String id, Request<User> request, @WSRequestBody User user) {
         return id;
     }
 }
