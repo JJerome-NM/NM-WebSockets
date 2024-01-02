@@ -2,7 +2,6 @@ package com.jjerome.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jjerome.core.Invocable;
-import com.jjerome.core.Mapping;
 import com.jjerome.core.Request;
 import com.jjerome.core.RequestRepository;
 import com.jjerome.core.UndefinedBody;
