@@ -22,8 +22,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
         this.requestHandler = requestHandler;
         this.privateGlobalData = privateGlobalData;
 
-        LOGGER.info("NM-WebSockets successfully started");
-        LOGGER.error("Happy hacking😘");
+//        LOGGER.info("NM-WebSockets successfully started");
+//        LOGGER.error("Happy hacking😘");
+        LOGGER.info("Handler is registered.");
     }
 
 
@@ -40,7 +41,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         System.out.println(session.getId());
 
         privateGlobalData.getSessions().put(session.getId(), session);
-        requestHandler.handleConnectMapping();
+        requestHandler.handleConnectMapping(session);
     }
 
     @Override

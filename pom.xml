@@ -21,6 +21,7 @@
         <module>nm-websockets-common</module>
         <module>nm-websockets-test-application</module>
         <module>nm-websockets-filters</module>
+        <module>nm-websockets-security</module>
     </modules>
 
     <properties>
@@ -29,11 +30,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
@@ -46,6 +42,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>1.1.12.RELEASE</version>
+                <configuration>
+                    <mainClass>null</mainClass>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

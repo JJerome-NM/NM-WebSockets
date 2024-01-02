@@ -1,22 +1,22 @@
 package com.jjerome.handler;
 
 import com.jjerome.core.Mapping;
-import com.jjerome.core.RequestRepository;
-import com.jjerome.domain.MappingsStorage;
 import com.jjerome.core.Request;
+import com.jjerome.core.RequestRepository;
 import com.jjerome.core.Response;
 import com.jjerome.core.UndefinedBody;
-import com.jjerome.exception.MappingNotFoundException;
 import com.jjerome.core.mapper.RequestMapper;
+import com.jjerome.domain.MappingsStorage;
+import com.jjerome.exception.MappingNotFoundException;
+import com.jjerome.local.data.SessionLocal;
 import com.jjerome.util.InvokeUtil;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
+import java.util.regex.Matcher;
 
-@Component
 public class RequestHandler {
 
     private final MappingsStorage mappingsStorage;
@@ -29,39 +29,58 @@ public class RequestHandler {
 
     private final InvokeUtil invokeUtil;
 
+    private final SessionLocal sessionLocal;
+
     public RequestHandler(MappingsStorage mappingsStorage, ResponseHandler responseHandler,
-                          ExecutorService executorService, RequestMapper requestMapper, InvokeUtil invokeUtil) {
+                          ExecutorService executorService, RequestMapper requestMapper, InvokeUtil invokeUtil,
+                          SessionLocal sessionLocal) {
         this.mappingsStorage = mappingsStorage;
         this.responseHandler = responseHandler;
         this.executorService = executorService;
         this.requestMapper = requestMapper;
         this.invokeUtil = invokeUtil;
+        this.sessionLocal = sessionLocal;
+
+//        AntPathMatcher
     }
 
 
     public void handleMapping(Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException {
         executorService.submit(() -> {
-            if (!mappingsStorage.containsMapping(request.getPath())){
+            String path = mappingsStorage.containsMapping(request.getPath(), true);
+            if (path == null) {
                 throw new MappingNotFoundException(request.getPath() + " - mapping not found");
             }
 
             RequestRepository.setRequest(request);
 
-            Mapping mapping = mappingsStorage.getMappingByPath(request.getPath());
+//            sessionLocal.setArgument("security.key", "SECURITY_KEY");
+//            var securityKey = sessionLocal.getArgument("security.key");
 
-            Object response = invokeUtil.invoke(mapping);
+            Mapping mapping = mappingsStorage.getMappingByPath(path);
+            String[] allPathVariableNames = mapping.getPathVariablesNames();
 
-            if (mapping.getMethodReturnType() != null && !mapping.getComponentAnnotation().disableReturnResponse()){
-                String responsePath = mapping.getController().buildFullPath(mapping);
+            if (allPathVariableNames.length > 0) {
+                Matcher matcher = mapping.getRegexPathPattern().matcher(request.getPath());
 
-                responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
+                if (matcher.find()) {
+                    for (int i = 1; i <= matcher.groupCount(); ++i) {
+                        String value = matcher.group(i);
+                        request.getPathVariables().put(allPathVariableNames[i - 1], value);
+                    }
+                }
             }
+
+            // Todo Enum for mapping types mb tray use factory or something else
+
+            invokeMapping(mapping, request);
         });
     }
 
     public void handleMapping(WebSocketSession session, TextMessage message){
         Request<UndefinedBody> request = requestMapper.JSONToRequest(message.getPayload(), UndefinedBody.class);
         request.setSessionId(session.getId());
+        request.setHttpHeaders(session.getHandshakeHeaders());
         try {
             handleMapping(request);
         } catch (InvocationTargetException | IllegalAccessException e) {
@@ -69,11 +88,36 @@ public class RequestHandler {
         }
     }
 
-    public void handleConnectMapping(){
+    public void handleConnectMapping(WebSocketSession session){
+        mappingsStorage.getConnectMappings().forEach((mapping -> {
+            Request<UndefinedBody> request = new Request<>(session.getId());
 
+            RequestRepository.setRequest(request);
+
+            invokeMapping(mapping, request);
+        }));
     }
 
     public void handleDisconnectMapping(){
 
+    }
+
+    private void invokeMapping(Mapping mapping, Request<UndefinedBody> request) {
+        if (mapping.returnsResponse()){
+            try {
+                Object response = invokeUtil.invoke(mapping);
+
+                if (!mapping.getComponentAnnotation().disableReturnResponse()){
+                    String responsePath = mapping.getController().buildFullResponsePath(mapping);
+
+                    responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
+                }
+            } catch (RuntimeException e){
+
+                System.out.println(e);
+            }
+        } else {
+            invokeUtil.invoke(mapping);
+        }
     }
 }

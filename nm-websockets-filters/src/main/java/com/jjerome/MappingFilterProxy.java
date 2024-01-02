@@ -1,15 +1,17 @@
 package com.jjerome;
 
-import com.jjerome.context.MethodParameter;
-import com.jjerome.context.Parameter;
-import com.jjerome.context.annotation.WSMapping;
 import com.jjerome.core.Controller;
 import com.jjerome.core.Mapping;
 import com.jjerome.core.enums.WSMappingType;
+import com.jjerome.core.filters.FilterChain;
+import com.jjerome.reflection.context.AnnotatedParameter;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.annotation.WSMapping;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.regex.Pattern;
 
 public class MappingFilterProxy implements Mapping {
 
@@ -24,14 +26,23 @@ public class MappingFilterProxy implements Mapping {
 
     @Override
     public Object invoke(Object[] methodParameters) throws InvocationTargetException, IllegalAccessException {
-        filterChain.doFilter();
-
+        filterChain.doFilters();
         return mapping.invoke(methodParameters);
     }
 
     @Override
     public String buildFullPath() {
         return mapping.buildFullPath();
+    }
+
+    @Override
+    public String[] getPathVariablesNames() {
+        return mapping.getPathVariablesNames();
+    }
+
+    @Override
+    public Pattern getRegexPathPattern() {
+        return mapping.getRegexPathPattern();
     }
 
     @Override
@@ -50,18 +61,28 @@ public class MappingFilterProxy implements Mapping {
     }
 
     @Override
-    public MethodParameter[] getMethodParams() {
+    public AnnotatedParameter[] getMethodParams() {
         return mapping.getMethodParams();
     }
 
     @Override
-    public Parameter getMethodReturnType() {
+    public MethodParameter getMethodReturnType() {
         return mapping.getMethodReturnType();
     }
 
     @Override
     public Annotation[] getAnnotations() {
         return mapping.getAnnotations();
+    }
+
+    @Override
+    public <T extends Annotation> T getAnnotation(Class<T> type) {
+        return mapping.getAnnotation(type);
+    }
+
+    @Override
+    public <T extends Annotation> boolean containsAnnotation(Class<T> type) {
+        return mapping.containsAnnotation(type);
     }
 
     @Override
