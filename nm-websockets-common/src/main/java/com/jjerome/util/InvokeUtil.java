@@ -1,12 +1,9 @@
 package com.jjerome.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jjerome.core.Invocable;
 import com.jjerome.core.Request;
 import com.jjerome.core.RequestRepository;
 import com.jjerome.core.UndefinedBody;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +13,6 @@ import java.util.stream.Stream;
 @Component
 public class InvokeUtil implements InitializingBean {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InvokeUtil.class);
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String BAD_REQUEST_BODY = "%s wants to request %s but passes the wrong request body";
     private static InvokeUtil instance;
 

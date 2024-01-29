@@ -58,6 +58,9 @@ public class RequestHandler {
 //            var securityKey = sessionLocal.getArgument("security.key");
 
             Mapping mapping = mappingsStorage.getMappingByPath(path);
+            mapping.applyRequestFieldsCollectFunctions(request);
+            mapping.applyInvokeFunction(request);
+
             String[] allPathVariableNames = mapping.getPathVariablesNames();
 
             if (allPathVariableNames.length > 0) {

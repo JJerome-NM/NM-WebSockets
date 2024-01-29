@@ -2,6 +2,9 @@ package com.jjerome.domain;
 
 import com.jjerome.core.Controller;
 import com.jjerome.core.Mapping;
+import com.jjerome.core.MappingInvokeStrategy;
+import com.jjerome.core.Request;
+import com.jjerome.core.UndefinedBody;
 import com.jjerome.core.enums.WSMappingType;
 import com.jjerome.reflection.context.AnnotatedParameter;
 import com.jjerome.reflection.context.MethodParameter;
@@ -10,31 +13,28 @@ import com.jjerome.reflection.context.annotation.WSMapping;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 public class ReadOnlyMapping implements Mapping {
 
     private final Annotation[] annotations;
-
     private final WSMappingType type;
-
     private final WSMapping mappingAnnotation;
-
     private final Controller controller;
-
     private final Method method;
-
     private final AnnotatedParameter[] methodParams;
-
     private final MethodParameter methodReturnType;
-
     private final String[] pathVariablesNames;
-
     private final Pattern pathPattern;
+    private final BiConsumer<Request<UndefinedBody>, Mapping>[] collectFunctions;
+    private final MappingInvokeStrategy invokeStrategy;
 
     public ReadOnlyMapping(Annotation[] annotations, WSMappingType type, WSMapping mappingAnnotation,
                            Controller controller, Method method, AnnotatedParameter[] methodParams,
-                           MethodParameter methodReturnType, String[] pathVariablesNames, Pattern pathPattern) {
+                           MethodParameter methodReturnType, String[] pathVariablesNames, Pattern pathPattern,
+                           BiConsumer<Request<UndefinedBody>, Mapping>[] collectFunctions,
+                           MappingInvokeStrategy invokeStrategy) {
         this.annotations = annotations;
         this.type = type;
         this.mappingAnnotation = mappingAnnotation;
@@ -44,6 +44,8 @@ public class ReadOnlyMapping implements Mapping {
         this.methodReturnType = methodReturnType;
         this.pathVariablesNames = pathVariablesNames;
         this.pathPattern = pathPattern;
+        this.collectFunctions = collectFunctions;
+        this.invokeStrategy = invokeStrategy;
     }
 
     @Override
@@ -82,6 +84,35 @@ public class ReadOnlyMapping implements Mapping {
     }
 
     @Override
+    public Request<UndefinedBody> applyRequestFieldsCollectFunctions(Request<UndefinedBody> request) {
+        for (var function : collectFunctions) {
+            function.accept(request, this);
+        }
+        return request;
+    }
+
+    @Override
+    public void applyInvokeFunction(Request<UndefinedBody> request) {
+        this.invokeStrategy.invoke(request, this);
+    }
+
+    @Override
+    public MappingBuilder<? extends Mapping> toBuilder() {
+        return ReadOnlyMapping.builder()
+                .annotations(annotations)
+                .type(type)
+                .componentAnnotation(mappingAnnotation)
+                .controller(controller)
+                .method(method)
+                .methodParams(methodParams)
+                .methodReturnType(methodReturnType)
+                .pathVariablesNames(pathVariablesNames)
+                .regexPathPattern(pathPattern.pattern())
+                .requestFieldsCollectFunctions(collectFunctions)
+                .invokeFunction(invokeStrategy);
+    }
+
+    @Override
     public WSMappingType getType() {
         return type;
     }
@@ -117,27 +148,22 @@ public class ReadOnlyMapping implements Mapping {
     public static class DefaultMappingBuilder implements MappingBuilder<ReadOnlyMapping> {
 
         private Annotation[] annotations;
-
         private WSMappingType type;
-
         private WSMapping componentAnnotation;
-
         private Controller controller;
-
         private Method method;
-
         private AnnotatedParameter[] methodParams;
-
         private MethodParameter methodReturnType;
-
         private String[] pathVariablesNames;
-
         private Pattern regexPathPattern;
+        private BiConsumer<Request<UndefinedBody>, Mapping>[] collectFunctions;
+        private MappingInvokeStrategy invokeStrategy;
+
 
         @Override
         public ReadOnlyMapping build() {
             return new ReadOnlyMapping(annotations, type, componentAnnotation, controller, method, methodParams,
-                    methodReturnType, pathVariablesNames, regexPathPattern);
+                    methodReturnType, pathVariablesNames, regexPathPattern, collectFunctions, invokeStrategy);
         }
 
         @Override
@@ -195,6 +221,18 @@ public class ReadOnlyMapping implements Mapping {
         @Override
         public MappingBuilder<ReadOnlyMapping> regexPathPattern(String regexPath) {
             this.regexPathPattern = Pattern.compile(regexPath);
+            return this;
+        }
+
+        @Override
+        public MappingBuilder<ReadOnlyMapping> requestFieldsCollectFunctions(BiConsumer<Request<UndefinedBody>, Mapping>[] collectFunctions) {
+            this.collectFunctions = collectFunctions;
+            return this;
+        }
+
+        @Override
+        public MappingBuilder<ReadOnlyMapping> invokeFunction(MappingInvokeStrategy invokeStrategy) {
+            this.invokeStrategy = invokeStrategy;
             return this;
         }
     }

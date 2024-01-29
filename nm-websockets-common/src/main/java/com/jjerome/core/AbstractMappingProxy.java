@@ -41,6 +41,21 @@ public abstract class AbstractMappingProxy implements Mapping {
     }
 
     @Override
+    public Request<UndefinedBody> applyRequestFieldsCollectFunctions(Request<UndefinedBody> request) {
+        return mapping.applyRequestFieldsCollectFunctions(request);
+    }
+
+    @Override
+    public void applyInvokeFunction(Request<UndefinedBody> request) {
+        mapping.applyInvokeFunction(request);
+    }
+
+    @Override
+    public MappingBuilder<? extends Mapping> toBuilder() {
+        return mapping.toBuilder();
+    }
+
+    @Override
     public WSMappingType getType() {
         return mapping.getType();
     }

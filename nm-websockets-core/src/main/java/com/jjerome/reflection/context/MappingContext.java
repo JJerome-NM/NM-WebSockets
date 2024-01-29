@@ -70,10 +70,9 @@ public class MappingContext {
                                          PrivateGlobalData privateGlobalData) {
         LoggerUtil.disableReflectionsInfoLogs();
         Map<String, WebSocketHandler> handlers = domainStorage.getHandlers();
-        List<Controller> controllers = getAllControllers();
         Map<String, List<Controller>> handlersControllers = new HashMap<>();
 
-        for (Controller controller : controllers) {
+        for (Controller controller : getAllControllers()) {
             String handlerPath = controller.getComponentAnnotation().handlerPath();
             if (!handlersControllers.containsKey(handlerPath)) {
                 handlersControllers.put(handlerPath, new ArrayList<>());
@@ -85,7 +84,7 @@ public class MappingContext {
             MappingsStorage mappingsStorage = findAllMappings(handlersControllers.get(handlerPath));
             RequestHandler requestHandler = new RequestHandler(mappingsStorage, responseHandler, executorService,
                     requestMapper, invokeUtil, sessionLocal);
-            handlers.put(handlerPath, new WebSocketHandler(requestHandler, privateGlobalData));
+            handlers.put(handlerPath, new WebSocketHandler(requestHandler, privateGlobalData, handlerPath));
         }
         LoggerUtil.enableReflectionsLogs();
     }
@@ -94,9 +93,7 @@ public class MappingContext {
         LoggerUtil.disableReflectionsInfoLogs();
 
         Reflections reflections = new Reflections(initialClass.getClazz().getPackageName());
-        Set<Class<?>> allControllerClasses;
-
-        allControllerClasses = reflections.getTypesAnnotatedWith(WSController.class);
+        Set<Class<?>> allControllerClasses = reflections.getTypesAnnotatedWith(WSController.class);
 
         for (String pack : initialClass.getBasePackages()){
             allControllerClasses.addAll(new Reflections(pack).getTypesAnnotatedWith(WSController.class));
@@ -108,14 +105,11 @@ public class MappingContext {
 
 
         List<Controller> controllers = new ArrayList<>();
-        WSController controllerAnnotation;
-        Annotation[] annotations;
-        Object controllerSpringBean;
 
         for (Class<?> controllerClazz : allControllerClasses){
-            controllerAnnotation = findMergedAnnotation(controllerClazz, WSController.class);
-            annotations = mergedAnnotationUtil.findAllAnnotations(controllerClazz);
-            controllerSpringBean = context.getBean(controllerClazz);
+            WSController controllerAnnotation = findMergedAnnotation(controllerClazz, WSController.class);
+            Annotation[] annotations = mergedAnnotationUtil.findAllAnnotations(controllerClazz);
+            Object controllerSpringBean = context.getBean(controllerClazz);
 
             controllers.add(new DefaultController(annotations, controllerAnnotation, controllerClazz, controllerSpringBean));
         }

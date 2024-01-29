@@ -6,6 +6,7 @@ import com.jjerome.domain.DomainStorage;
 import com.jjerome.domain.MappingFactory;
 import com.jjerome.domain.PrivateGlobalData;
 import com.jjerome.handler.ResponseHandler;
+import com.jjerome.handler.WebSocketHandler;
 import com.jjerome.local.data.SessionLocal;
 import com.jjerome.reflection.context.MappingContext;
 import com.jjerome.util.BeanUtil;
@@ -14,6 +15,8 @@ import com.jjerome.util.InvokeUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
 import com.jjerome.util.PathUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,13 +27,14 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 @Configuration
 @EnableWebSocket
 @ComponentScan(basePackages = {"com.jjerome"})
 public class WebSocketConfiguration {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketHandler.class);
     private static final int THREAD_POOL = Runtime.getRuntime().availableProcessors();
-
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL);
 
     WebSocketConfiguration() {
@@ -48,7 +52,7 @@ public class WebSocketConfiguration {
             MappingFactory mappingFactory,
             DomainStorage domainStorage,
             PathUtil pathUtil
-    ){
+    ) {
         return new MappingContext(context, methodUtil, mergedAnnotationUtil, initialClass, mappingFactory, domainStorage, pathUtil);
     }
 
@@ -83,7 +87,12 @@ public class WebSocketConfiguration {
             MappingContext mappingContext) {
         mappingContext.collectWebSocketHandlers(responseHandler, executorService, requestMapper, invokeUtil,
                 sessionLocal, privateGlobalData);
-        return new WebSocketHandlerConfiguration();
+        var handlersConfiguration = new WebSocketHandlerConfiguration();
+
+        LOGGER.info("NM-WebSockets successfully started");
+        LOGGER.error("Happy hacking😘");
+
+        return handlersConfiguration;
     }
 
     @Bean
@@ -92,7 +101,7 @@ public class WebSocketConfiguration {
     }
 
     @Bean
-    public SessionLocal sessionLocal(){
+    public SessionLocal sessionLocal() {
         return new SessionLocal();
     }
 }

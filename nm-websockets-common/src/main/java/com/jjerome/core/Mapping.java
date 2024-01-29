@@ -7,6 +7,7 @@ import com.jjerome.reflection.context.MethodParameter;
 import com.jjerome.reflection.context.annotation.WSMapping;
 
 import java.lang.reflect.Method;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
@@ -23,6 +24,12 @@ public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
 
     Pattern getRegexPathPattern();
 
+    Request<UndefinedBody> applyRequestFieldsCollectFunctions(Request<UndefinedBody> request);
+
+    void applyInvokeFunction(Request<UndefinedBody> request);
+
+    MappingBuilder<? extends Mapping> toBuilder();
+
     interface MappingBuilder<T extends Mapping> extends AnnotatedComponentBuilder<WSMapping, T>, Builder<T>{
         MappingBuilder<T> type(WSMappingType type);
 
@@ -38,5 +45,10 @@ public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
 
         MappingBuilder<T> regexPathPattern(String regexPath);
 
+        MappingBuilder<T> requestFieldsCollectFunctions(
+                BiConsumer<Request<UndefinedBody>, Mapping>[] collectFunctions);
+
+        MappingBuilder<T> invokeFunction(
+                MappingInvokeStrategy invokeStrategy);
     }
 }
