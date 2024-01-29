@@ -1,4 +1,4 @@
-package com.jjerome.domain.strategies.mapping.invoke;
+package com.jjerome.core;
 
 
 public enum MappingInvokeType {

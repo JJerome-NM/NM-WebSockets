@@ -15,7 +15,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
-import java.util.regex.Matcher;
 
 public class RequestHandler {
 
@@ -61,22 +60,22 @@ public class RequestHandler {
             mapping.applyRequestFieldsCollectFunctions(request);
             mapping.applyInvokeFunction(request);
 
-            String[] allPathVariableNames = mapping.getPathVariablesNames();
-
-            if (allPathVariableNames.length > 0) {
-                Matcher matcher = mapping.getRegexPathPattern().matcher(request.getPath());
-
-                if (matcher.find()) {
-                    for (int i = 1; i <= matcher.groupCount(); ++i) {
-                        String value = matcher.group(i);
-                        request.getPathVariables().put(allPathVariableNames[i - 1], value);
-                    }
-                }
-            }
+//            String[] allPathVariableNames = mapping.getPathVariablesNames();
+//
+//            if (allPathVariableNames.length > 0) {
+//                Matcher matcher = mapping.getRegexPathPattern().matcher(request.getPath());
+//
+//                if (matcher.find()) {
+//                    for (int i = 1; i <= matcher.groupCount(); ++i) {
+//                        String value = matcher.group(i);
+//                        request.getPathVariables().put(allPathVariableNames[i - 1], value);
+//                    }
+//                }
+//            }
 
             // Todo Enum for mapping types mb tray use factory or something else
 
-            invokeMapping(mapping, request);
+//            invokeMapping(mapping, request);
         });
     }
 

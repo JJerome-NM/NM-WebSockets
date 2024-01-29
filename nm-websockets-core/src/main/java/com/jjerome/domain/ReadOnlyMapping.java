@@ -2,6 +2,7 @@ package com.jjerome.domain;
 
 import com.jjerome.core.Controller;
 import com.jjerome.core.Mapping;
+import com.jjerome.core.MappingCollectStrategy;
 import com.jjerome.core.MappingInvokeStrategy;
 import com.jjerome.core.Request;
 import com.jjerome.core.UndefinedBody;
@@ -13,7 +14,6 @@ import com.jjerome.reflection.context.annotation.WSMapping;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 public class ReadOnlyMapping implements Mapping {
@@ -27,13 +27,13 @@ public class ReadOnlyMapping implements Mapping {
     private final MethodParameter methodReturnType;
     private final String[] pathVariablesNames;
     private final Pattern pathPattern;
-    private final BiConsumer<Request<UndefinedBody>, Mapping>[] collectFunctions;
+    private final MappingCollectStrategy[] collectStrategies;
     private final MappingInvokeStrategy invokeStrategy;
 
     public ReadOnlyMapping(Annotation[] annotations, WSMappingType type, WSMapping mappingAnnotation,
                            Controller controller, Method method, AnnotatedParameter[] methodParams,
                            MethodParameter methodReturnType, String[] pathVariablesNames, Pattern pathPattern,
-                           BiConsumer<Request<UndefinedBody>, Mapping>[] collectFunctions,
+                           MappingCollectStrategy[] collectStrategies,
                            MappingInvokeStrategy invokeStrategy) {
         this.annotations = annotations;
         this.type = type;
@@ -44,7 +44,7 @@ public class ReadOnlyMapping implements Mapping {
         this.methodReturnType = methodReturnType;
         this.pathVariablesNames = pathVariablesNames;
         this.pathPattern = pathPattern;
-        this.collectFunctions = collectFunctions;
+        this.collectStrategies = collectStrategies;
         this.invokeStrategy = invokeStrategy;
     }
 
@@ -85,8 +85,8 @@ public class ReadOnlyMapping implements Mapping {
 
     @Override
     public Request<UndefinedBody> applyRequestFieldsCollectFunctions(Request<UndefinedBody> request) {
-        for (var function : collectFunctions) {
-            function.accept(request, this);
+        for (var strategy : collectStrategies) {
+            strategy.collect(request, this);
         }
         return request;
     }
@@ -108,7 +108,7 @@ public class ReadOnlyMapping implements Mapping {
                 .methodReturnType(methodReturnType)
                 .pathVariablesNames(pathVariablesNames)
                 .regexPathPattern(pathPattern.pattern())
-                .requestFieldsCollectFunctions(collectFunctions)
+                .requestFieldsCollectFunctions(collectStrategies)
                 .invokeFunction(invokeStrategy);
     }
 
@@ -156,14 +156,14 @@ public class ReadOnlyMapping implements Mapping {
         private MethodParameter methodReturnType;
         private String[] pathVariablesNames;
         private Pattern regexPathPattern;
-        private BiConsumer<Request<UndefinedBody>, Mapping>[] collectFunctions;
+        private MappingCollectStrategy[] collectStrategies;
         private MappingInvokeStrategy invokeStrategy;
 
 
         @Override
         public ReadOnlyMapping build() {
             return new ReadOnlyMapping(annotations, type, componentAnnotation, controller, method, methodParams,
-                    methodReturnType, pathVariablesNames, regexPathPattern, collectFunctions, invokeStrategy);
+                    methodReturnType, pathVariablesNames, regexPathPattern, collectStrategies, invokeStrategy);
         }
 
         @Override
@@ -225,8 +225,8 @@ public class ReadOnlyMapping implements Mapping {
         }
 
         @Override
-        public MappingBuilder<ReadOnlyMapping> requestFieldsCollectFunctions(BiConsumer<Request<UndefinedBody>, Mapping>[] collectFunctions) {
-            this.collectFunctions = collectFunctions;
+        public MappingBuilder<ReadOnlyMapping> requestFieldsCollectFunctions(MappingCollectStrategy[] collectStrategies) {
+            this.collectStrategies = collectStrategies;
             return this;
         }
 

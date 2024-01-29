@@ -2,6 +2,7 @@ package com.jjerome.domain.strategies.mapping.invoke;
 
 import com.jjerome.core.Mapping;
 import com.jjerome.core.MappingInvokeStrategy;
+import com.jjerome.core.MappingInvokeType;
 import com.jjerome.util.InvokeUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;

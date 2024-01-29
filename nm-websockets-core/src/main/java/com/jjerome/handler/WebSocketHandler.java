@@ -49,4 +49,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         requestHandler.handleDisconnectMapping();
     }
+
+    public String getHandlerPath() {
+        return handlerPath;
+    }
 }

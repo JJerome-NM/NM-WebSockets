@@ -2,50 +2,34 @@ package com.jjerome.domain;
 
 import com.jjerome.ApplicationSecurity;
 import com.jjerome.core.Mapping;
-import com.jjerome.core.MappingRequestFieldsCollectFunction;
-import com.jjerome.core.Request;
-import com.jjerome.core.UndefinedBody;
 import com.jjerome.core.filters.ApplicationFilterChain;
+import com.jjerome.domain.strategies.mapping.collect.MappingCollectFunctionFactory;
 import com.jjerome.domain.strategies.mapping.invoke.MappingInvokeFunctionFactory;
-import com.jjerome.reflection.context.annotation.WSMapping;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
 
 @Component
 public class MappingFactory {
 
     private final ApplicationFilterChain applicationFilterChain;
     private final ApplicationSecurity applicationSecurity;
-    private final MappingInvokeFunctionFactory functionFactory;
+    private final MappingInvokeFunctionFactory invokeFunctionFactory;
+    private final MappingCollectFunctionFactory collectFunctionFactory;
 
 
-    public MappingFactory(ApplicationFilterChain applicationFilterChain, ApplicationSecurity applicationSecurity,
-                          MappingInvokeFunctionFactory functionFactory) {
+    public MappingFactory(ApplicationFilterChain applicationFilterChain,
+                          ApplicationSecurity applicationSecurity,
+                          MappingInvokeFunctionFactory invokeFunctionFactory,
+                          MappingCollectFunctionFactory collectFunctionFactory) {
         this.applicationFilterChain = applicationFilterChain;
         this.applicationSecurity = applicationSecurity;
-        this.functionFactory = functionFactory;
+        this.invokeFunctionFactory = invokeFunctionFactory;
+        this.collectFunctionFactory = collectFunctionFactory;
     }
 
-    public Mapping buildMapping(Mapping mappingWorkpiece){
-        List<BiConsumer<Request<UndefinedBody>, Mapping>> collectFunctions = new ArrayList<>();
-
-        WSMapping wsMappingAnnotation = mappingWorkpiece.getComponentAnnotation();
-
-
-        if (wsMappingAnnotation.path().contains("{") && wsMappingAnnotation.path().contains("}")) {
-            collectFunctions.add(MappingRequestFieldsCollectFunction.COLLECT_REQUEST_PATH_PARAMS.get());
-        }
-        if (wsMappingAnnotation.path().contains("?")) {
-            collectFunctions.add(MappingRequestFieldsCollectFunction.COLLECT_REQUEST_QUERY_PARAMS.get());
-        }
-
+    public Mapping buildMapping(Mapping mappingWorkpiece) {
         mappingWorkpiece = mappingWorkpiece.toBuilder()
-                .requestFieldsCollectFunctions(
-                        (BiConsumer<Request<UndefinedBody>, Mapping>[]) collectFunctions.toArray())
-                .invokeFunction(functionFactory.buildInvokeFunction(mappingWorkpiece))
+                .requestFieldsCollectFunctions(collectFunctionFactory.buildCollectStrategies(mappingWorkpiece)) // Error here
+                .invokeFunction(invokeFunctionFactory.buildInvokeFunction(mappingWorkpiece))
                 .build();
 
         return wrapMappingWithOtherModules(mappingWorkpiece);
