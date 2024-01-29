@@ -12,18 +12,18 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class WebSocketHandler extends TextWebSocketHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketHandler.class);
-
     private final RequestHandler requestHandler;
-
     private final PrivateGlobalData privateGlobalData;
+    private final String handlerPath;
 
     public WebSocketHandler(RequestHandler requestHandler,
-                            PrivateGlobalData privateGlobalData) {
+                            PrivateGlobalData privateGlobalData,
+                            String handlerPath) {
         this.requestHandler = requestHandler;
         this.privateGlobalData = privateGlobalData;
+        this.handlerPath = handlerPath;
 
-        LOGGER.info("NM-WebSockets successfully started");
-        LOGGER.error("Happy hacking😘");
+        LOGGER.info("Handler with path '%s' is registered.".formatted(handlerPath));
     }
 
 
@@ -40,7 +40,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         System.out.println(session.getId());
 
         privateGlobalData.getSessions().put(session.getId(), session);
-        requestHandler.handleConnectMapping();
+        requestHandler.handleConnectMapping(session);
     }
 
     @Override
@@ -48,5 +48,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
         System.out.println(session.getId());
 
         requestHandler.handleDisconnectMapping();
+    }
+
+    public String getHandlerPath() {
+        return handlerPath;
     }
 }

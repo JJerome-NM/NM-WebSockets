@@ -5,8 +5,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class RequestRepository { // TODO: 15.08.2023 Rename this class
 
-    private static final ThreadLocal<Request<UndefinedBody>> request = new ThreadLocal<>();
 
+    // TODO: Mb create new var for request with real body
+    private static final ThreadLocal<Request<UndefinedBody>> request = new ThreadLocal<>();
     public static Request<UndefinedBody> getRequest() {
         return request.get();
     }
