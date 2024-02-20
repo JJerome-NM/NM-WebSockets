@@ -1,6 +1,6 @@
 package com.jjerome.domain;
 
-import com.jjerome.ApplicationSecurity;
+import com.jjerome.core.ApplicationSecurity;
 import com.jjerome.core.Mapping;
 import com.jjerome.core.filters.ApplicationFilterChain;
 import com.jjerome.domain.strategies.mapping.collect.MappingCollectFunctionFactory;
@@ -28,14 +28,14 @@ public class MappingFactory {
 
     public Mapping buildMapping(Mapping mappingWorkpiece) {
         mappingWorkpiece = mappingWorkpiece.toBuilder()
-                .requestFieldsCollectFunctions(collectFunctionFactory.buildCollectStrategies(mappingWorkpiece)) // Error here
+                .requestFieldsCollectFunctions(collectFunctionFactory.buildCollectStrategies(mappingWorkpiece))
                 .invokeFunction(invokeFunctionFactory.buildInvokeFunction(mappingWorkpiece))
                 .build();
 
         return wrapMappingWithOtherModules(mappingWorkpiece);
     }
 
-    private Mapping wrapMappingWithOtherModules(Mapping mappingWorkpiece) {
+    private Mapping wrapMappingWithOtherModules(Mapping mappingWorkpiece) { // TODO mb rework this to some list...
         mappingWorkpiece = applicationFilterChain.wrapMappingWithFilter(mappingWorkpiece);
         mappingWorkpiece = applicationSecurity.wrapMappingSecurity(mappingWorkpiece);
         return mappingWorkpiece;

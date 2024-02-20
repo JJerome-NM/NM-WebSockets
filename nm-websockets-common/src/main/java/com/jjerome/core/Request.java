@@ -9,17 +9,11 @@ import java.util.Map;
 public class Request <T> {
 
     private String sessionId;
-
     private String path;
-
     private HttpHeaders httpHeaders;
-
     private RequestHeaders headers;
-
     private Map<String, Object> pathVariables;
-
     private Map<String, Object> requestParams;
-
     private T body;
 
     public Request(String sessionId, String path, T body) {

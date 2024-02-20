@@ -101,7 +101,13 @@ public class RequestHandler {
     }
 
     public void handleDisconnectMapping(){
+        mappingsStorage.getDisconnectMappings().forEach((mapping -> {
+            Request<UndefinedBody> request = new Request<>();
 
+            RequestRepository.setRequest(request);
+
+            invokeMapping(mapping, request);
+        }));
     }
 
     private void invokeMapping(Mapping mapping, Request<UndefinedBody> request) {

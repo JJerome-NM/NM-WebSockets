@@ -21,11 +21,10 @@
         <module>nm-websockets-common</module>
         <module>nm-websockets-test-application</module>
         <module>nm-websockets-filters</module>
-        <module>nm-websockets-security</module>
     </modules>
 
     <properties>
-        <java.version>20</java.version>
+        <java.version>21</java.version>
 <!--        <revision>0.0.1-SNAPSHOT</revision>-->
     </properties>
 

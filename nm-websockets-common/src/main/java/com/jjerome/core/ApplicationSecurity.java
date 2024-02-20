@@ -1,6 +1,4 @@
-package com.jjerome;
-
-import com.jjerome.core.Mapping;
+package com.jjerome.core;
 
 public interface ApplicationSecurity {
 
