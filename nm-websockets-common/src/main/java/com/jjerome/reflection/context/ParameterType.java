@@ -2,6 +2,7 @@ package com.jjerome.reflection.context;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jjerome.core.Request;
+import com.jjerome.core.RequestRepository;
 import com.jjerome.core.UndefinedBody;
 import com.jjerome.reflection.context.annotation.WSPathVariable;
 import org.apache.commons.lang3.StringUtils;
@@ -12,14 +13,27 @@ import java.util.function.BiFunction;
 public enum ParameterType {
 
     UNDEFINED_DATA((request, parameter) -> {
+        Request<?> result;
+
+        if ((result = RequestRepository.getRequestWithRealBody()) != null) {
+            return result;
+        }
+
         try {
-            return request.getBody().convertToRealBody(parameter.getType());
+            result = request.getBody().convertToRealBody(parameter.getType());
+            RequestRepository.setRequestWithRealBody(result);
+            return result;
         } catch (IllegalArgumentException e) {
             return null;
         }
     }),
     REQUEST(((request, parameter) -> {
-        Request<?> result = null;
+        Request<?> result;
+
+        if ((result = RequestRepository.getRequestWithRealBody()) != null) {
+            return result;
+        }
+
         try {
             // There may be a problem if the generic for the body is not the first in the request
             result = new Request<>(request.getSessionId(), request.getPath(),
@@ -30,6 +44,7 @@ public enum ParameterType {
 
         result.setRequestParams(new HashMap<>(request.getRequestParams()));
         result.setPathVariables(new HashMap<>(request.getPathVariables()));
+        RequestRepository.setRequestWithRealBody(result);
         return result;
     })),
     REQUEST_BODY((request, parameter) -> {

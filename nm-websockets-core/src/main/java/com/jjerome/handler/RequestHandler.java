@@ -59,23 +59,6 @@ public class RequestHandler {
             Mapping mapping = mappingsStorage.getMappingByPath(path);
             mapping.applyRequestFieldsCollectFunctions(request);
             mapping.applyInvokeFunction(request);
-
-//            String[] allPathVariableNames = mapping.getPathVariablesNames();
-//
-//            if (allPathVariableNames.length > 0) {
-//                Matcher matcher = mapping.getRegexPathPattern().matcher(request.getPath());
-//
-//                if (matcher.find()) {
-//                    for (int i = 1; i <= matcher.groupCount(); ++i) {
-//                        String value = matcher.group(i);
-//                        request.getPathVariables().put(allPathVariableNames[i - 1], value);
-//                    }
-//                }
-//            }
-
-            // Todo Enum for mapping types mb tray use factory or something else
-
-//            invokeMapping(mapping, request);
         });
     }
 
@@ -121,7 +104,6 @@ public class RequestHandler {
                     responseHandler.sendJSONMessage(request.getSessionId(), new Response<>(responsePath, response));
                 }
             } catch (RuntimeException e){
-
                 System.out.println(e);
             }
         } else {

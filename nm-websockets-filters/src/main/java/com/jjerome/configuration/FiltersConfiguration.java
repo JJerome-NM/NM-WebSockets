@@ -8,13 +8,12 @@ import com.jjerome.context.FiltersContext;
 import com.jjerome.core.filters.ApplicationFilterChain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 import java.util.List;
 
 
 @Configuration
-@DependsOn("securityConfiguration")
+//@DependsOn({"securityConfiguration"})
 public class FiltersConfiguration {
 
     FiltersConfiguration() {

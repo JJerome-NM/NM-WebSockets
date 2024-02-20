@@ -5,6 +5,7 @@ import com.jjerome.core.Mapping;
 import com.jjerome.core.filters.ApplicationFilterChain;
 import com.jjerome.domain.strategies.mapping.collect.MappingCollectFunctionFactory;
 import com.jjerome.domain.strategies.mapping.invoke.MappingInvokeFunctionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +18,7 @@ public class MappingFactory {
 
 
     public MappingFactory(ApplicationFilterChain applicationFilterChain,
-                          ApplicationSecurity applicationSecurity,
+                          @Autowired(required = false) ApplicationSecurity applicationSecurity,
                           MappingInvokeFunctionFactory invokeFunctionFactory,
                           MappingCollectFunctionFactory collectFunctionFactory) {
         this.applicationFilterChain = applicationFilterChain;
@@ -37,7 +38,11 @@ public class MappingFactory {
 
     private Mapping wrapMappingWithOtherModules(Mapping mappingWorkpiece) { // TODO mb rework this to some list...
         mappingWorkpiece = applicationFilterChain.wrapMappingWithFilter(mappingWorkpiece);
-        mappingWorkpiece = applicationSecurity.wrapMappingSecurity(mappingWorkpiece);
+
+        if (applicationSecurity != null) {
+            mappingWorkpiece = applicationSecurity.wrapMappingSecurity(mappingWorkpiece);
+        }
+
         return mappingWorkpiece;
     }
 }

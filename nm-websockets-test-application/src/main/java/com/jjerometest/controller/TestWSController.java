@@ -1,7 +1,6 @@
 package com.jjerometest.controller;
 
 import com.jjerome.core.Request;
-import com.jjerome.reflection.context.annotation.HasRole;
 import com.jjerome.reflection.context.annotation.WSController;
 import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.reflection.context.annotation.WSPathVariable;
@@ -30,7 +29,6 @@ public class TestWSController {
             path = "/second",
             filters = {"GoodFilter", "GoodFilter2"}
     )
-    @HasRole("ADMIN")
     public Integer test2(){
         System.out.println("test2");
         return 2;

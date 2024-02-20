@@ -21,7 +21,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 import java.util.concurrent.ExecutorService;
@@ -43,7 +42,7 @@ public class WebSocketConfiguration {
     }
 
     @Bean
-    @DependsOn("securityContext")
+//    @DependsOn("securityContext")
     public MappingContext mappingContext(
             ApplicationContext context,
             MethodUtil methodUtil,

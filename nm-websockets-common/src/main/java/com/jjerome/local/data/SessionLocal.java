@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public class SessionLocal implements LocalDataArguments<String>, InitializingBean {
 
-    private static SessionLocal INSTANSE;
+    private static SessionLocal INSTANCE;
 
     private final LocalDataArgumentsMap argumentsMap;
 
@@ -110,10 +110,10 @@ public class SessionLocal implements LocalDataArguments<String>, InitializingBea
 
     @Override
     public void afterPropertiesSet() {
-        INSTANSE = this;
+        INSTANCE = this;
     }
 
-    public static SessionLocal getINSTANSE(){
-        return INSTANSE;
+    public static SessionLocal getINSTANCE() {
+        return INSTANCE;
     }
 }
