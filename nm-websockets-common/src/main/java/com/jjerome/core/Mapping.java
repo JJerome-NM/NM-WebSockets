@@ -1,12 +1,13 @@
 package com.jjerome.core;
 
 
-import com.jjerome.context.MethodParameter;
-import com.jjerome.context.Parameter;
-import com.jjerome.context.annotation.WSMapping;
 import com.jjerome.core.enums.WSMappingType;
+import com.jjerome.reflection.context.AnnotatedParameter;
+import com.jjerome.reflection.context.MethodParameter;
+import com.jjerome.reflection.context.annotation.WSMapping;
 
 import java.lang.reflect.Method;
+import java.util.regex.Pattern;
 
 public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
 
@@ -16,11 +17,17 @@ public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
 
     Method getMethod();
 
-    MethodParameter[] getMethodParams();
-
-    Parameter getMethodReturnType();
-
     String buildFullPath();
+
+    String[] getPathVariablesNames();
+
+    Pattern getRegexPathPattern();
+
+    Request<UndefinedBody> applyRequestFieldsCollectFunctions(Request<UndefinedBody> request);
+
+    void applyInvokeFunction(Request<UndefinedBody> request);
+
+    MappingBuilder<? extends Mapping> toBuilder();
 
     interface MappingBuilder<T extends Mapping> extends AnnotatedComponentBuilder<WSMapping, T>, Builder<T>{
         MappingBuilder<T> type(WSMappingType type);
@@ -29,8 +36,18 @@ public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
 
         MappingBuilder<T> method(Method method);
 
-        MappingBuilder<T> methodParams(MethodParameter[] parameters);
+        MappingBuilder<T> methodParams(AnnotatedParameter[] parameters);
 
-        MappingBuilder<T> methodReturnType(Parameter returnType);
+        MappingBuilder<T> methodReturnType(MethodParameter returnType);
+
+        MappingBuilder<T> pathVariablesNames(String[] pathVariablesNames);
+
+        MappingBuilder<T> regexPathPattern(String regexPath);
+
+        MappingBuilder<T> requestFieldsCollectFunctions(
+                MappingCollectStrategy[] collectStrategies);
+
+        MappingBuilder<T> invokeFunction(
+                MappingInvokeStrategy invokeStrategy);
     }
 }

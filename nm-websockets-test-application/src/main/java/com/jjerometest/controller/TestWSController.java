@@ -1,21 +1,28 @@
 package com.jjerometest.controller;
 
-import com.jjerome.context.anotation.WSConnectMapping;
-import com.jjerome.context.annotation.WSController;
-import com.jjerome.context.annotation.WSMapping;
-import com.jjerome.context.annotation.WSRequestBody;
-import com.jjerometest.entity.Good;
-import org.springframework.web.bind.annotation.PathVariable;
+import com.jjerome.core.Request;
+import com.jjerome.reflection.context.annotation.WSController;
+import com.jjerome.reflection.context.annotation.WSMapping;
+import com.jjerome.reflection.context.annotation.WSPathVariable;
+import com.jjerome.reflection.context.annotation.WSRequestBody;
+import com.jjerome.reflection.context.anotation.WSConnectMapping;
+import com.jjerometest.entity.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 
-@WSController("/test")
+@RequiredArgsConstructor
+@WSController(value = "/test", handlerPath = "/socket")
 public class TestWSController {
 
-    @WSConnectMapping(
-            responsePath = "/connected",
-            filters = {"GoodFilter", "GoodFilter2"}
-    )
-    public void test(@WSRequestBody Good<Good<Good<Integer, Integer>, Integer>, Integer> good){
-        System.out.println(good.isGood());
+    private final ApplicationContext context;
+
+
+    @WSConnectMapping(responsePath = "/connect/test")
+    public Integer connect(){
+
+        context.getDisplayName();
+
+        return 23232;
     }
 
     @WSMapping(
@@ -27,10 +34,18 @@ public class TestWSController {
         return 2;
     }
 
-    @WSMapping(path = "/{id}/good", responsePath = "/test3/response")
-    public String test3(@PathVariable Integer request){
-        System.out.println(request);
+    @WSMapping(path = "/{id}/good/{id2}/{id3}", responsePath = "/test3/response")
+    public String test3(@WSPathVariable Integer id, @WSPathVariable Integer id2, @WSPathVariable Integer id3) {
+        return id.toString();
+    }
 
-        return request.toString();
+    @WSMapping(path = "/{id}/dooo/{name}", responsePath = "/test3/response")
+    public String test4(@WSPathVariable String id, @WSPathVariable String name) {
+        return name + "|" + id;
+    }
+
+    @WSMapping(path = "/ffff/{id}/dooo", responsePath = "/test3/response")
+    public String test5(@WSPathVariable String id, Request<User> request, @WSRequestBody User user) {
+        return id;
     }
 }

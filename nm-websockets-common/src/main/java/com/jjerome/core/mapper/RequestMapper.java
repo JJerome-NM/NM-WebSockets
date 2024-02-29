@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jjerome.core.Request;
-import com.jjerome.core.dto.RequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -28,9 +27,5 @@ public class RequestMapper {
 
     public <T> Request<T> JSONToRequest(String json, Class<T> bodyType) {
         return (Request<T>) JSONTo(json, Request.class, bodyType);
-    }
-
-    public <T> RequestDto<T> JSONToRequestDto(String json, Class<T> bodyType){
-        return (RequestDto<T>) JSONTo(json, RequestDto.class, bodyType);
     }
 }

@@ -1,6 +1,9 @@
 package com.jjerome;
 
+import com.jjerome.core.filters.Filter;
+import com.jjerome.core.filters.FilterChain;
 import com.jjerome.core.Mapping;
+import com.jjerome.core.filters.FilterComparator;
 import com.jjerome.exeption.FilterNotFound;
 
 import java.util.HashMap;
@@ -20,14 +23,14 @@ public final class FiltersStorage {
     private final Map<String, FilterComponent> filterComponents;
 
 
-    public FiltersStorage() {
-        this.filterComponents = new HashMap<>();
-        this.filters = new HashMap<>();
-    }
-
     public FiltersStorage(Map<String, Filter> filters, List<FilterComponent> filterComponents) {
         this.filters = filters;
         this.filterComponents = buildFilterComponentsMap(filterComponents);
+    }
+
+    public FiltersStorage() {
+        this.filters = new HashMap<>();
+        this.filterComponents = new HashMap<>();
     }
 
     private Map<String, FilterComponent> buildFilterComponentsMap(List<FilterComponent> filterComponents){
@@ -39,24 +42,24 @@ public final class FiltersStorage {
         return new MappingFilterChain(collectAllFiltersByLabel(mapping.getComponentAnnotation().filters()));
     }
 
-    public <T extends FilterChain> Set<T> collectAllFiltersByLabel(String... labels){
+    public <T extends Filter> Set<T> collectAllFiltersByLabel(String... labels){
         return Stream.of(labels)
                 .map(label -> (T) getFilterByLabelOrThrow(label))
-                .collect(Collectors.toCollection(() -> new TreeSet<>(FilterChainComparator.buildComparator())));
+                .collect(Collectors.toCollection(() -> new TreeSet<>(FilterComparator.buildComparator())));
     }
 
-    public <T extends FilterChain> T getFilterByLabelOrThrow(String label) throws FilterNotFound {
+    public <T extends Filter> T getFilterByLabelOrThrow(String label) throws FilterNotFound {
         return getFilterByNameOrElseThrow(label,
                 () -> new FilterNotFound(String.format("Filter with name {%s} not found", label)));
     }
 
     /**
      * @param label name of the filter you want to get
-     * @param e exception that will be applied if the {@link Filter} is not found
-     * @return {@link Filter} - method filter chain
+     * @param e exception that will be applied if the {@link MappingFilter} is not found
+     * @return {@link MappingFilter} - method filter chain
      * @throws X Exception type
      */
-    public <X extends Throwable, T extends FilterChain> T getFilterByNameOrElseThrow(String label, Supplier<? extends X> e) throws X{
+    public <X extends Throwable, T extends Filter> T getFilterByNameOrElseThrow(String label, Supplier<? extends X> e) throws X{
         T filterChain = getFilterByLabel(label);
         if (filterChain != null){
             return filterChain;
@@ -65,7 +68,7 @@ public final class FiltersStorage {
         }
     }
 
-    public <T extends FilterChain> T getFilterByLabel(String label){
+    public <T extends Filter> T getFilterByLabel(String label){
         return (T) filters.get(label);
     }
 }
