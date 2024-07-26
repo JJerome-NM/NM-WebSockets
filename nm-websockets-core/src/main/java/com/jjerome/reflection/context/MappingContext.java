@@ -21,20 +21,23 @@ import com.jjerome.util.LoggerUtil;
 import com.jjerome.util.MergedAnnotationUtil;
 import com.jjerome.util.MethodUtil;
 import com.jjerome.util.PathUtil;
-import org.reflections.Reflections;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
-import static org.springframework.core.annotation.AnnotatedElementUtils.hasAnnotation;
 
 public class MappingContext {
 
@@ -69,58 +72,60 @@ public class MappingContext {
                                          SessionLocal sessionLocal,
                                          PrivateGlobalData privateGlobalData) {
         LoggerUtil.disableReflectionsInfoLogs();
-        Map<String, WebSocketHandler> handlers = domainStorage.getHandlers();
-        Map<String, List<Controller>> handlersControllers = new HashMap<>();
 
-        for (Controller controller : getAllControllers()) {
-            String handlerPath = controller.getComponentAnnotation().handlerPath();
-            if (!handlersControllers.containsKey(handlerPath)) {
-                handlersControllers.put(handlerPath, new ArrayList<>());
-            }
-            handlersControllers.get(handlerPath).add(controller);
-        }
+        Map<String, List<Controller>> splitControllers = getAllControllers()
+                .stream()
+                .collect(groupingBy(k -> k.getComponentAnnotation().handlerPath().equals("*") ? "SHARED" : "DEFAULT"));
 
-        for (String handlerPath : handlersControllers.keySet()) {
-            MappingsStorage mappingsStorage = findAllMappings(handlersControllers.get(handlerPath));
-            RequestHandler requestHandler = new RequestHandler(mappingsStorage, responseHandler, executorService,
-                    requestMapper, invokeUtil, sessionLocal);
-            handlers.put(handlerPath, new WebSocketHandler(requestHandler, privateGlobalData, handlerPath));
-        }
+        Map<String, List<Controller>> handlersControllers = splitControllers.getOrDefault("DEFAULT", Collections.emptyList())
+                .stream()
+                .collect(groupingBy(
+                        controller -> controller.getComponentAnnotation().handlerPath(),
+                        HashMap::new,
+                        collectingAndThen(toList(), list -> {
+                            List<Controller> combinedList = new ArrayList<>(splitControllers.getOrDefault("SHARED", Collections.emptyList()));
+                            combinedList.addAll(list);
+                            return combinedList;
+                        })
+                ));
+
+        Map<String, WebSocketHandler> handlers = handlersControllers.entrySet()
+                .stream()
+                .collect(toMap(Map.Entry::getKey, entry -> {
+                    MappingsStorage storage = findAllMappings(entry.getValue());
+                    RequestHandler requestHandler = new RequestHandler(storage, responseHandler, executorService,
+                            requestMapper, invokeUtil, sessionLocal);
+
+                    WebSocketHandler handler = new WebSocketHandler(requestHandler, privateGlobalData, entry.getKey());
+                    context.getAutowireCapableBeanFactory().autowireBean(handler); // TODO mb try create bean
+                    return handler;
+                }));
+
+        domainStorage.setHandlers(handlers);
+
         LoggerUtil.enableReflectionsLogs();
     }
 
     public List<Controller> getAllControllers() {
         LoggerUtil.disableReflectionsInfoLogs();
 
-        Reflections reflections = new Reflections(initialClass.getClazz().getPackageName());
-        Set<Class<?>> allControllerClasses = reflections.getTypesAnnotatedWith(WSController.class);
+        List<Controller> controllers = context.getBeansWithAnnotation(WSController.class)
+                .values().stream()
+                .map(Object::getClass).map(controllerClazz -> {
+                    WSController controllerAnnotation = findMergedAnnotation(controllerClazz, WSController.class);
+                    Annotation[] annotations = mergedAnnotationUtil.findAllAnnotations(controllerClazz);
+                    Object controllerSpringBean = context.getBean(controllerClazz);
 
-        for (String pack : initialClass.getBasePackages()){
-            allControllerClasses.addAll(new Reflections(pack).getTypesAnnotatedWith(WSController.class));
-        }
+                    return new DefaultController(annotations, controllerAnnotation, controllerClazz, controllerSpringBean);
+                })
+                .collect(toList());
 
-        initialClass.getBaseClasses().stream()
-                .filter(clazz -> hasAnnotation(clazz, WSController.class))
-                .forEach(allControllerClasses::add);
-
-
-        List<Controller> controllers = new ArrayList<>();
-
-        for (Class<?> controllerClazz : allControllerClasses){
-            WSController controllerAnnotation = findMergedAnnotation(controllerClazz, WSController.class);
-            Annotation[] annotations = mergedAnnotationUtil.findAllAnnotations(controllerClazz);
-            Object controllerSpringBean = context.getBean(controllerClazz);
-
-            controllers.add(new DefaultController(annotations, controllerAnnotation, controllerClazz, controllerSpringBean));
-        }
         LoggerUtil.enableReflectionsLogs();
         return controllers;
     }
 
     public MappingsStorage findAllMappings(List<Controller> controllers) {
-        Map<String, Mapping> methodMappings = new HashMap<>();
-        List<Mapping> connectMappings = new ArrayList<>();
-        List<Mapping> disconnectMappings = new ArrayList<>();
+        List<Mapping> mappings = new ArrayList<>();
 
         for (Controller controller : controllers) {
             WSController controllerAnnotation = controller.getComponentAnnotation();
@@ -128,11 +133,11 @@ public class MappingContext {
             for (Method method : controller.getClazz().getDeclaredMethods()) {
                 WSMapping mappingAnnotation = mergedAnnotationUtil.findAllMergedAnnotationsAndCompareArrays(method, WSMapping.class);
 
-                if (mappingAnnotation == null) {
+                if (Objects.isNull(mappingAnnotation)) {
                     continue;
                 }
 
-                String fullPath = String.join("", controllerAnnotation.pathPrefix(), mappingAnnotation.path());
+                String fullPath = controllerAnnotation.pathPrefix() + mappingAnnotation.path();
                 Mapping mapping = ReadOnlyMapping.builder()
                         .annotations(mergedAnnotationUtil.findAllAnnotations(method))
                         .type(mappingAnnotation.type())
@@ -145,16 +150,11 @@ public class MappingContext {
                         .regexPathPattern(pathUtil.buildRegex(fullPath))
                         .build();
 
-                switch (mapping.getType()) {
-                    case METHOD -> {
-                        mapping = mappingFactory.buildMapping(mapping);
-                        methodMappings.put(mapping.buildFullPath(), mapping);
-                    }
-                    case CONNECT -> connectMappings.add(mapping);
-                    case DISCONNECT -> disconnectMappings.add(mapping);
-                }
+                mapping = mappingFactory.buildMapping(mapping);
+
+                mappings.add(mapping);
             }
         }
-        return new MappingsStorage(methodMappings, connectMappings, disconnectMappings);
+        return new MappingsStorage(mappings);
     }
 }

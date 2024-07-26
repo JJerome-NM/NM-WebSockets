@@ -1,13 +1,19 @@
 package com.jjerome.handler;
 
+import com.jjerome.core.Controller;
 import com.jjerome.domain.PrivateGlobalData;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class WebSocketHandler extends TextWebSocketHandler {
 
@@ -15,6 +21,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private final RequestHandler requestHandler;
     private final PrivateGlobalData privateGlobalData;
     private final String handlerPath;
+    @Value("${nm-websocket.allowed-origins:*}")
+    private String[] allowedOrigins = {};
 
     public WebSocketHandler(RequestHandler requestHandler,
                             PrivateGlobalData privateGlobalData,
@@ -29,10 +37,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) {
-//        double start = System.nanoTime();
         requestHandler.handleMapping(session, message);
-//        System.out.println("Request runtime = " + (System.nanoTime() - start));
-
     }
 
     @Override
@@ -52,5 +57,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     public String getHandlerPath() {
         return handlerPath;
+    }
+
+    public List<Controller> getAvailableControllers() {
+        return requestHandler.getMappingsStorage().getControllers();
+    }
+
+    public Map<String, UUID> getMappingsUUIDs() {
+        return requestHandler.getMappingsStorage().getMappingsPathToUUIDMap();
     }
 }

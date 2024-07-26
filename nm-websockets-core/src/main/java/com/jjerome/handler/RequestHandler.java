@@ -7,7 +7,6 @@ import com.jjerome.core.Response;
 import com.jjerome.core.UndefinedBody;
 import com.jjerome.core.mapper.RequestMapper;
 import com.jjerome.domain.MappingsStorage;
-import com.jjerome.exception.MappingNotFoundException;
 import com.jjerome.local.data.SessionLocal;
 import com.jjerome.util.InvokeUtil;
 import org.springframework.web.socket.TextMessage;
@@ -46,17 +45,12 @@ public class RequestHandler {
 
     public void handleMapping(Request<UndefinedBody> request) throws InvocationTargetException, IllegalAccessException {
         executorService.submit(() -> {
-            String path = mappingsStorage.containsMapping(request.getPath(), true);
-            if (path == null) {
-                throw new MappingNotFoundException(request.getPath() + " - mapping not found");
-            }
-
             RequestRepository.setRequest(request);
 
 //            sessionLocal.setArgument("security.key", "SECURITY_KEY");
 //            var securityKey = sessionLocal.getArgument("security.key");
 
-            Mapping mapping = mappingsStorage.getMappingByPath(path);
+            Mapping mapping = mappingsStorage.getMappingByRequest(request);
             mapping.applyRequestFieldsCollectFunctions(request);
             mapping.applyInvokeFunction(request);
         });
@@ -109,5 +103,9 @@ public class RequestHandler {
         } else {
             invokeUtil.invoke(mapping);
         }
+    }
+
+    public MappingsStorage getMappingsStorage() {
+        return mappingsStorage;
     }
 }
