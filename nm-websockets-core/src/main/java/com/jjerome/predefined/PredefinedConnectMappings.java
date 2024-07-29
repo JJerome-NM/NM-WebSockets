@@ -5,8 +5,7 @@ import com.jjerome.handler.WebSocketHandler;
 import com.jjerome.reflection.context.annotation.WSController;
 import com.jjerome.reflection.context.anotation.WSConnectMapping;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
 
 @WSController(responsePathPrefix = "/predefined", handlerPath = "*")
 public class PredefinedConnectMappings {
@@ -17,10 +16,11 @@ public class PredefinedConnectMappings {
         this.domainStorage = domainStorage;
     }
 
-    @WSConnectMapping
-    public Map<String, UUID> connect() {
+    @WSConnectMapping(responsePath = "/available_mapping")
+    public List<AvailableMappingDetails> connect() {
+
         WebSocketHandler handler = domainStorage.getMyHandler();
 
-        return handler.getMappingsUUIDs();
+        return handler.getAvailableMappingDetails();
     }
 }

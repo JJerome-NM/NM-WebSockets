@@ -14,13 +14,15 @@ import com.jjerome.reflection.context.annotation.WSMapping;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class ReadOnlyMapping implements Mapping {
-
+    private final UUID id;
     private final Annotation[] annotations;
     private final WSMappingType type;
     private final WSMapping mappingAnnotation;
+    private final Object springBean;
     private final Controller controller;
     private final Method method;
     private final AnnotatedParameter[] methodParams;
@@ -30,14 +32,16 @@ public class ReadOnlyMapping implements Mapping {
     private final MappingCollectStrategy[] collectStrategies;
     private final MappingInvokeStrategy invokeStrategy;
 
-    public ReadOnlyMapping(Annotation[] annotations, WSMappingType type, WSMapping mappingAnnotation,
-                           Controller controller, Method method, AnnotatedParameter[] methodParams,
+    public ReadOnlyMapping(UUID id, Annotation[] annotations, WSMappingType type, WSMapping mappingAnnotation,
+                           Object springBean, Controller controller, Method method, AnnotatedParameter[] methodParams,
                            MethodParameter methodReturnType, String[] pathVariablesNames, Pattern pathPattern,
                            MappingCollectStrategy[] collectStrategies,
                            MappingInvokeStrategy invokeStrategy) {
+        this.id = id;
         this.annotations = annotations;
         this.type = type;
         this.mappingAnnotation = mappingAnnotation;
+        this.springBean = springBean;
         this.controller = controller;
         this.method = method;
         this.methodParams = methodParams;
@@ -99,6 +103,7 @@ public class ReadOnlyMapping implements Mapping {
     @Override
     public MappingBuilder<? extends Mapping> toBuilder() {
         return ReadOnlyMapping.builder()
+                .id(id)
                 .annotations(annotations)
                 .type(type)
                 .componentAnnotation(mappingAnnotation)
@@ -110,6 +115,11 @@ public class ReadOnlyMapping implements Mapping {
                 .regexPathPattern(pathPattern.pattern())
                 .requestFieldsCollectFunctions(collectStrategies)
                 .invokeFunction(invokeStrategy);
+    }
+
+    @Override
+    public UUID getID() {
+        return id;
     }
 
     @Override
@@ -146,10 +156,11 @@ public class ReadOnlyMapping implements Mapping {
     }
 
     public static class DefaultMappingBuilder implements MappingBuilder<ReadOnlyMapping> {
-
+        private UUID id;
         private Annotation[] annotations;
         private WSMappingType type;
         private WSMapping componentAnnotation;
+        private Object springBean;
         private Controller controller;
         private Method method;
         private AnnotatedParameter[] methodParams;
@@ -162,8 +173,14 @@ public class ReadOnlyMapping implements Mapping {
 
         @Override
         public ReadOnlyMapping build() {
-            return new ReadOnlyMapping(annotations, type, componentAnnotation, controller, method, methodParams,
+            return new ReadOnlyMapping(id, annotations, type, componentAnnotation, springBean, controller, method, methodParams,
                     methodReturnType, pathVariablesNames, regexPathPattern, collectStrategies, invokeStrategy);
+        }
+
+        @Override
+        public DefaultMappingBuilder id(UUID id) {
+            this.id = id;
+            return this;
         }
 
         @Override
@@ -180,6 +197,7 @@ public class ReadOnlyMapping implements Mapping {
 
         @Override
         public DefaultMappingBuilder springBean(Object springBean) {
+            this.springBean = springBean;
             return this;
         }
 

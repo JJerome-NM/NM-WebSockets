@@ -47,10 +47,8 @@ public class MappingsStorage {
     }
 
     private void addMapping(Mapping mapping) {
-        UUID uuid = UUID.randomUUID();
-
-        mappingsUUIDByPath.put(mapping.buildFullPath(), uuid);
-        mappings.put(uuid, mapping);
+        mappingsUUIDByPath.put(mapping.buildFullPath(), mapping.getID());
+        mappings.put(mapping.getID(), mapping);
     }
 
     private void addConnectMapping(Mapping mapping) {
@@ -81,17 +79,17 @@ public class MappingsStorage {
 
     public Mapping getMappingByRequest(Request<UndefinedBody> request) {
         if (Objects.nonNull(request.getMappingID())) {
-            Mapping mapping = mappings.get(request.getMappingIDAsUUID());
-
-            System.out.println(mapping);
+            return mappings.get(request.getMappingIDAsUUID());
         }
 
         UUID mappingId = containsMapping(request.getPath());
+        request.setMappingID(mappingId.toString());
+
         return mappings.get(mappingId);
     }
 
-    public Map<String, UUID> getMappingsPathToUUIDMap() {
-        return mappingsUUIDByPath;
+    public List<Mapping> getMappings() {
+        return mappings.values().stream().filter(mapping -> Objects.nonNull(mapping.getID())).collect(toList());
     }
 
     public List<Controller> getControllers() {

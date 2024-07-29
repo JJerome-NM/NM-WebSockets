@@ -18,14 +18,14 @@ public @interface WSMapping {
     @AliasFor(
             attribute = "path"
     )
-    String value() default "";
+    String value() default "/";
 
     @AliasFor(
             attribute = "value"
     )
-    String path() default "";
+    String path() default "/";
 
-    String responsePath() default "";
+    String responsePath() default "/";
 
     @AliasFor(
             annotation = UseFilters.class,

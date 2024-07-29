@@ -20,4 +20,10 @@ public class MappingFilterProxy extends AbstractMappingProxy {
         filterChain.doFilters();
         return super.invoke(methodParameters);
     }
+
+    //    @Override
+//    public void applyInvokeFunction(Request<UndefinedBody> request) {
+//        filterChain.doFilters();
+//        super.applyInvokeFunction(request);
+//    }
 }

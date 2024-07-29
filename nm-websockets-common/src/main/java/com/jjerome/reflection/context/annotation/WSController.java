@@ -1,6 +1,5 @@
 package com.jjerome.reflection.context.annotation;
 
-import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Documented;
@@ -16,17 +15,9 @@ import java.lang.annotation.Target;
 @Component
 public @interface WSController {
 
-    @AliasFor(
-            attribute = "pathPrefix"
-    )
-    String value() default "/";
+    String pathPrefix() default "";
 
-    @AliasFor(
-            attribute = "value"
-    )
-    String pathPrefix() default "/";
+    String responsePathPrefix() default "";
 
-    String responsePathPrefix() default "/";
-
-    String handlerPath() default "/";
+    String handlerPath() default "";
 }

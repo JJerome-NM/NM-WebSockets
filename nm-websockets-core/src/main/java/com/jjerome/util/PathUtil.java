@@ -28,6 +28,10 @@ public class PathUtil {
     }
 
     public String buildRegex(String path) {
+        if (path.equals(SLASH)) {
+            return SLASH;
+        }
+
         StringBuilder builder = new StringBuilder();
         String[] components = StringUtils.split(path, SLASH);
         for (String component : components) {

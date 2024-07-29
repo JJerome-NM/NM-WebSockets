@@ -9,12 +9,12 @@ import com.jjerome.reflection.context.annotation.WSMapping;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public abstract class AbstractMappingProxy implements Mapping {
 
     private final Mapping mapping;
-
 
     protected AbstractMappingProxy(Mapping mapping) {
         this.mapping = mapping;
@@ -23,6 +23,11 @@ public abstract class AbstractMappingProxy implements Mapping {
     @Override
     public Object invoke(Object[] methodParameters) throws InvocationTargetException, IllegalAccessException {
         return mapping.invoke(methodParameters);
+    }
+
+    @Override
+    public UUID getID() {
+        return mapping.getID();
     }
 
     @Override

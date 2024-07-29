@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -139,6 +140,7 @@ public class MappingContext {
 
                 String fullPath = controllerAnnotation.pathPrefix() + mappingAnnotation.path();
                 Mapping mapping = ReadOnlyMapping.builder()
+                        .id(UUID.randomUUID())
                         .annotations(mergedAnnotationUtil.findAllAnnotations(method))
                         .type(mappingAnnotation.type())
                         .componentAnnotation(mappingAnnotation)

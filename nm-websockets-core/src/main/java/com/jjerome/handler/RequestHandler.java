@@ -77,9 +77,9 @@ public class RequestHandler {
         }));
     }
 
-    public void handleDisconnectMapping(){
+    public void handleDisconnectMapping(WebSocketSession session) {
         mappingsStorage.getDisconnectMappings().forEach((mapping -> {
-            Request<UndefinedBody> request = new Request<>();
+            Request<UndefinedBody> request = new Request<>(session.getId());
 
             RequestRepository.setRequest(request);
 

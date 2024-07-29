@@ -1,7 +1,9 @@
 package com.jjerome.handler;
 
 import com.jjerome.core.Controller;
+import com.jjerome.core.Mapping;
 import com.jjerome.domain.PrivateGlobalData;
+import com.jjerome.predefined.AvailableMappingDetails;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +13,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class WebSocketHandler extends TextWebSocketHandler {
 
@@ -44,7 +45,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) {
         System.out.println(session.getId());
 
-        privateGlobalData.getSessions().put(session.getId(), session);
+        privateGlobalData.addSession(session);
         requestHandler.handleConnectMapping(session);
     }
 
@@ -52,7 +53,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         System.out.println(session.getId());
 
-        requestHandler.handleDisconnectMapping();
+        privateGlobalData.removeSession(session);
+        requestHandler.handleDisconnectMapping(session);
     }
 
     public String getHandlerPath() {
@@ -63,7 +65,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
         return requestHandler.getMappingsStorage().getControllers();
     }
 
-    public Map<String, UUID> getMappingsUUIDs() {
-        return requestHandler.getMappingsStorage().getMappingsPathToUUIDMap();
+    public List<AvailableMappingDetails> getAvailableMappingDetails() {
+        List<AvailableMappingDetails> details = new ArrayList<>();
+        for (Mapping m : requestHandler.getMappingsStorage().getMappings()) {
+            details.add(new AvailableMappingDetails(m.buildFullPath(), m.getRegexPathPattern().pattern(), m.getID()));
+        }
+        return details;
     }
 }

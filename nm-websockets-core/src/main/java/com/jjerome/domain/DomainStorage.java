@@ -2,10 +2,12 @@ package com.jjerome.domain;
 
 import com.jjerome.exception.HandlerNotFoundException;
 import com.jjerome.handler.WebSocketHandler;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,13 +16,18 @@ public class DomainStorage {
 
     private Map<String, WebSocketHandler> handlersByControllerClassName;
     private Map<String, WebSocketHandler> handlers;
+    private final PrivateGlobalData privateData;
 
-    public DomainStorage() {
+    public DomainStorage(PrivateGlobalData privateGlobalData) {
+        this.privateData = privateGlobalData;
         this.handlers = new HashMap<>();
     }
 
     public WebSocketHandler getMyHandler() {
-        return getMyHandler(Thread.currentThread().getStackTrace()[2].getClassName());
+        WebSocketSession session = privateData.getSession()
+                .orElseThrow(() -> new HandlerNotFoundException("No session found"));
+
+        return handlers.get(Objects.requireNonNull(session.getUri()).getPath());
     }
 
     protected WebSocketHandler getMyHandler(String controllerClassName) {

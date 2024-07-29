@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 
 @RequiredArgsConstructor
-@WSController(value = "/room", handlerPath = "/room")
+@WSController(pathPrefix = "/room", handlerPath = "/room")
 public class TestWSController23 {
 
     private final ApplicationContext context;

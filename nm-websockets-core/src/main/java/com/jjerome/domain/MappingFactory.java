@@ -28,12 +28,18 @@ public class MappingFactory {
     }
 
     public Mapping buildMapping(Mapping mappingWorkpiece) {
+        mappingWorkpiece = wrapMappingWithOtherModules(mappingWorkpiece);
+
+//        if (mappingWorkpiece.getClass().getName() == "com.jjerome.MappingFilterProxy") {
+//            mappingWorkpiece.applyInvokeFunction(null);
+//        }
+
         mappingWorkpiece = mappingWorkpiece.toBuilder()
                 .requestFieldsCollectFunctions(collectFunctionFactory.buildCollectStrategies(mappingWorkpiece))
                 .invokeFunction(invokeFunctionFactory.buildInvokeFunction(mappingWorkpiece))
                 .build();
 
-        return wrapMappingWithOtherModules(mappingWorkpiece);
+        return mappingWorkpiece;
     }
 
     private Mapping wrapMappingWithOtherModules(Mapping mappingWorkpiece) { // TODO mb rework this to some list...
@@ -42,6 +48,11 @@ public class MappingFactory {
         if (applicationSecurity != null) {
             mappingWorkpiece = applicationSecurity.wrapMappingSecurity(mappingWorkpiece);
         }
+
+
+//        if (mappingWorkpiece.getClass().getName() == "com.jjerome.MappingFilterProxy") {
+//            mappingWorkpiece.applyInvokeFunction(null);
+//        }
 
         return mappingWorkpiece;
     }
