@@ -56,8 +56,8 @@ public class WebSocketConfiguration {
     }
 
     @Bean
-    public DomainStorage domainStorage() {          ////
-        return new DomainStorage();
+    public DomainStorage domainStorage(PrivateGlobalData privateGlobalData) {          ////
+        return new DomainStorage(privateGlobalData);
     }
 
     @Bean

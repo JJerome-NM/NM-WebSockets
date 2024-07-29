@@ -7,9 +7,12 @@ import com.jjerome.reflection.context.MethodParameter;
 import com.jjerome.reflection.context.annotation.WSMapping;
 
 import java.lang.reflect.Method;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
+
+    UUID getID();
 
     WSMappingType getType();
 
@@ -30,6 +33,8 @@ public interface Mapping extends Invocable, AnnotatedComponent<WSMapping> {
     MappingBuilder<? extends Mapping> toBuilder();
 
     interface MappingBuilder<T extends Mapping> extends AnnotatedComponentBuilder<WSMapping, T>, Builder<T>{
+        MappingBuilder<T> id(UUID id);
+
         MappingBuilder<T> type(WSMappingType type);
 
         MappingBuilder<T> controller(Controller controller);

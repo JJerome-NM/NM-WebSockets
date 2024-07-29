@@ -4,10 +4,11 @@ import org.springframework.http.HttpHeaders;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 
 public class Request <T> {
-
+    private String mappingID;
     private String sessionId;
     private String path;
     private HttpHeaders httpHeaders;
@@ -36,6 +37,14 @@ public class Request <T> {
         this(null, null, null);
     }
 
+    public UUID getMappingIDAsUUID() {
+        return UUID.fromString(this.mappingID);
+    }
+
+    public String getMappingID() {
+        return this.mappingID;
+    }
+
     public String getSessionId() {
         return sessionId;
     }
@@ -46,6 +55,10 @@ public class Request <T> {
 
     public T getBody() {
         return body;
+    }
+
+    public void setMappingID(String mappingID) {
+        this.mappingID = mappingID;
     }
 
     public void setSessionId(String sessionId) {

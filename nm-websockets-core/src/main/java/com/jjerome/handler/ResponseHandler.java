@@ -1,11 +1,12 @@
 package com.jjerome.handler;
 
-import com.jjerome.domain.PrivateGlobalData;
 import com.jjerome.core.Response;
 import com.jjerome.core.mapper.ResponseMapper;
+import com.jjerome.domain.PrivateGlobalData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -29,16 +30,21 @@ public class ResponseHandler {
         this.responseMapper = responseMapper;
     }
 
-    public void sendJSONMessage(String sessionID, Response<?> response){
+    public void sendJSONMessage(String sessionID, Response<?> response) {
 
-        if (!privateGlobalData.getSessions().containsKey(sessionID)){
-            LOGGER.error("Send a message to an unidentified session");
-            return;
-        }
+//        if (!privateGlobalData.containsSession(sessionID)){
+//            LOGGER.error("Send a message to an unidentified session");
+//            return;
+//        }
 
-        try{
-            privateGlobalData.getSessions().get(sessionID).sendMessage(responseMapper.buildTextMessage(response));
-        } catch (IOException exception){
+        try {
+            WebSocketSession session = privateGlobalData.getSession(sessionID)
+                    .orElseThrow(() -> new IllegalStateException("Send a message to an unidentified session"));
+
+            System.out.println(response.getPath());
+
+            session.sendMessage(responseMapper.buildTextMessage(response));
+        } catch (IOException exception) {
             LOGGER.error(exception.getMessage());
         }
     }

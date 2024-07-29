@@ -10,10 +10,9 @@ import java.util.regex.Pattern;
 @Component
 public class PathUtil {
 
-    private static final String PATH_VARIABLE_PATTERN = "\\{[^\\/]+\\}";
+    private static final String PATH_VARIABLE_PATTERN = "\\{[^/]+}";
     private static final String PATH_VARIABLE_PATTERN_FOR_REGEX = "([^\\/]+)";
     private static final String REMOVE_BRACKETS_PATTERN = "[{}]";
-
     private static final String SLASH = "/";
 
     public String[] extractPathVariables(String path) {
@@ -29,6 +28,10 @@ public class PathUtil {
     }
 
     public String buildRegex(String path) {
+        if (path.equals(SLASH)) {
+            return SLASH;
+        }
+
         StringBuilder builder = new StringBuilder();
         String[] components = StringUtils.split(path, SLASH);
         for (String component : components) {

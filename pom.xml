@@ -6,8 +6,9 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.1.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
+
     <groupId>com.jjerome</groupId>
     <artifactId>NM-WebSockets</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -21,6 +22,7 @@
         <module>nm-websockets-common</module>
         <module>nm-websockets-test-application</module>
         <module>nm-websockets-filters</module>
+        <module>nm-websockets-sync</module>
     </modules>
 
     <properties>

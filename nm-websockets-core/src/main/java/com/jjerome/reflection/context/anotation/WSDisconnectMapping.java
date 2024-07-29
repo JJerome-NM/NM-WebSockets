@@ -1,7 +1,7 @@
 package com.jjerome.reflection.context.anotation;
 
-import com.jjerome.reflection.context.annotation.WSMapping;
 import com.jjerome.core.enums.WSMappingType;
+import com.jjerome.reflection.context.annotation.WSMapping;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.Documented;
@@ -21,7 +21,7 @@ public @interface WSDisconnectMapping {
     @AliasFor(
             annotation = WSMapping.class
     )
-    String responsePath() default "/";
+    String responsePath() default "";
 
     @AliasFor(
             annotation = WSMapping.class
